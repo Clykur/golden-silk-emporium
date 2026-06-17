@@ -29,7 +29,7 @@ app.use("/api/blog", blogRoutes);
 app.use("/api/support", supportRoutes);
 
 // Health check
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", (req: any, res: any) => {
   res.json({ status: "healthy", timestamp: new Date() });
 });
 

@@ -6,7 +6,7 @@ let isConnected = false;
 
 if (!redisUrl.includes("mock")) {
   client = createClient({ url: redisUrl });
-  client.on("error", (err) => {
+  client.on("error", (err: any) => {
     console.warn("Redis client warning, caching disabled:", err.message);
     isConnected = false;
   });
@@ -16,7 +16,7 @@ if (!redisUrl.includes("mock")) {
       console.log("Connected to Redis cache");
       isConnected = true;
     })
-    .catch((err) => {
+    .catch((err: any) => {
       console.warn("Failed to connect to Redis cache. Fallback to direct DB queries:", err.message);
       isConnected = false;
     });

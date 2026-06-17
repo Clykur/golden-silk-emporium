@@ -32,7 +32,7 @@ async function refreshAccessToken(): Promise<string | null> {
 export async function apiFetch(endpoint: string, options: RequestInit = {}): Promise<any> {
   const { accessToken } = useAuth.getState();
 
-  const headers: Record<string, string> = {
+  const headers: any = {
     "Content-Type": "application/json",
     ...((options.headers as Record<string, string>) || {}),
   };

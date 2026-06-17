@@ -11,9 +11,9 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/search")({
   validateSearch: searchSchema,
-  head: ({ search }) => ({
+  head: (ctx: any) => ({
     meta: [
-      { title: `Search Results for "${search.q || ""}" — Maaya Couture` },
+      { title: `Search Results for "${ctx.search?.q || ""}" — Maaya Couture` },
       { name: "description", content: `Browse search results matching keyword query.` },
     ],
   }),
