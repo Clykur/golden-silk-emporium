@@ -1,0 +1,99 @@
+import { X, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { useShop } from "@/lib/store";
+import { formatINR } from "@/lib/products";
+
+const SIZES = ["XS", "S", "M", "L", "XL"];
+
+export function QuickView() {
+  const quickView = useShop((s) => s.quickView);
+  const setQuickView = useShop((s) => s.setQuickView);
+  const addToCart = useShop((s) => s.addToCart);
+  const wishlist = useShop((s) => s.wishlist);
+  const toggleWishlist = useShop((s) => s.toggleWishlist);
+  const [size, setSize] = useState("M");
+
+  useEffect(() => {
+    document.body.style.overflow = quickView ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [quickView]);
+
+  if (!quickView) return null;
+  const wished = wishlist.includes(quickView.id);
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center p-4">
+      <div className="absolute inset-0 bg-ink/50 animate-rise" onClick={() => setQuickView(null)} />
+      <div className="relative grid w-full max-w-4xl grid-cols-1 overflow-hidden bg-background shadow-2xl animate-rise md:grid-cols-2 max-h-[92vh]">
+        <button
+          onClick={() => setQuickView(null)}
+          aria-label="Close"
+          className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-background/90 backdrop-blur hover:bg-background"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <img src={quickView.image} alt={quickView.name} className="h-72 w-full object-cover md:h-full" />
+        <div className="flex flex-col overflow-y-auto p-7 md:p-10">
+          <p className="eyebrow">{quickView.collection}</p>
+          <h3 className="mt-2 font-display text-2xl md:text-3xl">{quickView.name}</h3>
+          <div className="mt-2 flex items-baseline gap-3">
+            <span className="text-lg">{formatINR(quickView.price)}</span>
+            {quickView.compareAt && (
+              <span className="text-sm text-muted-foreground line-through">
+                {formatINR(quickView.compareAt)}
+              </span>
+            )}
+          </div>
+          <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+            {quickView.description}
+          </p>
+
+          <div className="mt-6">
+            <p className="eyebrow mb-3">Size</p>
+            <div className="flex flex-wrap gap-2">
+              {SIZES.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSize(s)}
+                  className={`h-10 min-w-10 border px-3 text-sm transition-colors ${
+                    size === s
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-border hover:border-foreground"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-auto pt-8 flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={() => { addToCart(quickView, size); setQuickView(null); }}
+              className="flex-1 bg-foreground py-4 text-xs font-medium tracking-[0.25em] uppercase text-background hover:bg-gold hover:text-gold-foreground transition-colors"
+            >
+              Add to bag
+            </button>
+            <button
+              onClick={() => toggleWishlist(quickView.id)}
+              aria-label="Wishlist"
+              className="grid place-items-center border border-border px-5 py-4 hover:border-foreground transition-colors"
+            >
+              <Heart className={`h-4 w-4 ${wished ? "fill-gold text-gold" : ""}`} />
+            </button>
+          </div>
+
+          <Link
+            to="/product/$id"
+            params={{ id: quickView.id }}
+            onClick={() => setQuickView(null)}
+            className="mt-4 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
+          >
+            View full details →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
