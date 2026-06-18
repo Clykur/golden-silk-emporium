@@ -29,10 +29,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-color: "always"
-          node-version: "18.x"
+          node-version: "22"
 
       - name: Install All Dependencies (Monorepo)
         run: npm ci
