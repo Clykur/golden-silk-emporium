@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, BookOpen, ArrowRight } from "lucide-react";
+import { EDITORIAL_IMAGES } from "@/lib/media";
 
 export const Route = createFileRoute("/virtual-catalog")({
   head: () => ({
@@ -20,28 +21,28 @@ const PAGES = [
     title: "Vivah Couture Cover",
     tagline: "The Bridal Atelier",
     desc: "A celebration of hand-embroidered velvet and gold zardozi motifs.",
-    image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&q=80",
+    image: EDITORIAL_IMAGES.catalogPage1,
     productId: "noor-crimson",
   },
   {
     title: "Heritage Weaves Cover",
     tagline: "Banarasi & Kanjivaram Rarities",
     desc: "Pure mulberry silk handloom textiles woven in ancient Varanasi lanes.",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
+    image: EDITORIAL_IMAGES.catalogPage2,
     productId: "meera-emerald",
   },
   {
     title: "Soirée Couture Cover",
     tagline: "Celebration Fluidity",
     desc: "Shimmering crystal-cut borders and flowing pastels for evening receptions.",
-    image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=900&q=80",
+    image: EDITORIAL_IMAGES.catalogPage3,
     productId: "ivaana-ivory",
   },
   {
     title: "Varanasi Heritage Weaves",
     tagline: "The Real Gold tested Zari Saree",
     desc: "Blush Banarasi silk woven in 24k tested zari designed with master looms.",
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4b4098?w=900&q=80",
+    image: EDITORIAL_IMAGES.catalogPage4,
     productId: "saira-blush",
   },
 ];

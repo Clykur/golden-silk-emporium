@@ -39,7 +39,7 @@ export class SupabaseStorageService {
     const client = await getSupabaseClient();
     if (!client) {
       console.warn("Supabase client unavailable, returning fallback image.");
-      return `https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80`;
+      return `https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80`;
     }
 
     const filename = `${folder}/${Date.now()}-${Math.random().toString(36).substring(4)}.jpg`;
@@ -55,7 +55,7 @@ export class SupabaseStorageService {
 
       if (error) {
         console.error("Supabase storage upload error:", error.message);
-        return `https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80`;
+        return `https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80`;
       }
 
       const { data: urlData } = client.storage
@@ -65,7 +65,7 @@ export class SupabaseStorageService {
       return urlData.publicUrl;
     } catch (err: any) {
       console.error("Supabase upload failed:", err.message);
-      return `https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80`;
+      return `https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80`;
     }
   }
 }

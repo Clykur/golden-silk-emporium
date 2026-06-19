@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { COLLECTION_IMAGES } from "@/lib/media";
 
 export const Route = createFileRoute("/collections/")({
   head: () => ({
@@ -20,28 +21,28 @@ const COLLECTION_EDITS = [
     name: "Heritage Weaves",
     tagline: "Handloom masterworks",
     desc: "A tribute to Katan silk, real gold zari, and heirloom weaves direct from Varanasi and Kanchipuram master weavers.",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
+    image: COLLECTION_IMAGES.heritageWeaves,
   },
   {
     slug: "vivah-couture",
     name: "Vivah Couture",
     tagline: "The bridal trousseau",
     desc: "Intricately detailed bridal silk sarees hand-finished with gold thread zardozi and real pearls for the luxury bride.",
-    image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&q=80",
+    image: COLLECTION_IMAGES.vivahCouture,
   },
   {
     slug: "soiree",
     name: "Soirée",
     tagline: "For the celebration",
     desc: "Fluid chiffons, designer organzas and shimmering crystal cut borders for modern evening receptions and festive ceremonies.",
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4b4098?w=900&q=80",
+    image: COLLECTION_IMAGES.soiree,
   },
   {
     slug: "modern-minimalist",
     name: "Modern Minimalist",
     tagline: "Contemporary drapes",
     desc: "Contemporary hand-block linens and breathable mulmul cottons designed for everyday elegance and effortless grace.",
-    image: "https://images.unsplash.com/photo-1609234656388-0ff363383899?w=900&q=80",
+    image: COLLECTION_IMAGES.modernMinimalist,
   },
 ];
 

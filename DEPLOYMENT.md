@@ -234,4 +234,4 @@ Before opening the storefront to the public, perform this checklist:
 * **Resolution**:
   1. For Unsplash images, ensure URLs contain correct parameter keys (e.g. `auto=format&fit=crop`).
   2. For local images, confirm they are imported using absolute paths starting with `@/assets/` in Vite or are located in the `public` directory.
-  3. Ensure no portrait, lehenga, or shirts are displayed. The shop is curated strictly for premium sarees.
+  3. Ensure all displayed imagery features premium sarees only. The shop is curated strictly for luxury handwoven sarees.

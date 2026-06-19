@@ -198,7 +198,7 @@ function OrderHistory() {
                       <img
                         src={
                           item.variant.product.images?.[0]?.url ||
-                          "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=200&q=80"
+                          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=200&q=80"
                         }
                         alt=""
                         className="h-16 w-12 object-cover"

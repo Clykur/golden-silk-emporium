@@ -1,10 +1,10 @@
-// Premium Saree Database — Maaya Couture
+import { COLLECTION_IMAGES, PRODUCT_IMAGES } from "./media";
 
 export type Product = {
   id: string;
   name: string;
   collection: string;
-  category: "Sarees";
+  category: string;
   fabric:
     | "Silk"
     | "Kanjivaram"
@@ -31,7 +31,7 @@ export type Product = {
   price: number;
   compareAt?: number;
   image: string;
-  images: string[];
+  gallery: string[];
   badge?: "New" | "Bestseller" | "Limited";
   description: string;
   details: string[];
@@ -43,48 +43,29 @@ export const COLLECTIONS = [
     slug: "heritage-weaves",
     name: "Heritage Weaves",
     tagline: "Handloom masterworks from Banaras & Kanchipuram",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
+    image: COLLECTION_IMAGES.heritageWeaves,
   },
   {
     slug: "vivah-couture",
     name: "Vivah Couture",
     tagline: "Bridal masterpieces adorned in gold and real pearls",
-    image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=900&q=80",
+    image: COLLECTION_IMAGES.vivahCouture,
   },
   {
     slug: "soiree",
     name: "Soirée",
     tagline: "Flowing chiffons and designer organzas for celebrations",
-    image: "https://images.unsplash.com/photo-1594938298603-c8148c4b4098?w=900&q=80",
+    image: COLLECTION_IMAGES.soiree,
   },
   {
     slug: "modern-minimalist",
     name: "Modern Minimalist",
     tagline: "Contemporary hand-block linens and everyday cottons",
-    image: "https://images.unsplash.com/photo-1609234656388-0ff363383899?w=900&q=80",
+    image: COLLECTION_IMAGES.modernMinimalist,
   },
 ];
 
-// High-quality saree & Indian fashion images from Unsplash CDN
-const LOCAL_IMAGES = [
-  "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80",
-  "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80",
-  "https://images.unsplash.com/photo-1594938298603-c8148c4b4098?w=800&q=80",
-  "https://images.unsplash.com/photo-1609234656388-0ff363383899?w=800&q=80",
-  "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&q=80",
-  "https://images.unsplash.com/photo-1604502504079-f47266be3a7d?w=800&q=80",
-  "https://images.unsplash.com/photo-1625758564590-89bcff1fc1a8?w=800&q=80",
-  "https://images.unsplash.com/photo-1646995890977-f9ce4a9ee95d?w=800&q=80",
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-  "https://images.unsplash.com/photo-1600721391776-b5cd0e0048f9?w=800&q=80",
-  "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80",
-];
-
-// Helper to generate a unique image URL for each product
-const getSareeImage = (index: number, subIndex: number = 0): string => {
-  const imgIndex = (index + subIndex) % LOCAL_IMAGES.length;
-  return LOCAL_IMAGES[imgIndex];
-};
+// Using pre-generated unique product images from media.ts
 
 // Programmatic lists to construct 105 highly detailed, unique products
 const NAMES_PREFIX = [
@@ -266,19 +247,49 @@ const generateProducts = (): Product[] => {
     const compareAt = i % 3 === 0 ? Math.floor(price * 1.15) : undefined;
     const badge = i % 7 === 0 ? BADGES[i % BADGES.length] : undefined;
 
+    // Determine category dynamically matching the 14 saree-focused categories
+    let category = "Silk Sarees";
+    if (weave === "Kanjivaram") {
+      category = "Kanjivaram Sarees";
+    } else if (weave === "Banarasi") {
+      category = "Banarasi Sarees";
+    } else if (fabric === "Organza") {
+      category = "Organza Sarees";
+    } else if (fabric === "Chiffon") {
+      category = "Chiffon Sarees";
+    } else if (fabric === "Linen") {
+      category = "Linen Sarees";
+    } else if (fabric === "Cotton") {
+      category = "Cotton Sarees";
+    } else if (occasion === "Bridal") {
+      category = "Bridal Sarees";
+    } else if (occasion === "Festive") {
+      category = "Festive Sarees";
+    } else if (fabric === "Designer") {
+      category = "Designer Sarees";
+    } else if (fabric === "Contemporary") {
+      category = "Contemporary Sarees";
+    } else if (fabric === "Handloom") {
+      category = "Handloom Sarees";
+    } else if (collection === "Heritage Weaves") {
+      category = "Heritage Sarees";
+    } else if (badge === "Limited") {
+      category = "Limited Edition Sarees";
+    }
+
     list.push({
       id: `saree-${i + 1}-${pfx.toLowerCase().replace(/\s+/g, "-")}`,
       name,
       collection,
-      category: "Sarees",
+      category,
       fabric,
       weave,
       color,
       occasion,
       price,
       compareAt,
-      image: getSareeImage(i),
-      images: [getSareeImage(i), getSareeImage(i, 1), getSareeImage(i, 2)],
+      image: PRODUCT_IMAGES[i].image,
+      gallery: PRODUCT_IMAGES[i].gallery,
       badge,
       description: getDescription(name, fabric, color, occasion),
       details: [

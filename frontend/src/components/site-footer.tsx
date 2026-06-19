@@ -29,10 +29,10 @@ export function SiteFooter() {
               title: "Shop",
               links: [
                 { label: "Shop All", to: "/shop" as const, search: {} },
-                { label: "Kanjivaram", to: "/shop" as const, search: { weave: "Kanjivaram" } },
-                { label: "Banarasi", to: "/shop" as const, search: { weave: "Banarasi" } },
-                { label: "Bridal Sarees", to: "/shop" as const, search: { occasion: "Bridal" } },
-                { label: "New Arrivals", to: "/shop" as const, search: {} },
+                { label: "Kanjivaram Sarees", to: "/shop" as const, search: { category: "kanjivaram-sarees" } },
+                { label: "Banarasi Sarees", to: "/shop" as const, search: { category: "banarasi-sarees" } },
+                { label: "Bridal Sarees", to: "/shop" as const, search: { category: "bridal-sarees" } },
+                { label: "New Arrivals", to: "/new-arrivals" as const, search: {} },
               ],
             },
             {

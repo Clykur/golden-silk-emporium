@@ -3,13 +3,21 @@ import { Heart, Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useShop, cartCount } from "@/lib/store";
 
-const NAV = [
-  { to: "/shop", label: "Shop All", search: { category: "all" as const } },
-  { to: "/shop", label: "Kanjivaram", search: { weave: "Kanjivaram" as const } },
-  { to: "/shop", label: "Banarasi", search: { weave: "Banarasi" as const } },
-  { to: "/shop", label: "Organza", search: { fabric: "Organza" as const } },
-  { to: "/shop", label: "Handloom", search: { fabric: "Handloom" as const } },
+const LEFT_NAV = [
+  { to: "/" as const, label: "Home", search: {} },
+  { to: "/shop" as const, label: "Shop Sarees", search: {} },
+  { to: "/collections" as const, label: "Collections", search: {} },
+  { to: "/new-arrivals" as const, label: "New Arrivals", search: {} },
 ];
+
+const RIGHT_NAV = [
+  { to: "/bestsellers" as const, label: "Best Sellers", search: {} },
+  { to: "/lookbook" as const, label: "Lookbook", search: {} },
+  { to: "/about" as const, label: "About Us", search: {} },
+  { to: "/support" as const, label: "Contact", search: {} },
+];
+
+const ALL_NAV = [...LEFT_NAV, ...RIGHT_NAV];
 
 export function SiteHeader() {
   const location = useLocation();
@@ -100,83 +108,95 @@ export function SiteHeader() {
         }`}
       >
         <div
-          className={`grid grid-cols-[auto_1fr_auto] items-center gap-6 transition-navbar ${
+          className={`grid grid-cols-[1fr_auto_1fr] items-center gap-6 transition-navbar ${
             isFloating ? "w-full py-2.5 md:py-3.5 px-6 md:px-10" : "container-luxe py-4 md:py-5"
           }`}
         >
-          <button className="md:hidden -ml-2 p-2" aria-label="Menu" onClick={() => setOpen(true)}>
-            <Menu className="h-5 w-5" />
-          </button>
+          {/* Column 1: Left Menu & Mobile Hamburger */}
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden -ml-2 p-2" aria-label="Menu" onClick={() => setOpen(true)}>
+              <Menu className="h-5 w-5" />
+            </button>
 
-          <nav className="hidden md:flex items-center gap-7 text-sm">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                search={n.search}
-                className="relative text-foreground/80 hover:text-foreground transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
-              >
-                {n.label}
-              </Link>
-            ))}
-            <Link
-              to="/shop"
-              search={{ category: "all" }}
-              className="text-foreground/80 hover:text-foreground"
-            >
-              Journal
-            </Link>
-          </nav>
+            <nav className="hidden lg:flex items-center gap-5 text-[11px] uppercase tracking-widest font-semibold">
+              {LEFT_NAV.map((n) => (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  search={n.search}
+                  className="relative text-foreground/80 hover:text-foreground transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
+                >
+                  {n.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-          <Link to="/" className="justify-self-center text-center" aria-label="Maaya home">
-            <span className="font-display text-2xl md:text-3xl tracking-[0.2em]">MAAYA</span>
+          {/* Column 2: Center Logo */}
+          <Link to="/" className="justify-self-center text-center select-none" aria-label="Maaya home">
+            <span className="font-display text-2xl md:text-3xl tracking-[0.2em] font-medium">MAAYA</span>
             <span className="block eyebrow mt-0.5 text-[0.55rem]">Couture · Est. 1998</span>
           </Link>
 
-          <div className="flex items-center gap-1 md:gap-2 justify-self-end">
-            <button
-              className="hidden md:inline-flex p-2 hover:text-gold transition-colors"
-              aria-label="Search"
-            >
-              <Search className="h-[18px] w-[18px]" />
-            </button>
-            <Link
-              to="/wishlist"
-              className="relative p-2 hover:text-gold transition-colors"
-              aria-label="Wishlist"
-            >
-              <Heart className="h-[18px] w-[18px]" />
-              {wishlist.length > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-medium text-gold-foreground">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
-            <button
-              className="hidden md:inline-flex p-2 hover:text-gold transition-colors"
-              aria-label="Account"
-            >
-              <User className="h-[18px] w-[18px]" />
-            </button>
-            <button
-              onClick={openCart}
-              className="relative p-2 hover:text-gold transition-colors"
-              aria-label="Cart"
-            >
-              <ShoppingBag className="h-[18px] w-[18px]" />
-              {count > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-medium text-gold-foreground">
-                  {count}
-                </span>
-              )}
-            </button>
+          {/* Column 3: Right Menu + Icons */}
+          <div className="flex items-center gap-4 justify-self-end">
+            <nav className="hidden lg:flex items-center gap-5 text-[11px] uppercase tracking-widest font-semibold mr-2">
+              {RIGHT_NAV.map((n) => (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  search={n.search}
+                  className="relative text-foreground/80 hover:text-foreground transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
+                >
+                  {n.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="flex items-center gap-1 md:gap-2">
+              <button
+                className="hidden md:inline-flex p-2 hover:text-gold transition-colors"
+                aria-label="Search"
+              >
+                <Search className="h-[18px] w-[18px]" />
+              </button>
+              <Link
+                to="/wishlist"
+                className="relative p-2 hover:text-gold transition-colors"
+                aria-label="Wishlist"
+              >
+                <Heart className="h-[18px] w-[18px]" />
+                {wishlist.length > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-medium text-gold-foreground">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+              <button
+                className="hidden md:inline-flex p-2 hover:text-gold transition-colors"
+                aria-label="Account"
+              >
+                <User className="h-[18px] w-[18px]" />
+              </button>
+              <button
+                onClick={openCart}
+                className="relative p-2 hover:text-gold transition-colors"
+                aria-label="Cart"
+              >
+                <ShoppingBag className="h-[18px] w-[18px]" />
+                {count > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 w-4 place-items-center rounded-full bg-gold text-[10px] font-medium text-gold-foreground">
+                    {count}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Mobile menu */}
       {open && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-[82%] max-w-sm bg-background p-6 animate-rise">
             <div className="flex items-center justify-between">
@@ -186,7 +206,7 @@ export function SiteHeader() {
               </button>
             </div>
             <nav className="mt-10 flex flex-col gap-1">
-              {NAV.map((n) => (
+              {ALL_NAV.map((n) => (
                 <Link
                   key={n.label}
                   to={n.to}

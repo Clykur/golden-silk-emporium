@@ -85,7 +85,7 @@ function ProductPage() {
             "@context": "https://schema.org/",
             "@type": "Product",
             name: product.name,
-            image: product.images,
+            image: product.gallery,
             description: product.description,
             sku: product.id.toUpperCase(),
             offers: {
@@ -147,7 +147,7 @@ function ProductPage() {
         {/* Gallery */}
         <div className="grid gap-3 md:grid-cols-[80px_1fr]">
           <div className="order-2 flex gap-3 md:order-1 md:flex-col">
-            {product.images.map((img: string, i: number) => (
+            {product.gallery.map((img: string, i: number) => (
               <button
                 key={i}
                 onClick={() => {
@@ -177,9 +177,9 @@ function ProductPage() {
           </div>
           <div className="order-1 aspect-[3/4] md:order-2">
             {view360 ? (
-              <Product360Viewer images={product.images} />
+              <Product360Viewer images={product.gallery} />
             ) : (
-              <ProductZoom src={product.images[active]} alt={product.name} />
+              <ProductZoom src={product.gallery[active]} alt={product.name} />
             )}
           </div>
         </div>

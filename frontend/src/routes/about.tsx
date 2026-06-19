@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { EDITORIAL_IMAGES } from "@/lib/media";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -24,7 +25,7 @@ function AboutUs() {
         className="relative h-[50svh] min-h-[350px] w-full bg-ink text-background flex items-center justify-center"
       >
         <img
-          src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=1400&q=80"
+          src={EDITORIAL_IMAGES.storyHero}
           alt="Model in Banarasi Silk Saree"
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
@@ -42,7 +43,7 @@ function AboutUs() {
         {/* Section 1: History */}
         <div className="grid gap-12 md:grid-cols-2 items-center">
           <div className="space-y-4">
-             <p className="eyebrow text-gold">Origins</p>
+            <p className="eyebrow text-gold">Origins</p>
             <h2 className="font-display text-3xl md:text-4xl">Heirlooms from Mumbai</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Established in 1998, Maaya Couture began as a small boutique atelier in South Mumbai,
@@ -53,7 +54,7 @@ function AboutUs() {
           </div>
           <div className="bg-champagne/20 border border-border p-6 shadow-soft">
             <img
-              src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80"
+              src={EDITORIAL_IMAGES.storyCraft}
               alt="Silk weaving border detail"
               className="w-full aspect-[4/3] object-cover border border-border"
             />
@@ -74,7 +75,7 @@ function AboutUs() {
           </div>
           <div className="md:order-1 bg-champagne/20 border border-border p-6 shadow-soft">
             <img
-              src="https://images.unsplash.com/photo-1604502504079-f47266be3a7d?w=800&q=80"
+              src={EDITORIAL_IMAGES.storyLoom}
               alt="Colorful silk threads on loom"
               className="w-full aspect-[4/3] object-cover border border-border"
             />

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { EDITORIAL_IMAGES } from "@/lib/media";
 
 export const Route = createFileRoute("/celebrity-looks")({
   head: () => ({
@@ -19,7 +20,7 @@ const CELEBRITY_EDITS = [
     event: "Met Gala Afterparty",
     quote:
       "Wearing Maaya's ivory Banarasi silk saree felt like carrying a piece of home. The pearl thread details and gold borders are breathtaking.",
-    image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80",
+    image: EDITORIAL_IMAGES.celebAlia,
     productId: "saree-6-mayur", // References a generated Kanjivaram/Banarasi ID
   },
   {
@@ -27,7 +28,7 @@ const CELEBRITY_EDITS = [
     event: "Royal Heritage Reception",
     quote:
       "The Crimson Silk Saree is a masterclass in zardozi embroidery. Extremely regal yet fluid to wear.",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80",
+    image: EDITORIAL_IMAGES.celebDeepika,
     productId: "saree-1-varanasi", // References generated saree-1-varanasi ID
   },
 ];

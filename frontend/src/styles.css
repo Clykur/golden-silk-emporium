@@ -205,6 +205,28 @@
   animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 1.2s ease-out both;
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
 @utility transition-navbar {
   transition:
     width 0.5s cubic-bezier(0.16, 1, 0.3, 1),

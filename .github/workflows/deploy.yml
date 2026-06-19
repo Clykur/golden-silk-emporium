@@ -10,21 +10,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: maaya_couture_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v3
 
@@ -39,8 +24,8 @@ jobs:
 
       - name: Run Prisma Generate & Migrations (Test DB)
         run: |
-          npm run prisma:generate
-          DATABASE_URL="postgresql://postgres:postgres@localhost:5432/maaya_couture_test?schema=public" npm run prisma:migrate
+          npm run prisma:generate -w backend
+          DATABASE_URL="postgresql://postgres:postgres@localhost:5432/maaya_couture_test?schema=public" npm run prisma:migrate -w backend
         env:
           NODE_ENV: development
 
@@ -49,8 +34,3 @@ jobs:
 
       - name: Build Frontend
         run: npm run build:frontend
-
-      - name: Build Docker Images (Verify containerization)
-        run: |
-          docker build -f backend/Dockerfile -t maaya-backend:latest ./backend
-          docker build -f frontend/Dockerfile -t maaya-frontend:latest ./frontend

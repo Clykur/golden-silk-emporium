@@ -94,8 +94,10 @@ function Shop() {
     let list = [...PRODUCTS];
 
     // Filter by route URL params
-    if (category && category !== "all" && category !== "Sarees") {
-      list = [];
+    if (category && category !== "all") {
+      list = list.filter(
+        (p) => p.category.toLowerCase().replace(/\s+/g, "-") === category.toLowerCase(),
+      );
     }
     if (collection) {
       list = list.filter(

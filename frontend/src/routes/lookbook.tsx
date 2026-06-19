@@ -34,10 +34,10 @@ const HOTSPOTS: Hotspot[] = [
     top: "42%",
     left: "55%",
     product: {
-      id: "saree-1-varanasi",
+      id: "saree-1-varanasi-heritage",
       name: "Varanasi Heritage Zardozi Saree",
       price: 84500,
-      image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80",
+      image: "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?auto=format&fit=crop&w=600&q=80",
     },
   },
   {
@@ -48,7 +48,7 @@ const HOTSPOTS: Hotspot[] = [
       id: "saree-6-mayur",
       name: "Mayur Handwoven Kanjivaram Saree",
       price: 56800,
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80",
+      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
     },
   },
 ];
@@ -73,7 +73,7 @@ function EditorialLookbook() {
       <div className="container-luxe py-16 flex justify-center">
         <div className="relative w-full max-w-2xl aspect-[3/4] bg-champagne/20 border border-border shadow-soft overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=900&q=80"
+            src="https://images.unsplash.com/photo-1641699862936-be9f49b1c38d?auto=format&fit=crop&w=1200&q=80"
             alt="Atelier photoshoot edit"
             className="w-full h-full object-cover"
           />

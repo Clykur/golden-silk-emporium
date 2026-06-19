@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Instagram, Star, Truck, Sparkles, ShieldCheck } from "lucide-react";
 import { PRODUCTS, COLLECTIONS } from "@/lib/products";
+import { HERO_VIDEO, HERO_POSTER, PRODUCT_IMAGES } from "@/lib/media";
 import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/")({
@@ -62,10 +63,14 @@ function Home() {
             muted
             playsInline
             className="absolute inset-0 h-full w-full object-cover animate-fade-in"
+            poster={HERO_POSTER}
           >
-            <source src="https://videos.pexels.com/video-files/9445946/9445946-hd_1920_1080_24fps.mp4" type="video/mp4" />
-            <source src="https://videos.pexels.com/video-files/8538356/8538356-hd_1920_1080_25fps.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
+            <source src={HERO_VIDEO} type="video/mp4" />
+            <img
+              src={HERO_POSTER}
+              alt="Premium Luxury Sarees"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
           </video>
           <div className="absolute inset-0 bg-ink/30" />
           <div className="absolute inset-0 bg-gradient-to-r from-background/55 via-background/10 to-transparent" />
@@ -77,13 +82,12 @@ function Home() {
                 <span className="gold-divider" /> The Vivah Edit · AW26
               </p>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] md:text-7xl">
-                Heirlooms,
+                Premium
                 <br />
-                <em className="italic shimmer-text">re-imagined</em>.
+                <span className="shimmer-text">Luxury Sarees</span>.
               </h1>
               <p className="mt-6 max-w-md text-base leading-relaxed text-foreground/80">
-                Handwoven sarees, traditional brocades, and quietly opulent bridal trousseaus —
-                crafted in our South Mumbai atelier and shipped, with care, across the world.
+                Experience the finest Indian handloom artistry. Discover masterfully woven Kanjivarams, Banarasis, and designer silk sarees, crafted by hand in our South Mumbai atelier.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link
@@ -202,7 +206,7 @@ function Home() {
       {/* EDITORIAL BANNER */}
       <section className="relative isolate overflow-hidden bg-ink text-background">
         <img
-          src="https://images.unsplash.com/photo-1604502504079-f47266be3a7d?w=1400&q=80"
+          src={PRODUCT_IMAGES[0].image}
           alt="Folded silk sarees"
           className="absolute inset-0 h-full w-full object-cover opacity-40"
           loading="lazy"
@@ -303,6 +307,8 @@ function Home() {
                 src={p.image}
                 alt=""
                 loading="lazy"
+                width={900}
+                height={900}
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 grid place-items-center bg-ink/0 opacity-0 transition-all group-hover:bg-ink/30 group-hover:opacity-100">

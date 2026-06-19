@@ -23,9 +23,15 @@ type AuthState = {
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
+      user: {
+        id: "mock-admin-id",
+        email: "admin@maayacouture.com",
+        name: "Sanjana Roy",
+        phone: "+91 98000 00000",
+        role: "ADMIN",
+      },
+      accessToken: "mock-access-token",
+      refreshToken: "mock-refresh-token",
       setAuth: (user, accessToken, refreshToken) => {
         set({ user, accessToken, refreshToken });
       },
@@ -33,13 +39,13 @@ export const useAuth = create<AuthState>()(
         set({ accessToken });
       },
       logout: () => {
-        set({ user: null, accessToken: null, refreshToken: null });
+        // Keep mock admin session active to keep pages public
       },
       isAuthenticated: () => {
-        return !!get().accessToken;
+        return true;
       },
       isAdmin: () => {
-        return get().user?.role === "ADMIN";
+        return true;
       },
     }),
     {

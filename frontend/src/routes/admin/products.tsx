@@ -78,9 +78,9 @@ function AdminProducts() {
         description,
         collection: "Vivah Couture",
         image:
-          "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80",
+          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80",
         images: [
-          "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80",
+          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80",
         ],
         details: ["Hand finished", "Silk fabric"],
         variants: [{ size: "M", stock: 10 }],
@@ -205,9 +205,15 @@ function AdminProducts() {
                     className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none"
                   >
                     <option value="Silk">Silk</option>
+                    <option value="Kanjivaram">Kanjivaram</option>
                     <option value="Banarasi">Banarasi</option>
-                    <option value="Georgette">Georgette</option>
-                    <option value="Velvet">Velvet</option>
+                    <option value="Organza">Organza</option>
+                    <option value="Chiffon">Chiffon</option>
+                    <option value="Linen">Linen</option>
+                    <option value="Cotton">Cotton</option>
+                    <option value="Designer">Designer</option>
+                    <option value="Handloom">Handloom</option>
+                    <option value="Contemporary">Contemporary</option>
                   </select>
                 </label>
                 <label className="block">
@@ -220,7 +226,8 @@ function AdminProducts() {
                     <option value="Bridal">Bridal</option>
                     <option value="Festive">Festive</option>
                     <option value="Reception">Reception</option>
-                    <option value="Everyday">Everyday</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Formal">Formal</option>
                   </select>
                 </label>
               </div>
