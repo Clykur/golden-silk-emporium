@@ -22,13 +22,5 @@ jobs:
       - name: Install All Dependencies (Monorepo)
         run: npm ci
 
-      - name: Run Prisma Generate
-        run: npm run prisma:generate -w backend
-        env:
-          NODE_ENV: development
-
-      - name: Build Backend (TS compilation)
-        run: npm run build:backend
-
       - name: Build Frontend
         run: npm run build:frontend
