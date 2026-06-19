@@ -1,5 +1,5 @@
 import { i as __toESM, n as __exportAll } from "../_runtime.mjs";
-import { r as require_react } from "./react+tanstack__react-query.mjs";
+import { o as require_react } from "./react+tanstack__react-query.mjs";
 import { t as clsx } from "./clsx.mjs";
 import { C as require_isFunction, S as require_memoize, _ as require_isNaN, a as require_range, b as require_isNil, c as require_last, d as require_min, f as require_max, g as require_upperFirst, h as require_uniqBy, i as require_some, l as require_isEqual, m as require_sortBy, n as require_every, o as require_isBoolean, p as require_throttle, r as require_mapValues, s as require_isPlainObject, t as require_find, u as require_flatMap, v as require_isNumber, w as require_isObject, x as require_get, y as require_isString } from "./lodash.mjs";
 import { t as require_react_is } from "./react-is.mjs";
@@ -11905,12 +11905,7 @@ var getCartesianAxisSize = function getCartesianAxisSize(axisObj, axisName) {
 	if (axisName === "xAxis") return axisObj[axisName].width;
 	if (axisName === "yAxis") return axisObj[axisName].height;
 };
-//#endregion
-//#region ../node_modules/recharts/es6/chart/AreaChart.js
-/**
-* @fileOverview Area Chart
-*/
-var AreaChart = function generateCategoricalChart(_ref6) {
+var generateCategoricalChart = function generateCategoricalChart(_ref6) {
 	var chartName = _ref6.chartName, GraphicalChild = _ref6.GraphicalChild, _ref6$defaultTooltipE = _ref6.defaultTooltipEventType, defaultTooltipEventType = _ref6$defaultTooltipE === void 0 ? "axis" : _ref6$defaultTooltipE, _ref6$validateTooltip = _ref6.validateTooltipEventTypes, validateTooltipEventTypes = _ref6$validateTooltip === void 0 ? ["axis"] : _ref6$validateTooltip, axisComponents = _ref6.axisComponents, legendContent = _ref6.legendContent, formatAxisMap = _ref6.formatAxisMap, defaultProps = _ref6.defaultProps;
 	var getFormatItems = function getFormatItems(props, currentState) {
 		var graphicalItems = currentState.graphicalItems, stackGroups = currentState.stackGroups, offset = currentState.offset, updateId = currentState.updateId, dataStartIndex = currentState.dataStartIndex, dataEndIndex = currentState.dataEndIndex;
@@ -12950,7 +12945,32 @@ var AreaChart = function generateCategoricalChart(_ref6) {
 	});
 	CategoricalChart.displayName = CategoricalChartWrapper.displayName;
 	return CategoricalChart;
-}({
+};
+//#endregion
+//#region ../node_modules/recharts/es6/chart/BarChart.js
+/**
+* @fileOverview Bar Chart
+*/
+var BarChart = generateCategoricalChart({
+	chartName: "BarChart",
+	GraphicalChild: Bar,
+	defaultTooltipEventType: "axis",
+	validateTooltipEventTypes: ["axis", "item"],
+	axisComponents: [{
+		axisType: "xAxis",
+		AxisComp: XAxis
+	}, {
+		axisType: "yAxis",
+		AxisComp: YAxis
+	}],
+	formatAxisMap
+});
+//#endregion
+//#region ../node_modules/recharts/es6/chart/AreaChart.js
+/**
+* @fileOverview Area Chart
+*/
+var AreaChart = generateCategoricalChart({
 	chartName: "AreaChart",
 	GraphicalChild: Area,
 	axisComponents: [{
@@ -12963,4 +12983,4 @@ var AreaChart = function generateCategoricalChart(_ref6) {
 	formatAxisMap
 });
 //#endregion
-export { CartesianGrid as a, Area as i, YAxis as n, ResponsiveContainer as o, XAxis as r, Tooltip as s, AreaChart as t };
+export { Area as a, ResponsiveContainer as c, XAxis as i, Tooltip as l, BarChart as n, CartesianGrid as o, YAxis as r, Bar as s, AreaChart as t };

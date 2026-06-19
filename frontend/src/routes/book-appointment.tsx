@@ -7,7 +7,7 @@ import { Calendar, Video, Clock, Check } from "lucide-react";
 export const Route = createFileRoute("/book-appointment")({
   head: () => ({
     meta: [
-      { title: "Schedule Saree Styling & Consultation — Maaya Couture" },
+      { title: "Schedule Saree Styling & Consultation — Drapeva" },
       {
         name: "description",
         content:

@@ -1,165 +1,146 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { User, LogOut, Package, MapPin, Settings, Bell, CheckSquare } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bell, Check, CheckCheck, Package, Truck, CreditCard, MessageSquare, Info } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
+import { notificationsApi } from "@/lib/api";
+import type { Notification } from "@/lib/types";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const Route = createFileRoute("/dashboard/notifications")({
   head: () => ({
     meta: [
-      { title: "Notifications — Maaya Couture" },
-      { name: "description", content: "Review alerts and transactional message logs." },
+      { title: "Notifications — Drapeva" },
+      { name: "description", content: "Your order and account notifications." },
     ],
   }),
-  component: NotificationsCenter,
+  component: Notifications,
 });
 
-type Notification = {
-  id: string;
-  title: string;
-  message: string;
-  createdAt: string;
-  isRead: boolean;
+const TYPE_ICONS: Record<string, any> = {
+  order_placed: Package,
+  order_processing: Package,
+  order_shipped: Truck,
+  order_delivered: Check,
+  order_cancelled: Package,
+  payment_success: CreditCard,
+  payment_failed: CreditCard,
+  ticket_reply: MessageSquare,
+  account_update: Info,
+  promo: Info,
+  system: Info,
 };
 
-function NotificationsCenter() {
-  const { user, logout, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [alerts, setAlerts] = useState<Notification[]>([
-    {
-      id: "alert-1",
-      title: "Appointment Confirmed",
-      message:
-        "Your video bridal consultation with our master stylist has been scheduled for Friday at 4 PM IST.",
-      createdAt: new Date().toLocaleDateString(),
-      isRead: false,
+const TYPE_COLORS: Record<string, string> = {
+  order_placed: "bg-blue-50 text-blue-600",
+  order_processing: "bg-indigo-50 text-indigo-600",
+  order_shipped: "bg-purple-50 text-purple-600",
+  order_delivered: "bg-emerald-50 text-emerald-600",
+  order_cancelled: "bg-red-50 text-red-600",
+  payment_success: "bg-emerald-50 text-emerald-600",
+  payment_failed: "bg-red-50 text-red-600",
+  ticket_reply: "bg-amber-50 text-amber-600",
+  account_update: "bg-gold/10 text-gold",
+  promo: "bg-rose-50 text-rose-600",
+  system: "bg-muted text-muted-foreground",
+};
+
+function Notifications() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ["my-notifications", user?.id],
+    queryFn: () => user ? notificationsApi.list(user.id) : Promise.resolve([]),
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
+
+  const markReadMut = useMutation({
+    mutationFn: (id: string) => notificationsApi.markRead(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["my-notifications"] }),
+  });
+
+  const markAllMut = useMutation({
+    mutationFn: () => notificationsApi.markAllRead(user!.id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-notifications"] });
+      toast.success("All notifications marked as read");
     },
-    {
-      id: "alert-2",
-      title: "Atelier Welcome",
-      message:
-        "Thank you for registering at Maaya Couture. Explore our handwoven collections in the Shop edit.",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toLocaleDateString(),
-      isRead: true,
-    },
-  ]);
+  });
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.navigate({ to: "/auth/login" });
-    }
-  }, [isAuthenticated]);
-
-  const markAllRead = () => {
-    setAlerts(alerts.map((a) => ({ ...a, isRead: true })));
-  };
-
-  if (!user) return null;
+  const unread = notifications.filter((n: Notification) => !n.is_read).length;
 
   return (
-    <div className="container-luxe py-12">
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-        {/* Sidebar */}
-        <aside className="border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <div className="flex items-center gap-3 pb-6 border-b border-border">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-champagne text-gold font-display text-lg">
-              {user.name.charAt(0)}
-            </div>
-            <div>
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
-          </div>
-
-          <nav className="mt-6 space-y-1 text-xs uppercase tracking-widest font-medium text-muted-foreground">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <User className="h-4 w-4" /> Account Overview
-            </Link>
-            <Link
-              to="/dashboard/orders"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Package className="h-4 w-4" /> Order History
-            </Link>
-            <Link
-              to="/dashboard/addresses"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <MapPin className="h-4 w-4" /> Address Book
-            </Link>
-            <Link
-              to="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Settings className="h-4 w-4" /> Profile Settings
-            </Link>
-            <button
-              onClick={() => {
-                logout();
-                router.navigate({ to: "/" });
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2 text-destructive hover:text-destructive/80 text-left cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" /> Sign Out
-            </button>
-          </nav>
-        </aside>
-
-        {/* Content */}
-        <main className="space-y-8">
-          <div className="flex justify-between items-baseline flex-wrap gap-4 border-b border-border pb-5">
-            <div>
-              <p className="eyebrow text-gold">Notifications</p>
-              <h1 className="mt-1 font-display text-3xl">Inbox Alerts</h1>
-            </div>
-            {alerts.some((a) => !a.isRead) && (
-              <button
-                onClick={markAllRead}
-                className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border-b border-foreground pb-0.5"
-              >
-                Mark all as read
-              </button>
-            )}
-          </div>
-
-          {alerts.length === 0 ? (
-            <div className="py-16 text-center border border-dashed border-border">
-              <Bell className="h-10 w-10 mx-auto text-muted-foreground stroke-1" />
-              <p className="mt-4 text-sm text-muted-foreground font-display">
-                Inbox is currently empty.
-              </p>
-            </div>
-          ) : (
-            <div className="border border-border divide-y divide-border">
-              {alerts.map((a) => (
-                <div
-                  key={a.id}
-                  className={`p-6 flex items-start gap-4 transition-colors ${a.isRead ? "bg-background" : "bg-champagne/10"}`}
-                >
-                  <div
-                    className={`mt-0.5 grid h-6 w-6 place-items-center rounded-full border ${a.isRead ? "border-border text-muted-foreground" : "border-gold text-gold bg-gold/10"}`}
-                  >
-                    <Bell className="h-3.5 w-3.5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`text-sm ${a.isRead ? "text-foreground/80" : "text-foreground font-semibold"}`}
-                    >
-                      {a.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                      {a.message}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-2">{a.createdAt}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </main>
+    <DashboardLayout title="Notifications" subtitle="Updates & Alerts">
+      <div className="flex items-center justify-between">
+        {unread > 0 && (
+          <p className="text-sm text-muted-foreground">
+            {unread} unread notification{unread !== 1 ? "s" : ""}
+          </p>
+        )}
+        {unread > 0 && (
+          <button
+            onClick={() => markAllMut.mutate()}
+            disabled={markAllMut.isPending}
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border-b border-dashed border-muted-foreground pb-0.5"
+          >
+            <CheckCheck className="h-3.5 w-3.5" />
+            Mark all read
+          </button>
+        )}
       </div>
-    </div>
+
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="border border-border p-4 animate-pulse h-16 bg-champagne/5" />
+          ))}
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="py-16 text-center border border-dashed border-border">
+          <Bell className="h-10 w-10 mx-auto text-muted-foreground stroke-1 mb-4" />
+          <p className="font-display text-xl">No notifications yet</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Order updates and alerts will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="divide-y divide-border border border-border">
+          {notifications.map((n: Notification) => {
+            const Icon = TYPE_ICONS[n.type] || Bell;
+            const colorClass = TYPE_COLORS[n.type] || "bg-muted text-muted-foreground";
+            return (
+              <div
+                key={n.id}
+                onClick={() => !n.is_read && markReadMut.mutate(n.id)}
+                className={`flex gap-4 items-start p-4 transition-colors cursor-pointer ${
+                  !n.is_read ? "bg-gold/3 hover:bg-champagne/20" : "hover:bg-champagne/10"
+                }`}
+              >
+                <div className={`h-9 w-9 rounded-full grid place-items-center shrink-0 ${colorClass}`}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className={`text-sm font-medium ${!n.is_read ? "text-foreground" : "text-muted-foreground"}`}>
+                      {n.title}
+                    </p>
+                    {!n.is_read && (
+                      <div className="h-2 w-2 rounded-full bg-gold shrink-0 mt-1.5" />
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{n.message}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1.5 opacity-60">
+                    {new Date(n.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </DashboardLayout>
   );
 }

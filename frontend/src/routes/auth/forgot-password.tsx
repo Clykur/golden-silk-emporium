@@ -6,8 +6,8 @@ import { api } from "@/lib/api";
 export const Route = createFileRoute("/auth/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Forgot Password — Maaya Couture" },
-      { name: "description", content: "Recover your Maaya Couture account password." },
+      { title: "Forgot Password — Drapeva" },
+      { name: "description", content: "Recover your Drapeva account password." },
     ],
   }),
   component: ForgotPassword,

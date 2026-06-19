@@ -1,190 +1,102 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth-store";
-import { api } from "@/lib/api";
-import { toast } from "sonner";
-import { ShoppingBag, Users, Activity, FileText, CheckCircle, MessageSquare } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AdminLayout } from "@/components/admin/admin-layout";
+import { supabase } from "@/lib/supabase";
+import type { Profile } from "@/lib/types";
+import { Search, Users, Mail, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/admin/customers")({
-  head: () => ({
-    meta: [{ title: "Admin Customer Management — Golden Silk Emporium" }],
-  }),
+  head: () => ({ meta: [{ title: "Customers — Admin" }] }),
   component: AdminCustomers,
 });
 
 function AdminCustomers() {
-  const { user, isAuthenticated, isAdmin } = useAuth();
-  const router = useRouter();
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [tickets, setTickets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (!isAuthenticated() || !isAdmin()) {
-      router.navigate({ to: "/auth/login" });
-      return;
-    }
+  const { data: customers = [], isLoading } = useQuery({
+    queryKey: ["admin-customers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("role", "customer")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
-    // Load mock lists
-    setCustomers([
-      {
-        id: "c-1",
-        name: "Aishwarya Sen",
-        email: "customer@maayacouture.com",
-        spend: 141300,
-        segment: "VIP Bridal",
-      },
-      {
-        id: "c-2",
-        name: "Karan Johar",
-        email: "karan@johar.com",
-        spend: 56800,
-        segment: "Celebrity Look",
-      },
-    ]);
-
-    api.support
-      .tickets()
-      .then((data) => setTickets(data))
-      .catch(() => {
-        setTickets([
-          {
-            id: "t-1",
-            name: "Aishwarya Sen",
-            subject: "Custom Blouse Sizing",
-            message: "Can we sleeve length adjustment?",
-            status: "OPEN",
-          },
-        ]);
-      })
-      .finally(() => setLoading(false));
-  }, [isAuthenticated]);
-
-  const handleTicketResolve = async (id: string) => {
-    try {
-      await api.support.updateTicketStatus(id, "RESOLVED");
-      setTickets(tickets.map((t) => (t.id === id ? { ...t, status: "RESOLVED" } : t)));
-      toast.success("Support ticket resolved");
-    } catch {
-      setTickets(tickets.map((t) => (t.id === id ? { ...t, status: "RESOLVED" } : t)));
-      toast.success("Support ticket resolved (simulated)");
-    }
-  };
-
-  if (!user || user.role !== "ADMIN") return null;
+  const filtered = customers.filter((c: Profile) =>
+    !search || (c.name || "").toLowerCase().includes(search.toLowerCase()) || c.email.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="container-luxe py-12">
-      <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
-        <aside className="border-r border-border pr-8 space-y-6">
-          <div className="pb-6 border-b border-border">
-            <span className="font-display text-xl tracking-wider text-gold">ATELIER CMS</span>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">
-              Atelier Console
-            </p>
+    <AdminLayout title="Customers" subtitle={`${customers.length} registered customers`}>
+      <div className="space-y-5">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search customers..."
+            className="w-full border border-border bg-background pl-9 pr-4 py-2.5 text-sm focus:outline-none" />
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-16"><div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="py-20 text-center border border-dashed border-border">
+            <Users className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
+            <p className="font-display text-xl">No customers found</p>
+            <p className="text-sm text-muted-foreground mt-2">Customers will appear here after they register.</p>
           </div>
-
-          <nav className="space-y-1 text-xs uppercase tracking-widest font-semibold text-muted-foreground">
-            <Link
-              to="/admin"
-              className="flex items-center gap-3 px-3 py-2.5 hover:text-foreground transition-colors"
-            >
-              <Activity className="h-4 w-4" /> Analytics Overview
-            </Link>
-            <Link
-              to="/admin/products"
-              className="flex items-center gap-3 px-3 py-2.5 hover:text-foreground transition-colors"
-            >
-              <ShoppingBag className="h-4 w-4" /> Products CRUD
-            </Link>
-            <Link
-              to="/admin/orders"
-              className="flex items-center gap-3 px-3 py-2.5 hover:text-foreground transition-colors"
-            >
-              <FileText className="h-4 w-4" /> Order Book
-            </Link>
-            <Link
-              to="/admin/customers"
-              className="flex items-center gap-3 px-3 py-2.5 bg-champagne text-foreground"
-            >
-              <Users className="h-4 w-4" /> Customer List
-            </Link>
-          </nav>
-        </aside>
-
-        <main className="space-y-10">
-          {/* Customers Registry */}
-          <div>
-            <div className="border-b border-border pb-5">
-              <p className="eyebrow text-gold">Segmentation</p>
-              <h1 className="mt-1 font-display text-3xl">Customer Directory</h1>
-            </div>
-            <div className="overflow-x-auto border border-border mt-6">
-              <table className="w-full border-collapse text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-champagne/10">
-                    <th className="p-4 eyebrow text-[9px]">Name</th>
-                    <th className="p-4 eyebrow text-[9px]">Email</th>
-                    <th className="p-4 eyebrow text-[9px]">Total Spend</th>
-                    <th className="p-4 eyebrow text-[9px]">Classification</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {customers.map((c) => (
-                    <tr key={c.id} className="hover:bg-champagne/5">
-                      <td className="p-4 font-semibold">{c.name}</td>
-                      <td className="p-4 text-muted-foreground">{c.email}</td>
-                      <td className="p-4 font-semibold text-gold">
-                        ₹{c.spend.toLocaleString("en-IN")}
-                      </td>
-                      <td className="p-4 font-semibold text-gold">{c.segment}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Support Tickets Section */}
-          <div>
-            <h2 className="font-display text-2xl border-b border-border pb-4">
-              Concierge Support Tickets
-            </h2>
-            {tickets.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6">All support requests resolved.</p>
-            ) : (
-              <div className="mt-4 space-y-4">
-                {tickets.map((t) => (
-                  <div
-                    key={t.id}
-                    className="border border-border p-5 bg-champagne/5 relative flex justify-between items-start gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-gold stroke-1" />
-                        <span className="font-display text-lg font-semibold">{t.subject}</span>
+        ) : (
+          <div className="overflow-x-auto border border-border">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead>
+                <tr className="border-b border-border bg-champagne/10">
+                  <th className="p-4 eyebrow text-[9px]">Name</th>
+                  <th className="p-4 eyebrow text-[9px]">Email</th>
+                  <th className="p-4 eyebrow text-[9px]">Phone</th>
+                  <th className="p-4 eyebrow text-[9px]">Role</th>
+                  <th className="p-4 eyebrow text-[9px]">Joined</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filtered.map((c: Profile) => (
+                  <tr key={c.id} className="hover:bg-champagne/5">
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-gold/10 grid place-items-center text-gold font-semibold text-xs shrink-0">
+                          {(c.name || c.email).charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-medium">{c.name || "—"}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        From: {t.name} · Status:{" "}
-                        <span className="font-medium text-gold">{t.status}</span>
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-3 italic">"{t.message}"</p>
-                    </div>
-                    {t.status === "OPEN" && (
-                      <button
-                        onClick={() => handleTicketResolve(t.id)}
-                        className="inline-flex items-center gap-1.5 border border-foreground bg-foreground text-background px-4 py-2 text-[10px] uppercase tracking-wider font-semibold hover:bg-gold hover:text-gold-foreground transition-colors cursor-pointer"
-                      >
-                        <CheckCircle className="h-3.5 w-3.5" /> Resolve
-                      </button>
-                    )}
-                  </div>
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        {c.email}
+                      </div>
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {c.phone ? (
+                        <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5" />{c.phone}</div>
+                      ) : "—"}
+                    </td>
+                    <td className="p-4">
+                      <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 border rounded ${c.role === "admin" ? "bg-gold/10 text-gold border-gold/20" : "bg-muted text-muted-foreground border-border"}`}>
+                        {c.role}
+                      </span>
+                    </td>
+                    <td className="p-4 text-xs text-muted-foreground">
+                      {new Date(c.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            )}
+              </tbody>
+            </table>
           </div>
-        </main>
+        )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }

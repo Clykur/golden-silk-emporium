@@ -7,10 +7,10 @@ import { ChevronDown, Send } from "lucide-react";
 export const Route = createFileRoute("/support/")({
   head: () => ({
     meta: [
-      { title: "Support Center & FAQ — Maaya Couture" },
+      { title: "Support Center & FAQ — Drapeva" },
       {
         name: "description",
-        content: "Contact the Maaya concierge or browse policies on shipping, returns, and fits.",
+        content: "Contact the Drapeva concierge or browse policies on shipping, returns, and fits.",
       },
     ],
   }),
@@ -19,20 +19,28 @@ export const Route = createFileRoute("/support/")({
 
 const FAQS = [
   {
-    q: "How long does a made-to-order bridal piece take?",
-    a: "Our heavily embroidered bridal sarees and zardozi trousseaus take between 4 to 6 weeks to weave and hand-finish. Handloom and contemporary sarees ship within 3 to 5 business days.",
+    q: "How long does delivery take?",
+    a: "Most orders are processed within a week and delivered across India within 7-10 days, depending on your location.",
   },
   {
-    q: "Do you offer international shipping?",
-    a: "Yes, we ship across the globe. Complimentary shipping is provided within India; international shipping starts from ₹2,500 depending on weight and location.",
+    q: "Do you ship across India?",
+    a: "Yes, Drapeva currently delivers to customers across India. Shipping timelines may vary based on the delivery location.",
   },
   {
-    q: "How do I submit my custom measurements?",
-    a: "Once an order is confirmed, our fitting concierge will reach out to you via email or WhatsApp to schedule a video fitting call and guide you through our step-by-step measurement layout.",
+    q: "How can I track my order?",
+    a: "Once your order is shipped, you will receive a tracking link via email or SMS. You can also view your order status from your account dashboard.",
   },
   {
     q: "What is your return policy?",
-    a: "Since made-to-order couture items are custom stitched to your size, they are non-returnable. For ready-to-wear pieces, we accept returns/exchanges within 7 days of delivery.",
+    a: "We accept returns and exchanges on eligible products within 7 days of delivery. Items must be unused, unwashed, and returned in their original packaging.",
+  },
+  {
+    q: "What payment methods do you accept?",
+    a: "Currently, we offer Cash on Delivery (COD). Online payments will be introduced soon for a faster checkout experience.",
+  },
+  {
+    q: "Do I need an account to place an order?",
+    a: "Yes. Customers must create an account or sign in before adding products to their cart, placing orders, or managing their purchases.",
   },
 ];
 

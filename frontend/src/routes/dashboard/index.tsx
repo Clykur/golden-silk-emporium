@@ -1,193 +1,174 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { User, LogOut, Package, MapPin, Settings, Heart } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Package, MapPin, Heart, ShoppingBag, TrendingUp, Clock } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { api } from "@/lib/api";
-import { formatINR } from "@/lib/products";
+import { ordersApi, wishlistApi } from "@/lib/api";
+import { formatINR } from "@/lib/types";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
     meta: [
-      { title: "My Account — Maaya Couture" },
-      { name: "description", content: "Your Maaya Couture profile, orders, and details." },
+      { title: "My Account — Drapeva" },
+      { name: "description", content: "Your Drapeva profile, orders, and account details." },
     ],
   }),
   component: Dashboard,
 });
 
+const ORDER_STATUS_COLORS: Record<string, string> = {
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  processing: "bg-blue-50 text-blue-700 border-blue-200",
+  shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  cancelled: "bg-red-50 text-red-700 border-red-200",
+  returned: "bg-orange-50 text-orange-700 border-orange-200",
+};
+
 function Dashboard() {
-  const { user, logout, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [orders, setOrders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.navigate({ to: "/auth/login" });
-      return;
-    }
+  const { data: orders = [], isLoading: ordersLoading } = useQuery({
+    queryKey: ["my-orders", user?.id],
+    queryFn: () => user ? ordersApi.getUserOrders(user.id) : Promise.resolve([]),
+    enabled: !!user,
+  });
 
-    api.orders
-      .history()
-      .then((data) => setOrders(data.slice(0, 3)))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [isAuthenticated]);
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ["my-wishlist", user?.id],
+    queryFn: () => user ? wishlistApi.get(user.id) : Promise.resolve([]),
+    enabled: !!user,
+  });
 
-  if (!user) return null;
+  const totalSpent = orders
+    .filter((o: any) => o.status !== "cancelled")
+    .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
+
+  const activeOrders = orders.filter((o: any) =>
+    ["pending", "processing", "shipped"].includes(o.status)
+  ).length;
+
+  const recentOrders = orders.slice(0, 3);
+
+  const stats = [
+    { label: "Total Orders", value: orders.length.toString(), icon: Package, color: "text-gold" },
+    { label: "Total Spent", value: formatINR(totalSpent), icon: TrendingUp, color: "text-emerald-600" },
+    { label: "Active Orders", value: activeOrders.toString(), icon: Clock, color: "text-indigo-600" },
+    { label: "Wishlist Items", value: wishlist.length.toString(), icon: Heart, color: "text-rose-500" },
+  ];
 
   return (
-    <div className="container-luxe py-12">
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-        {/* Navigation Sidebar */}
-        <aside className="border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <div className="flex items-center gap-3 pb-6 border-b border-border">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-champagne text-gold font-display text-lg">
-              {user.name.charAt(0)}
-            </div>
-            <div>
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+    <DashboardLayout title="Account Overview" subtitle="Dashboard">
+      {/* Stats Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border border-border bg-champagne/10 p-5 hover:border-gold/30 transition-colors">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="eyebrow text-[9px] text-muted-foreground">{stat.label}</p>
+                <p className="font-display text-2xl mt-2">{stat.value}</p>
+              </div>
+              <stat.icon className={`h-5 w-5 ${stat.color} mt-1`} />
             </div>
           </div>
+        ))}
+      </div>
 
-          <nav className="mt-6 space-y-1 text-xs uppercase tracking-widest font-medium text-muted-foreground">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2 bg-champagne text-foreground"
-            >
-              <User className="h-4 w-4" /> Account Overview
-            </Link>
-            <Link
-              to="/dashboard/orders"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Package className="h-4 w-4" /> Order History
-            </Link>
-            <Link
-              to="/dashboard/addresses"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <MapPin className="h-4 w-4" /> Address Book
-            </Link>
-            <Link
-              to="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Settings className="h-4 w-4" /> Profile Settings
-            </Link>
-            <button
-              onClick={() => {
-                logout();
-                router.navigate({ to: "/" });
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2 text-destructive hover:text-destructive/80 text-left cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" /> Sign Out
-            </button>
-          </nav>
-        </aside>
+      {/* Quick Actions */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="border border-border p-6 bg-champagne/10">
+          <h2 className="font-display text-lg mb-2">Default Delivery</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Manage your delivery addresses for faster checkout.
+          </p>
+          <Link
+            to="/dashboard/addresses"
+            className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-wider border-b border-foreground pb-0.5 hover:text-gold hover:border-gold transition-colors"
+          >
+            <MapPin className="h-3.5 w-3.5" />
+            Manage Addresses
+          </Link>
+        </div>
 
-        {/* Content Area */}
-        <main className="space-y-10">
+        <div className="border border-border p-6 bg-champagne/10 flex flex-col justify-between">
           <div>
-            <p className="eyebrow text-gold">Overview</p>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl">Atelier Account</h1>
-            <p className="text-sm text-muted-foreground mt-2">
-              Review recent orders, manage your custom measurements, and control billing
-              credentials.
+            <h2 className="font-display text-lg mb-2">Concierge Consultation</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Need bridal styling advice? Book a personal consultation.
             </p>
           </div>
-
-          {/* Quick cards */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="border border-border p-6 bg-champagne/10">
-              <h2 className="font-display text-xl mb-4">Default Shipping</h2>
-              <p className="text-sm font-medium">{user.name}</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Flat 402, Signature Towers
-                <br />
-                Juhu Tara Road, Juhu
-                <br />
-                Mumbai, Maharashtra - 400049
-                <br />
-                India
-              </p>
-              <Link
-                to="/dashboard/addresses"
-                className="mt-4 inline-block text-xs uppercase tracking-wider border-b border-foreground pb-0.5"
-              >
-                Edit address book
-              </Link>
-            </div>
-
-            <div className="border border-border p-6 bg-champagne/10 flex flex-col justify-between">
-              <div>
-                <h2 className="font-display text-xl mb-2">Concierge Consultation</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Need style advice or made-to-measure bridal assistance? Book a video consultation
-                  session.
-                </p>
-              </div>
-              <Link
-                to="/book-appointment"
-                className="mt-4 inline-block bg-foreground text-background py-3 text-center text-xs uppercase tracking-widest font-medium transition-colors hover:bg-gold hover:text-gold-foreground"
-              >
-                Schedule Appointment
-              </Link>
-            </div>
-          </div>
-
-          {/* Recent Orders */}
-          <div>
-            <h2 className="font-display text-2xl pb-4 border-b border-border">Recent Orders</h2>
-            {loading ? (
-              <p className="text-sm text-muted-foreground py-6 animate-pulse">Fetching orders...</p>
-            ) : orders.length === 0 ? (
-              <div className="py-10 text-center border border-dashed border-border mt-4">
-                <p className="text-sm text-muted-foreground font-display">
-                  No couture commissions found.
-                </p>
-                <Link
-                  to="/shop"
-                  search={{ category: "all" }}
-                  className="mt-4 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest"
-                >
-                  Shop the collections
-                </Link>
-              </div>
-            ) : (
-              <div className="mt-4 divide-y divide-border border-b border-border">
-                {orders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="py-5 flex flex-wrap justify-between items-center gap-4"
-                  >
-                    <div>
-                      <p className="text-sm font-medium">
-                        Order #{order.id.substring(0, 8).toUpperCase()}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Placed: {new Date(order.createdAt).toLocaleDateString()} · Status:{" "}
-                        <span className="font-semibold text-gold">{order.status}</span>
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{formatINR(order.total)}</p>
-                      <Link
-                        to="/dashboard/orders"
-                        className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground mt-1 inline-block"
-                      >
-                        Track Details &rarr;
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </main>
+          <Link
+            to="/book-appointment"
+            className="mt-4 inline-block bg-foreground text-background py-3 text-center text-xs uppercase tracking-widest font-medium transition-colors hover:bg-gold hover:text-gold-foreground"
+          >
+            Schedule Appointment
+          </Link>
+        </div>
       </div>
-    </div>
+
+      {/* Recent Orders */}
+      <div>
+        <div className="flex items-center justify-between border-b border-border pb-4">
+          <h2 className="font-display text-xl">Recent Orders</h2>
+          <Link
+            to="/dashboard/orders"
+            className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border-b border-muted-foreground pb-0.5"
+          >
+            View All →
+          </Link>
+        </div>
+
+        {ordersLoading ? (
+          <p className="text-sm text-muted-foreground py-8 animate-pulse">Loading orders...</p>
+        ) : recentOrders.length === 0 ? (
+          <div className="py-12 text-center border border-dashed border-border mt-4">
+            <ShoppingBag className="h-10 w-10 mx-auto text-muted-foreground stroke-1 mb-4" />
+            <p className="text-sm text-muted-foreground font-display">
+              No orders placed yet.
+            </p>
+            <Link
+              to="/shop"
+              search={{ category: "all" }}
+              className="mt-4 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest"
+            >
+              Shop the Collections
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-4 divide-y divide-border border border-border">
+            {recentOrders.map((order: any) => (
+              <div
+                key={order.id}
+                className="px-6 py-4 flex flex-wrap justify-between items-center gap-4 hover:bg-champagne/5 transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-medium">
+                    Order #{order.id.substring(0, 8).toUpperCase()}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {new Date(order.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                    {" · "}
+                    {(order.items as any[])?.length || 0} item(s)
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className={`border px-2 py-0.5 text-[10px] uppercase tracking-wider rounded ${ORDER_STATUS_COLORS[order.status] || "bg-muted text-muted-foreground border-border"}`}>
+                    {order.status}
+                  </span>
+                  <p className="text-sm font-semibold text-gold">{formatINR(order.total)}</p>
+                  <Link
+                    to="/dashboard/orders"
+                    className="text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border px-3 py-1.5"
+                  >
+                    Track →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
   );
 }

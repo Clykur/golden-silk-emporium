@@ -1,5 +1,5 @@
 import { i as __toESM, r as __require, t as __commonJSMin } from "../../_runtime.mjs";
-import { n as require_jsx_runtime, r as require_react } from "../react+tanstack__react-query.mjs";
+import { a as require_jsx_runtime, o as require_react } from "../react+tanstack__react-query.mjs";
 import { r as parseHref } from "../tanstack__history.mjs";
 import { PassThrough, Readable } from "node:stream";
 import { ReadableStream as ReadableStream$1 } from "node:stream/web";
@@ -1338,22 +1338,6 @@ function encodePathParam(value, decoder) {
 }
 //#endregion
 //#region ../node_modules/@tanstack/router-core/dist/esm/not-found.js
-/**
-* Create a not-found error object recognized by TanStack Router.
-*
-* Throw this from loaders/actions to trigger the nearest `notFoundComponent`.
-* Use `routeId` to target a specific route's not-found boundary. If `throw`
-* is true, the error is thrown instead of returned.
-*
-* @param options Optional settings including `routeId`, `headers`, and `throw`.
-* @returns A not-found error object that can be thrown or returned.
-* @link https://tanstack.com/router/latest/docs/router/framework/react/api/router/notFoundFunction
-*/
-function notFound(options = {}) {
-	options.isNotFound = true;
-	if (options.throw) throw options;
-	return options;
-}
 /** Determine if a value is a TanStack Router not-found error. */
 function isNotFound(obj) {
 	return obj?.isNotFound === true;
@@ -5517,6 +5501,29 @@ function RouterProvider({ router, ...rest }) {
 		...rest,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Matches, {})
 	});
+}
+//#endregion
+//#region ../node_modules/@tanstack/react-router/dist/esm/useRouterState.js
+/**
+* Subscribe to the router's state store with optional selection and
+* structural sharing for render optimization.
+*
+* Options:
+* - `select`: Project the full router state to a derived slice
+* - `structuralSharing`: Replace-equal semantics for stable references
+* - `router`: Read state from a specific router instance instead of context
+*
+* @returns The selected router state (or the full state by default).
+* @link https://tanstack.com/router/latest/docs/framework/react/api/router/useRouterStateHook
+*/
+function useRouterState(opts) {
+	const contextRouter = useRouter({ warn: opts?.router === void 0 });
+	const router = opts?.router || contextRouter;
+	{
+		const state = router.stores.__store.get();
+		return opts?.select ? opts.select(state) : state;
+	}
+	return useStore(router.stores.__store, useStructuralSharing(opts, router));
 }
 //#endregion
 //#region ../node_modules/@tanstack/react-router/dist/esm/useLocation.js
@@ -14678,4 +14685,4 @@ var renderRouterToStream = async ({ request, router, responseHeaders, children }
 	throw new Error("No renderToReadableStream or renderToPipeableStream found in react-dom/server. Ensure you are using a version of react-dom that supports streaming.");
 };
 //#endregion
-export { rootRouteId as A, getScriptPreloadAttrs as C, executeRewriteInput as D, resolveManifestCssLink as E, decodePath as F, notFound as M, createLRUCache as N, isRedirect as O, invariant as P, createInlineCssStyleAsset as S, resolveManifestAssetLink as T, require_react_dom as _, replaceSsrResponse as a, TSR_SCRIPT_BARRIER_ID as b, HeadContent as c, createRouter as d, Outlet as f, Link as g, createRootRouteWithContext as h, normalizeSsrResponse as i, isNotFound as j, isResolvedRedirect as k, useLocation as l, createFileRoute as m, defineHandlerCallback as n, stripSsrResponseBody as o, lazyRouteComponent as p, isSsrResponse as r, Scripts as s, renderRouterToStream as t, RouterProvider as u, useRouter as v, getStylesheetHref as w, createInlineCssPlaceholderAsset as x, GLOBAL_TSR as y };
+export { isRedirect as A, createInlineCssPlaceholderAsset as C, resolveManifestAssetLink as D, getStylesheetHref as E, invariant as F, decodePath as I, rootRouteId as M, isNotFound as N, resolveManifestCssLink as O, createLRUCache as P, TSR_SCRIPT_BARRIER_ID as S, getScriptPreloadAttrs as T, Link as _, replaceSsrResponse as a, useRouter as b, HeadContent as c, RouterProvider as d, createRouter as f, createRootRouteWithContext as g, createFileRoute as h, normalizeSsrResponse as i, isResolvedRedirect as j, executeRewriteInput as k, useLocation as l, lazyRouteComponent as m, defineHandlerCallback as n, stripSsrResponseBody as o, Outlet as p, isSsrResponse as r, Scripts as s, renderRouterToStream as t, useRouterState as u, require_react_dom as v, createInlineCssStyleAsset as w, GLOBAL_TSR as x, useNavigate as y };

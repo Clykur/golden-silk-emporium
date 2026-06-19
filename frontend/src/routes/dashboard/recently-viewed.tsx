@@ -7,7 +7,7 @@ import { formatINR } from "@/lib/products";
 export const Route = createFileRoute("/dashboard/recently-viewed")({
   head: () => ({
     meta: [
-      { title: "Recently Viewed — Maaya Couture" },
+      { title: "Recently Viewed — Drapeva" },
       { name: "description", content: "Review items you recently browsed in the atelier." },
     ],
   }),
@@ -24,12 +24,12 @@ function RecentlyViewed() {
       router.navigate({ to: "/auth/login" });
       return;
     }
-    const history = JSON.parse(localStorage.getItem("maaya-recent-viewed") || "[]");
+    const history = JSON.parse(localStorage.getItem("drapeva-recent-viewed") || "[]");
     setItems(history);
   }, [isAuthenticated]);
 
   const clearHistory = () => {
-    localStorage.removeItem("maaya-recent-viewed");
+    localStorage.removeItem("drapeva-recent-viewed");
     setItems([]);
   };
 

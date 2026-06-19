@@ -6,7 +6,7 @@ import { EDITORIAL_IMAGES } from "@/lib/media";
 export const Route = createFileRoute("/virtual-catalog")({
   head: () => ({
     meta: [
-      { title: "Virtual Catalog — Maaya Couture" },
+      { title: "Virtual Catalog — Drapeva" },
       {
         name: "description",
         content: "Flip through our digital catalog and explore master designs.",

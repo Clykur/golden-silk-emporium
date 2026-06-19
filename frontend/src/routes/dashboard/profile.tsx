@@ -1,50 +1,52 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { User, LogOut, Package, MapPin, Settings } from "lucide-react";
 import { toast } from "sonner";
+import { User } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { api } from "@/lib/api";
+import { authApi } from "@/lib/api";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/dashboard/profile")({
   head: () => ({
     meta: [
-      { title: "Profile Settings — Maaya Couture" },
-      { name: "description", content: "Edit your Maaya profile settings." },
+      { title: "Profile Settings — Drapeva" },
+      { name: "description", content: "Edit your Drapeva profile settings." },
     ],
   }),
   component: ProfileSettings,
 });
 
 function ProfileSettings() {
-  const { user, logout, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const { user, setAuth } = useAuth();
+  const [name, setName] = useState(user?.name || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
-      router.navigate({ to: "/auth/login" });
-      return;
-    }
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
+      setName(user.name || "");
       setPhone(user.phone || "");
     }
-  }, [isAuthenticated, user]);
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      // In a real application, we would call an API like `/auth/profile/update`
-      // We will mock this operation and show a success notification
-      toast.success("Profile details updated successfully");
-      setPassword("");
+      await authApi.updateProfile({ name, phone: phone || undefined });
+      // Re-fetch profile to update local state
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+        if (profile) {
+          // Refresh auth store with updated profile
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            setAuth(profile, { access_token: session.access_token, refresh_token: session.refresh_token });
+          }
+        }
+      }
+      toast.success("Profile updated successfully");
     } catch (err: any) {
       toast.error(err.message || "Failed to update profile");
     } finally {
@@ -54,118 +56,81 @@ function ProfileSettings() {
 
   if (!user) return null;
 
+  const initials = (user.name || user.email || "?").charAt(0).toUpperCase();
+
   return (
-    <div className="container-luxe py-12">
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-        <aside className="border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <div className="flex items-center gap-3 pb-6 border-b border-border">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-champagne text-gold font-display text-lg">
-              {user.name.charAt(0)}
-            </div>
-            <div>
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
+    <DashboardLayout title="Profile Settings" subtitle="My Profile">
+      <div className="max-w-lg space-y-8">
+        {/* Avatar */}
+        <div className="flex items-center gap-5">
+          <div className="h-20 w-20 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 grid place-items-center text-gold font-display text-3xl ring-2 ring-gold/20 shrink-0">
+            {initials}
           </div>
-
-          <nav className="mt-6 space-y-1 text-xs uppercase tracking-widest font-medium text-muted-foreground">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <User className="h-4 w-4" /> Account Overview
-            </Link>
-            <Link
-              to="/dashboard/orders"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Package className="h-4 w-4" /> Order History
-            </Link>
-            <Link
-              to="/dashboard/addresses"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <MapPin className="h-4 w-4" /> Address Book
-            </Link>
-            <Link
-              to="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2 bg-champagne text-foreground"
-            >
-              <Settings className="h-4 w-4" /> Profile Settings
-            </Link>
-            <button
-              onClick={() => {
-                logout();
-                router.navigate({ to: "/" });
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2 text-destructive hover:text-destructive/80 text-left cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" /> Sign Out
-            </button>
-          </nav>
-        </aside>
-
-        <main className="max-w-xl">
           <div>
-            <p className="eyebrow text-gold">Settings</p>
-            <h1 className="mt-2 font-display text-3xl">Profile Credentials</h1>
-            <span className="gold-divider mt-4 block" />
+            <p className="font-display text-lg">{user.name}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+            <p className="text-xs text-muted-foreground mt-1 capitalize">{user.role} account</p>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <label className="block">
-              <span className="eyebrow mb-2 block">Full Name</span>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
-              />
-            </label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="border border-border p-6 space-y-5">
+          <h2 className="font-display text-lg border-b border-border pb-4">Personal Information</h2>
 
-            <label className="block">
-              <span className="eyebrow mb-2 block">Email Address</span>
-              <input
-                type="email"
-                required
-                disabled
-                value={email}
-                className="w-full border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground focus:outline-none"
-              />
-            </label>
+          <label className="block">
+            <span className="eyebrow mb-2 block">Full Name</span>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
+            />
+          </label>
 
-            <label className="block">
-              <span className="eyebrow mb-2 block">Phone Number</span>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
-              />
-            </label>
+          <label className="block">
+            <span className="eyebrow mb-2 block">Email Address</span>
+            <input
+              type="email"
+              disabled
+              value={user.email}
+              className="w-full border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground cursor-not-allowed"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">Email cannot be changed. Contact support if needed.</p>
+          </label>
 
-            <label className="block">
-              <span className="eyebrow mb-2 block">Update Password (Optional)</span>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
-                placeholder="••••••••"
-              />
-            </label>
+          <label className="block">
+            <span className="eyebrow mb-2 block">Phone Number</span>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
+              placeholder="+91 98765 43210"
+            />
+          </label>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-foreground text-background px-8 py-4 text-xs font-medium tracking-[0.25em] uppercase transition-colors hover:bg-gold hover:text-gold-foreground disabled:opacity-50"
-            >
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-          </form>
-        </main>
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-foreground text-background px-8 py-3 text-xs font-medium tracking-[0.25em] uppercase transition-colors hover:bg-gold hover:text-gold-foreground disabled:opacity-50"
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </form>
+
+        {/* Info note */}
+        <div className="text-xs text-muted-foreground flex gap-2 items-start">
+          <User className="h-4 w-4 shrink-0 mt-0.5" />
+          <p>
+            To change your password, visit the{" "}
+            <a href="/dashboard/security" className="border-b border-muted-foreground hover:text-foreground">
+              Security page
+            </a>
+            .
+          </p>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

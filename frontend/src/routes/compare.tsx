@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { PRODUCTS, formatINR } from "@/lib/products";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { productsApi } from "@/lib/api";
+import { formatINR } from "@/lib/types";
 import { Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
     meta: [
-      { title: "Compare Couture — Maaya Couture" },
+      { title: "Compare Couture — Drapeva" },
       {
         name: "description",
         content: "Compare fabrics, embroidery, sizes, and pricing options side-by-side.",
@@ -17,9 +19,21 @@ export const Route = createFileRoute("/compare")({
 });
 
 function CompareProducts() {
-  const [selectedIds, setSelectedIds] = useState<string[]>(["noor-crimson", "saira-blush"]);
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["compare-products-list"],
+    queryFn: () => productsApi.list(),
+  });
 
-  const productsToCompare = PRODUCTS.filter((p) => selectedIds.includes(p.id));
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Initialize with the first two products if available and selectedIds is empty
+  useEffect(() => {
+    if (products.length > 0 && selectedIds.length === 0) {
+      setSelectedIds(products.slice(0, 2).map((p) => p.id));
+    }
+  }, [products, selectedIds.length]);
+
+  const productsToCompare = products.filter((p) => selectedIds.includes(p.id));
 
   const removeProduct = (id: string) => {
     setSelectedIds(selectedIds.filter((pId) => pId !== id));
@@ -31,6 +45,14 @@ function CompareProducts() {
       setSelectedIds([...selectedIds, id]);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="container-luxe py-24 text-center animate-pulse">
+        <p className="font-display text-xl">Loading creations...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -50,8 +72,8 @@ function CompareProducts() {
             </p>
             <Link
               to="/shop"
-              search={{ category: "all" }}
-              className="mt-4 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest"
+              search={{}}
+              className="mt-4 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest hover:bg-gold hover:text-gold-foreground transition-colors"
             >
               Browse shop
             </Link>
@@ -63,11 +85,11 @@ function CompareProducts() {
               <div className="mb-8 border border-border p-4 bg-champagne/10">
                 <p className="eyebrow mb-3">Add item to comparison</p>
                 <div className="flex flex-wrap gap-2">
-                  {PRODUCTS.filter((p) => !selectedIds.includes(p.id)).map((p) => (
+                  {products.filter((p) => !selectedIds.includes(p.id)).map((p) => (
                     <button
                       key={p.id}
                       onClick={() => addProduct(p.id)}
-                      className="px-3 py-1.5 border border-border bg-background text-xs uppercase tracking-wider hover:border-foreground"
+                      className="px-3 py-1.5 border border-border bg-background text-xs uppercase tracking-wider hover:border-foreground transition-colors"
                     >
                       + {p.name}
                     </button>
@@ -95,7 +117,7 @@ function CompareProducts() {
                           />
                           <div>
                             <p className="font-display text-base leading-tight">{p.name}</p>
-                            <p className="text-xs text-muted-foreground mt-1">{p.collection}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{p.collection?.name || "Regular Collection"}</p>
                           </div>
                           <button
                             onClick={() => removeProduct(p.id)}
@@ -149,7 +171,7 @@ function CompareProducts() {
                     {productsToCompare.map((p) => (
                       <td key={p.id} className="p-4 border-r border-border last:border-r-0">
                         <ul className="list-disc pl-4 space-y-1 text-xs text-muted-foreground">
-                          {p.details.map((d) => (
+                          {(p.details || []).map((d) => (
                             <li key={d}>{d}</li>
                           ))}
                         </ul>

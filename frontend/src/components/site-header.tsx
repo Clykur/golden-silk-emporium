@@ -5,14 +5,12 @@ import { useShop, cartCount } from "@/lib/store";
 
 const LEFT_NAV = [
   { to: "/" as const, label: "Home", search: {} },
-  { to: "/shop" as const, label: "Shop Sarees", search: {} },
-  { to: "/collections" as const, label: "Collections", search: {} },
+  { to: "/shop" as const, label: "Shop", search: {} },
   { to: "/new-arrivals" as const, label: "New Arrivals", search: {} },
+  { to: "/bestsellers" as const, label: "Best Sellers", search: {} },
 ];
 
 const RIGHT_NAV = [
-  { to: "/bestsellers" as const, label: "Best Sellers", search: {} },
-  { to: "/lookbook" as const, label: "Lookbook", search: {} },
   { to: "/about" as const, label: "About Us", search: {} },
   { to: "/support" as const, label: "Contact", search: {} },
 ];
@@ -82,13 +80,11 @@ export function SiteHeader() {
         <div className="flex animate-marquee whitespace-nowrap text-[0.7rem] tracking-[0.32em] uppercase">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex shrink-0 gap-12 px-6">
-              <span>Complimentary shipping across India</span>
+              <span>Shipping across India</span>
               <span className="text-gold">◆</span>
-              <span>Hand-finished, made-to-order</span>
+              <span>Contact us in Instagram & Whatsapp</span>
               <span className="text-gold">◆</span>
-              <span>Concierge on WhatsApp · +91 98 0000 0000</span>
-              <span className="text-gold">◆</span>
-              <span>New arrivals every Friday</span>
+              <span>New arrivals every Week</span>
               <span className="text-gold">◆</span>
             </div>
           ))}
@@ -99,18 +95,17 @@ export function SiteHeader() {
       {!hasHero && <div className="h-[72px] md:h-[88px]" />}
 
       <header
-        className={`fixed left-0 right-0 mx-auto z-40 transition-navbar ${
-          isFloating
-            ? "top-4 w-[92vw] md:w-[88vw] max-w-6xl rounded-2xl md:rounded-full border border-border/80 bg-background/85 backdrop-blur-xl shadow-lg"
-            : "top-9 w-full max-w-none border border-transparent border-b-border bg-background"
-        } ${
-          isHidden ? "opacity-0 -translate-y-full pointer-events-none" : "opacity-100 translate-y-0"
-        }`}
+        className={`fixed left-0 right-0 mx-auto z-40 transition-navbar ${isFloating
+          ? "top-4 w-[92vw] md:w-[88vw] max-w-6xl rounded-2xl md:rounded-full border border-border/80 bg-background/85 backdrop-blur-xl shadow-lg"
+          : "top-9 w-full max-w-none border border-transparent border-b-border bg-background"
+          } ${isHidden ? "opacity-0 -translate-y-full pointer-events-none" : "opacity-100 translate-y-0"
+          }`}
       >
         <div
-          className={`grid grid-cols-[1fr_auto_1fr] items-center gap-6 transition-navbar ${
-            isFloating ? "w-full py-2.5 md:py-3.5 px-6 md:px-10" : "container-luxe py-4 md:py-5"
-          }`}
+          className={`flex items-center justify-between transition-navbar ${isFloating
+            ? "w-full py-3 px-8"
+            : "container-luxe py-4 md:py-5"
+            }`}
         >
           {/* Column 1: Left Menu & Mobile Hamburger */}
           <div className="flex items-center gap-4">
@@ -132,10 +127,18 @@ export function SiteHeader() {
             </nav>
           </div>
 
-          {/* Column 2: Center Logo */}
-          <Link to="/" className="justify-self-center text-center select-none" aria-label="Maaya home">
-            <span className="font-display text-2xl md:text-3xl tracking-[0.2em] font-medium">MAAYA</span>
-            <span className="block eyebrow mt-0.5 text-[0.55rem]">Couture · Est. 1998</span>
+          {/* Column 2: Center Brand */}
+          <Link
+            to="/"
+            className="justify-self-center flex flex-col items-center select-none"
+            aria-label="Drapeva home"
+          >
+            <span
+              className="text-3xl md:text-4xl uppercase tracking-[0.22em]"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              Drapeva
+            </span>
           </Link>
 
           {/* Column 3: Right Menu + Icons */}
@@ -200,7 +203,19 @@ export function SiteHeader() {
           <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-[82%] max-w-sm bg-background p-6 animate-rise">
             <div className="flex items-center justify-between">
-              <span className="font-display text-xl tracking-[0.2em]">MAAYA</span>
+              <Link
+                to="/"
+                onClick={() => setOpen(false)}
+                aria-label="Drapeva home"
+                className="flex items-center"
+              >
+                <span
+                  className="text-3xl font-serif tracking-[0.2em] uppercase"
+                  style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                >
+                  Drapeva
+                </span>
+              </Link>
               <button onClick={() => setOpen(false)} aria-label="Close" className="p-2">
                 <X className="h-5 w-5" />
               </button>

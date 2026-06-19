@@ -11,8 +11,8 @@ export const Route = createFileRoute("/blog/$slug")({
       .join(" ");
     return {
       meta: [
-        { title: `${title} — Maaya Couture` },
-        { name: "description", content: `Read the article ${title} on the Maaya Couture blog.` },
+        { title: `${title} — Drapeva` },
+        { name: "description", content: `Read the article ${title} on the Drapeva blog.` },
       ],
     };
   },

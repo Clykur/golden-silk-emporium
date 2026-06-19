@@ -1,8 +1,9 @@
 import { X, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useShop } from "@/lib/store";
 import { formatINR } from "@/lib/products";
+import { useAuth } from "@/lib/auth-store";
 
 const SIZES = ["XS", "S", "M", "L", "XL"];
 
@@ -13,6 +14,8 @@ export function QuickView() {
   const wishlist = useShop((s) => s.wishlist);
   const toggleWishlist = useShop((s) => s.toggleWishlist);
   const [size, setSize] = useState("M");
+  const isAuthenticated = useAuth((s) => s.isAuthenticated());
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = quickView ? "hidden" : "";
@@ -41,7 +44,7 @@ export function QuickView() {
           className="h-72 w-full object-cover md:h-full"
         />
         <div className="flex flex-col overflow-y-auto p-7 md:p-10">
-          <p className="eyebrow">{quickView.collection}</p>
+          <p className="eyebrow">{quickView?.collection_id}</p>
           <h3 className="mt-2 font-display text-2xl md:text-3xl">{quickView.name}</h3>
           <div className="mt-2 flex items-baseline gap-3">
             <span className="text-lg">{formatINR(quickView.price)}</span>
@@ -62,11 +65,10 @@ export function QuickView() {
                 <button
                   key={s}
                   onClick={() => setSize(s)}
-                  className={`h-10 min-w-10 border px-3 text-sm transition-colors ${
-                    size === s
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border hover:border-foreground"
-                  }`}
+                  className={`h-10 min-w-10 border px-3 text-sm transition-colors ${size === s
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border hover:border-foreground"
+                    }`}
                 >
                   {s}
                 </button>
@@ -77,6 +79,17 @@ export function QuickView() {
           <div className="mt-auto pt-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => {
+                if (!isAuthenticated) {
+                  setQuickView(null);
+                  navigate({
+                    to: "/auth/login",
+                    search: {
+                      redirect: window.location.pathname + window.location.search,
+                      message: "Please sign in to continue shopping.",
+                    },
+                  });
+                  return;
+                }
                 addToCart(quickView, size);
                 setQuickView(null);
               }}
@@ -85,7 +98,20 @@ export function QuickView() {
               Add to bag
             </button>
             <button
-              onClick={() => toggleWishlist(quickView.id)}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  setQuickView(null);
+                  navigate({
+                    to: "/auth/login",
+                    search: {
+                      redirect: window.location.pathname + window.location.search,
+                      message: "Please sign in to continue shopping.",
+                    },
+                  });
+                  return;
+                }
+                toggleWishlist(quickView.id);
+              }}
               aria-label="Wishlist"
               className="grid place-items-center border border-border px-5 py-4 hover:border-foreground transition-colors"
             >
@@ -95,7 +121,7 @@ export function QuickView() {
 
           <Link
             to="/product/$id"
-            params={{ id: quickView.id }}
+            params={{ id: quickView.slug }}
             onClick={() => setQuickView(null)}
             className="mt-4 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground"
           >

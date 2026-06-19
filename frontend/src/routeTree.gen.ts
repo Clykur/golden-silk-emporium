@@ -28,6 +28,10 @@ import { Route as CollectionsIndexRouteImport } from './routes/collections/index
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as DashboardWishlistRouteImport } from './routes/dashboard/wishlist'
+import { Route as DashboardSupportRouteImport } from './routes/dashboard/support'
+import { Route as DashboardSecurityRouteImport } from './routes/dashboard/security'
+import { Route as DashboardReturnsRouteImport } from './routes/dashboard/returns'
 import { Route as DashboardRecentlyViewedRouteImport } from './routes/dashboard/recently-viewed'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard/profile'
 import { Route as DashboardOrdersRouteImport } from './routes/dashboard/orders'
@@ -41,9 +45,18 @@ import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthOtpRouteImport } from './routes/auth/otp'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AdminSupportRouteImport } from './routes/admin/support'
+import { Route as AdminReviewsRouteImport } from './routes/admin/reviews'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminInventoryRouteImport } from './routes/admin/inventory'
+import { Route as AdminHomepageRouteImport } from './routes/admin/homepage'
 import { Route as AdminCustomersRouteImport } from './routes/admin/customers'
+import { Route as AdminCouponsRouteImport } from './routes/admin/coupons'
+import { Route as AdminCollectionsRouteImport } from './routes/admin/collections'
+import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
+import { Route as AdminAuditLogsRouteImport } from './routes/admin/audit-logs'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -140,6 +153,26 @@ const ProductIdRoute = ProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardWishlistRoute = DashboardWishlistRouteImport.update({
+  id: '/dashboard/wishlist',
+  path: '/dashboard/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSupportRoute = DashboardSupportRouteImport.update({
+  id: '/dashboard/support',
+  path: '/dashboard/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardSecurityRoute = DashboardSecurityRouteImport.update({
+  id: '/dashboard/security',
+  path: '/dashboard/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardReturnsRoute = DashboardReturnsRouteImport.update({
+  id: '/dashboard/returns',
+  path: '/dashboard/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRecentlyViewedRoute = DashboardRecentlyViewedRouteImport.update({
   id: '/dashboard/recently-viewed',
   path: '/dashboard/recently-viewed',
@@ -205,6 +238,16 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/auth/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSupportRoute = AdminSupportRouteImport.update({
+  id: '/admin/support',
+  path: '/admin/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReviewsRoute = AdminReviewsRouteImport.update({
+  id: '/admin/reviews',
+  path: '/admin/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/admin/products',
   path: '/admin/products',
@@ -215,9 +258,44 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/admin/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/admin/inventory',
+  path: '/admin/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminHomepageRoute = AdminHomepageRouteImport.update({
+  id: '/admin/homepage',
+  path: '/admin/homepage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCustomersRoute = AdminCustomersRouteImport.update({
   id: '/admin/customers',
   path: '/admin/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCouponsRoute = AdminCouponsRouteImport.update({
+  id: '/admin/coupons',
+  path: '/admin/coupons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCollectionsRoute = AdminCollectionsRouteImport.update({
+  id: '/admin/collections',
+  path: '/admin/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/admin/categories',
+  path: '/admin/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditLogsRoute = AdminAuditLogsRouteImport.update({
+  id: '/admin/audit-logs',
+  path: '/admin/audit-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -235,9 +313,18 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/virtual-catalog': typeof VirtualCatalogRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/collections': typeof AdminCollectionsRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
+  '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -251,6 +338,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/recently-viewed': typeof DashboardRecentlyViewedRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/support': typeof DashboardSupportRoute
+  '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -272,9 +363,18 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/virtual-catalog': typeof VirtualCatalogRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/collections': typeof AdminCollectionsRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
+  '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -288,6 +388,10 @@ export interface FileRoutesByTo {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/recently-viewed': typeof DashboardRecentlyViewedRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/support': typeof DashboardSupportRoute
+  '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/product/$id': typeof ProductIdRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -310,9 +414,18 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/virtual-catalog': typeof VirtualCatalogRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/audit-logs': typeof AdminAuditLogsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
+  '/admin/collections': typeof AdminCollectionsRoute
+  '/admin/coupons': typeof AdminCouponsRoute
   '/admin/customers': typeof AdminCustomersRoute
+  '/admin/homepage': typeof AdminHomepageRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/reviews': typeof AdminReviewsRoute
+  '/admin/support': typeof AdminSupportRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/otp': typeof AuthOtpRoute
@@ -326,6 +439,10 @@ export interface FileRoutesById {
   '/dashboard/orders': typeof DashboardOrdersRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/recently-viewed': typeof DashboardRecentlyViewedRoute
+  '/dashboard/returns': typeof DashboardReturnsRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/support': typeof DashboardSupportRoute
+  '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/product/$id': typeof ProductIdRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -349,9 +466,18 @@ export interface FileRouteTypes {
     | '/shop'
     | '/virtual-catalog'
     | '/wishlist'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/categories'
+    | '/admin/collections'
+    | '/admin/coupons'
     | '/admin/customers'
+    | '/admin/homepage'
+    | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reviews'
+    | '/admin/support'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
@@ -365,6 +491,10 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/dashboard/recently-viewed'
+    | '/dashboard/returns'
+    | '/dashboard/security'
+    | '/dashboard/support'
+    | '/dashboard/wishlist'
     | '/product/$id'
     | '/admin/'
     | '/blog/'
@@ -386,9 +516,18 @@ export interface FileRouteTypes {
     | '/shop'
     | '/virtual-catalog'
     | '/wishlist'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/categories'
+    | '/admin/collections'
+    | '/admin/coupons'
     | '/admin/customers'
+    | '/admin/homepage'
+    | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reviews'
+    | '/admin/support'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
@@ -402,6 +541,10 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/dashboard/recently-viewed'
+    | '/dashboard/returns'
+    | '/dashboard/security'
+    | '/dashboard/support'
+    | '/dashboard/wishlist'
     | '/product/$id'
     | '/admin'
     | '/blog'
@@ -423,9 +566,18 @@ export interface FileRouteTypes {
     | '/shop'
     | '/virtual-catalog'
     | '/wishlist'
+    | '/admin/analytics'
+    | '/admin/audit-logs'
+    | '/admin/categories'
+    | '/admin/collections'
+    | '/admin/coupons'
     | '/admin/customers'
+    | '/admin/homepage'
+    | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reviews'
+    | '/admin/support'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/otp'
@@ -439,6 +591,10 @@ export interface FileRouteTypes {
     | '/dashboard/orders'
     | '/dashboard/profile'
     | '/dashboard/recently-viewed'
+    | '/dashboard/returns'
+    | '/dashboard/security'
+    | '/dashboard/support'
+    | '/dashboard/wishlist'
     | '/product/$id'
     | '/admin/'
     | '/blog/'
@@ -461,9 +617,18 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   VirtualCatalogRoute: typeof VirtualCatalogRoute
   WishlistRoute: typeof WishlistRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminAuditLogsRoute: typeof AdminAuditLogsRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
+  AdminCollectionsRoute: typeof AdminCollectionsRoute
+  AdminCouponsRoute: typeof AdminCouponsRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
+  AdminHomepageRoute: typeof AdminHomepageRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminReviewsRoute: typeof AdminReviewsRoute
+  AdminSupportRoute: typeof AdminSupportRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthOtpRoute: typeof AuthOtpRoute
@@ -477,6 +642,10 @@ export interface RootRouteChildren {
   DashboardOrdersRoute: typeof DashboardOrdersRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardRecentlyViewedRoute: typeof DashboardRecentlyViewedRoute
+  DashboardReturnsRoute: typeof DashboardReturnsRoute
+  DashboardSecurityRoute: typeof DashboardSecurityRoute
+  DashboardSupportRoute: typeof DashboardSupportRoute
+  DashboardWishlistRoute: typeof DashboardWishlistRoute
   ProductIdRoute: typeof ProductIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -620,6 +789,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/wishlist': {
+      id: '/dashboard/wishlist'
+      path: '/dashboard/wishlist'
+      fullPath: '/dashboard/wishlist'
+      preLoaderRoute: typeof DashboardWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/support': {
+      id: '/dashboard/support'
+      path: '/dashboard/support'
+      fullPath: '/dashboard/support'
+      preLoaderRoute: typeof DashboardSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/security': {
+      id: '/dashboard/security'
+      path: '/dashboard/security'
+      fullPath: '/dashboard/security'
+      preLoaderRoute: typeof DashboardSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/returns': {
+      id: '/dashboard/returns'
+      path: '/dashboard/returns'
+      fullPath: '/dashboard/returns'
+      preLoaderRoute: typeof DashboardReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/recently-viewed': {
       id: '/dashboard/recently-viewed'
       path: '/dashboard/recently-viewed'
@@ -711,6 +908,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/support': {
+      id: '/admin/support'
+      path: '/admin/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AdminSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reviews': {
+      id: '/admin/reviews'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews'
+      preLoaderRoute: typeof AdminReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/admin/products'
@@ -725,11 +936,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/admin/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/homepage': {
+      id: '/admin/homepage'
+      path: '/admin/homepage'
+      fullPath: '/admin/homepage'
+      preLoaderRoute: typeof AdminHomepageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/customers': {
       id: '/admin/customers'
       path: '/admin/customers'
       fullPath: '/admin/customers'
       preLoaderRoute: typeof AdminCustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/coupons': {
+      id: '/admin/coupons'
+      path: '/admin/coupons'
+      fullPath: '/admin/coupons'
+      preLoaderRoute: typeof AdminCouponsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/collections': {
+      id: '/admin/collections'
+      path: '/admin/collections'
+      fullPath: '/admin/collections'
+      preLoaderRoute: typeof AdminCollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/admin/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit-logs': {
+      id: '/admin/audit-logs'
+      path: '/admin/audit-logs'
+      fullPath: '/admin/audit-logs'
+      preLoaderRoute: typeof AdminAuditLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -749,9 +1009,18 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   VirtualCatalogRoute: VirtualCatalogRoute,
   WishlistRoute: WishlistRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminAuditLogsRoute: AdminAuditLogsRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
+  AdminCollectionsRoute: AdminCollectionsRoute,
+  AdminCouponsRoute: AdminCouponsRoute,
   AdminCustomersRoute: AdminCustomersRoute,
+  AdminHomepageRoute: AdminHomepageRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminReviewsRoute: AdminReviewsRoute,
+  AdminSupportRoute: AdminSupportRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthOtpRoute: AuthOtpRoute,
@@ -765,6 +1034,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardOrdersRoute: DashboardOrdersRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardRecentlyViewedRoute: DashboardRecentlyViewedRoute,
+  DashboardReturnsRoute: DashboardReturnsRoute,
+  DashboardSecurityRoute: DashboardSecurityRoute,
+  DashboardSupportRoute: DashboardSupportRoute,
+  DashboardWishlistRoute: DashboardWishlistRoute,
   ProductIdRoute: ProductIdRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,

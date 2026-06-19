@@ -6,11 +6,11 @@ import { api } from "@/lib/api";
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
-      { title: "The Journal — Maaya Couture" },
+      { title: "The Journal — Drapeva" },
       {
         name: "description",
         content:
-          "Artisan stories, saree drape guides, styling tips, and bridal fashion insights from the Maaya studio.",
+          "Artisan stories, saree drape guides, styling tips, and bridal fashion insights from the Drapeva studio.",
       },
     ],
   }),

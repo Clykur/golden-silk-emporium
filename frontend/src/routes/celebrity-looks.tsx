@@ -4,7 +4,7 @@ import { EDITORIAL_IMAGES } from "@/lib/media";
 export const Route = createFileRoute("/celebrity-looks")({
   head: () => ({
     meta: [
-      { title: "Celebrity Looks — Maaya Couture" },
+      { title: "Celebrity Looks — Drapeva" },
       {
         name: "description",
         content: "Explore handwoven sarees worn and styled by celebrities and icons.",
@@ -19,7 +19,7 @@ const CELEBRITY_EDITS = [
     name: "Alia Bhatt",
     event: "Met Gala Afterparty",
     quote:
-      "Wearing Maaya's ivory Banarasi silk saree felt like carrying a piece of home. The pearl thread details and gold borders are breathtaking.",
+      "Wearing Drapeva's ivory Banarasi silk saree felt like carrying a piece of home. The pearl thread details and gold borders are breathtaking.",
     image: EDITORIAL_IMAGES.celebAlia,
     productId: "saree-6-mayur", // References a generated Kanjivaram/Banarasi ID
   },

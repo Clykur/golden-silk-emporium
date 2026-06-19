@@ -12,7 +12,7 @@ export const Route = createFileRoute("/auth/verify")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Verify Email — Maaya Couture" },
+      { title: "Verify Email — Drapeva" },
       { name: "description", content: "Verify your email address." },
     ],
   }),

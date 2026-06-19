@@ -6,7 +6,7 @@ import { formatINR } from "@/lib/products";
 export const Route = createFileRoute("/lookbook")({
   head: () => ({
     meta: [
-      { title: "Interactive Lookbook — Maaya Couture" },
+      { title: "Interactive Lookbook — Drapeva" },
       {
         name: "description",
         content: "Explore our interactive lookbook styling heritage handwoven sarees.",

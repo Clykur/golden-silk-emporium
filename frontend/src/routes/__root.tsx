@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { initAuthListener } from "@/lib/auth-store";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -73,14 +75,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Maaya Couture — Heirloom Indian Silk Sarees" },
+      { title: "Drapeva — Heirloom Indian Sarees" },
       {
         name: "description",
         content:
-          "Discover Maaya — an atelier of heirloom sarees and bridal drapes. Handwoven by Indian master artisans, designed for the modern bride.",
+          "Discover Drapeva — an atelier of heirloom sarees and bridal drapes. Handwoven by Indian master artisans, designed for the modern bride.",
       },
-      { name: "author", content: "Maaya Couture" },
-      { property: "og:title", content: "Maaya Couture — Heirloom Indian Silk Sarees" },
+      { name: "author", content: "Drapeva" },
+      { property: "og:title", content: "Drapeva — Heirloom Indian Silk Sarees" },
       {
         property: "og:description",
         content: "Handwoven silk sarees and bridal trousseaus, made-to-order in India.",
@@ -126,6 +128,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAuthRoute = pathname.startsWith("/auth");
+
+  useEffect(() => {
+    // Initialize Supabase auth state listener once at app root
+    initAuthListener();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -133,7 +142,7 @@ function RootComponent() {
       <main>
         <Outlet />
       </main>
-      <SiteFooter />
+      {!isAuthRoute && <SiteFooter />}
       <CartDrawer />
       <QuickView />
       <WhatsAppButton />

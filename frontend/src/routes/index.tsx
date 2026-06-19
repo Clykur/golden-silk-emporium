@@ -1,19 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Instagram, Star, Truck, Sparkles, ShieldCheck } from "lucide-react";
-import { PRODUCTS, COLLECTIONS } from "@/lib/products";
-import { HERO_VIDEO, HERO_POSTER, PRODUCT_IMAGES } from "@/lib/media";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, Instagram, Star, Truck, Sparkles, ShieldCheck, ChevronDown } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
+import { productsApi, collectionsApi, reviewsApi, homepageApi } from "@/lib/api";
+import { HERO_VIDEO, HERO_POSTER } from "@/lib/media";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Maaya Couture — Heirloom Indian Silk Sarees" },
+      { title: "Drapeva — Heirloom Indian Silk Sarees" },
       {
         name: "description",
         content:
           "An atelier of heirloom Indian sarees — handwoven Kanjivarams, Banarasis, and designer chiffons, made-to-order for the modern patron.",
       },
-      { property: "og:title", content: "Maaya Couture — Heirloom Indian Silk Sarees" },
+      { property: "og:title", content: "Drapeva — Heirloom Indian Silk Sarees" },
       {
         property: "og:description",
         content: "Handwoven sarees, made-to-order in India with authentic craftsmanship.",
@@ -23,34 +24,78 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const TESTIMONIALS = [
-  {
-    name: "Ananya M.",
-    city: "Mumbai",
-    quote:
-      "My Maaya Kanjivaram felt like an heirloom from the very first drape. The real gold zari work is breathtaking.",
-    rating: 5,
-  },
-  {
-    name: "Priya S.",
-    city: "London",
-    quote:
-      "The concierge helped me customize my reception Banarasi silk saree from across the world. It arrived perfect.",
-    rating: 5,
-  },
-  {
-    name: "Ishita R.",
-    city: "Delhi",
-    quote: "Soft, regal, and unmistakably mine. I will be wearing this silk saree for decades.",
-    rating: 5,
-  },
-];
+function ProductSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="aspect-[3/4] bg-champagne/40" />
+      <div className="mt-3 h-3 w-3/4 bg-champagne/60 rounded" />
+      <div className="mt-2 h-3 w-1/2 bg-champagne/40 rounded" />
+    </div>
+  );
+}
 
 function Home() {
-  const bestsellers = PRODUCTS.filter((p) => p.badge === "Bestseller" || p.compareAt).slice(0, 4);
-  const newArrivals = PRODUCTS.filter((p) => p.badge === "New")
-    .concat(PRODUCTS)
-    .slice(0, 4);
+  const { data: bestsellers = [], isLoading: bsLoading } = useQuery({
+    queryKey: ["bestsellers"],
+    queryFn: () => productsApi.getBestsellers(4),
+  });
+
+  const { data: newArrivals = [], isLoading: naLoading } = useQuery({
+    queryKey: ["new-arrivals"],
+    queryFn: () => productsApi.getNewArrivals(4),
+  });
+
+  const { data: collections = [], isLoading: colLoading } = useQuery({
+    queryKey: ["collections"],
+    queryFn: collectionsApi.list,
+  });
+
+  const { data: featured = [], isLoading: featLoading } = useQuery({
+    queryKey: ["featured"],
+    queryFn: () => productsApi.getFeatured(6),
+  });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["homepage-reviews"],
+    queryFn: () => reviewsApi.getRecentApproved(3),
+  });
+
+  const { data: banners = [] } = useQuery({
+    queryKey: ["homepage-banners"],
+    queryFn: homepageApi.getBanners,
+  });
+
+  // Static fallback testimonials if no reviews yet
+  const testimonials = reviews.length > 0
+    ? reviews.map((r: any) => ({
+      name: r.reviewer_name || r.profile?.name || "Customer",
+      city: "",
+      quote: r.comment || "",
+      rating: r.rating,
+    }))
+    : [
+      {
+        name: "Ananya M.",
+        city: "Hyderabad",
+        quote:
+          "The saree was exactly as shown on the website. The fabric felt comfortable, the quality was excellent, and delivery was quick.",
+        rating: 4,
+      },
+      {
+        name: "Priya S.",
+        city: "Bengaluru",
+        quote:
+          "Beautiful collection and an easy shopping experience. I found the perfect saree for a family celebration and received many compliments.",
+        rating: 4,
+      },
+      {
+        name: "Ishita R.",
+        city: "Kochi",
+        quote:
+          "Great quality, elegant designs, and smooth delivery. The saree was comfortable to wear throughout the event.",
+        rating: 5,
+      },
+    ];
 
   return (
     <div>
@@ -79,180 +124,153 @@ function Home() {
           <div className="container-luxe relative z-10 flex h-full flex-col justify-end pb-20 md:justify-center md:pb-0">
             <div className="max-w-xl animate-rise">
               <p className="eyebrow flex items-center gap-3">
-                <span className="gold-divider" /> The Vivah Edit · AW26
+                <span className="gold-divider" /> Since 2026
               </p>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] md:text-7xl">
-                Premium
+                Comfort in Every
                 <br />
-                <span className="shimmer-text">Luxury Sarees</span>.
+                <span className="shimmer-text">Drape</span>.
               </h1>
-              <p className="mt-6 max-w-md text-base leading-relaxed text-foreground/80">
-                Experience the finest Indian handloom artistry. Discover masterfully woven Kanjivarams, Banarasis, and designer silk sarees, crafted by hand in our South Mumbai atelier.
-              </p>
+              <p className="mt-6 max-w-4xl text-base leading-relaxed text-foreground/80">
+                Browse a curated selection of beautiful sarees that combine comfort, quality, and elegance. Whether you're dressing for work, celebrations, or special moments, Drapeva has something for every style.</p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link
                   to="/shop"
                   search={{}}
                   className="group inline-flex items-center gap-3 bg-foreground px-7 py-4 text-xs font-medium tracking-[0.25em] uppercase text-background transition-colors hover:bg-gold hover:text-gold-foreground"
                 >
-                  Shop the edit
+                  SHOP NOW
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <Link
-                  to="/shop"
-                  search={{ occasion: "Bridal" }}
-                  className="inline-flex items-center gap-3 border border-foreground/60 px-7 py-4 text-xs font-medium tracking-[0.25em] uppercase hover:border-foreground hover:bg-foreground hover:text-background transition-colors"
-                >
-                  Book a bridal consult
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="absolute bottom-6 right-6 hidden md:block">
-            <p className="eyebrow text-foreground/70">Scroll</p>
-            <div className="mt-3 h-12 w-px bg-foreground/40" />
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block">
+            <div className="flex flex-col items-center gap-2">
+              <p className="eyebrow text-foreground/70">Scroll</p>
+              <ChevronDown className="h-5 w-5 animate-bounce text-gold" />
+            </div>
           </div>
         </div>
       </section>
 
       {/* TRUST STRIP */}
       <section className="border-y border-border bg-champagne/30">
-        <div className="container-luxe grid grid-cols-2 gap-6 py-8 md:grid-cols-4">
+        <div className="container-luxe grid gap-8 py-8 md:grid-cols-3">
           {[
-            { icon: Sparkles, t: "Hand-finished", s: "by master weavers" },
-            { icon: Truck, t: "Complimentary shipping", s: "across India" },
-            { icon: ShieldCheck, t: "Bespoke finishing", s: "in 2–4 weeks" },
-            { icon: Star, t: "4.9 / 5 rating", s: "from 12,000+ patrons" },
+            {
+              icon: Truck,
+              t: "Fast Delivery Across India",
+              s: "Orders are processed quickly and delivered across India with tracking updates sent directly to your email and phone.",
+            },
+            {
+              icon: ShieldCheck,
+              t: "Secure Shopping Experience",
+              s: "Shop with confidence through secure checkout, protected customer information, and reliable order management.",
+            },
+            {
+              icon: Star,
+              t: "Carefully Curated Collections",
+              s: "Explore handpicked sarees selected for their comfort, quality, design, and value to suit every occasion.",
+            },
           ].map(({ icon: Icon, t, s }) => (
-            <div key={t} className="flex items-center gap-3">
-              <Icon className="h-5 w-5 shrink-0 text-gold" />
-              <div className="min-w-0">
-                <p className="text-sm font-medium">{t}</p>
-                <p className="text-xs text-muted-foreground">{s}</p>
+            <div key={t} className="flex items-start gap-4">
+              <Icon className="mt-1 h-6 w-6 shrink-0 text-gold" />
+
+              <div>
+                <h3 className="text-base font-semibold">{t}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {s}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* COLLECTIONS */}
-      <section className="container-luxe py-24 md:py-32">
-        <div className="flex flex-col items-center text-center">
-          <p className="eyebrow flex items-center gap-3">
-            <span className="gold-divider" /> The Collections <span className="gold-divider" />
-          </p>
-          <h2 className="mt-5 font-display text-4xl md:text-5xl">An atelier of stories</h2>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Four worlds, woven by hand. Each collection is a love letter to a heritage Indian
-            weaving style, reinterpreted for today.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-          {COLLECTIONS.map((c, i) => (
-            <Link
-              key={c.slug}
-              to="/shop"
-              search={{ collection: c.slug }}
-              className={`group relative block overflow-hidden ${
-                i % 2 === 1 ? "md:translate-y-6" : ""
-              }`}
-            >
-              <div className="aspect-[3/4] overflow-hidden bg-champagne/40">
-                <img
-                  src={c.image}
-                  alt={c.name}
-                  loading="lazy"
-                  width={900}
-                  height={1200}
-                  className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-110"
-                />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent p-7 text-background">
-                <p className="eyebrow text-background/70 text-[0.6rem]">{c.tagline}</p>
-                <h3 className="mt-2 font-display text-2xl">{c.name}</h3>
-                <span className="mt-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-gold">
-                  Explore <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* BESTSELLERS */}
-      <section className="container-luxe pb-24 md:pb-32">
+      {/* BESTSELLERS — Dynamic from Supabase */}
+      <section className="container-luxe pb-24 md:pb-32 pt-10">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
             <p className="eyebrow">Most loved</p>
             <h2 className="mt-3 font-display text-3xl md:text-4xl">Bestsellers</h2>
           </div>
-          <Link
-            to="/shop"
-            search={{}}
-            className="eyebrow inline-flex items-center gap-2 hover:text-gold transition-colors"
-          >
+          <Link to="/shop" search={{}} className="eyebrow inline-flex items-center gap-2 hover:text-gold transition-colors">
             View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4 md:gap-x-8">
-          {bestsellers.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+          {bsLoading
+            ? Array.from({ length: 4 }).map((_, i) => <ProductSkeleton key={i} />)
+            : bestsellers.map((p: any) => <ProductCard key={p.id} product={p} />)}
         </div>
+        {!bsLoading && bestsellers.length === 0 && (
+          <p className="text-center text-muted-foreground py-12 text-sm">
+            Mark products as "Bestseller" in the admin to feature them here.
+          </p>
+        )}
       </section>
 
       {/* EDITORIAL BANNER */}
       <section className="relative isolate overflow-hidden bg-ink text-background">
-        <img
-          src={PRODUCT_IMAGES[0].image}
-          alt="Folded silk sarees"
-          className="absolute inset-0 h-full w-full object-cover opacity-40"
-          loading="lazy"
-        />
+        {featured[0]?.image && (
+          <img
+            src={featured[0].image}
+            alt="Elegant Saree Collection"
+            className="absolute inset-0 h-full w-full object-cover opacity-40"
+            loading="lazy"
+          />
+        )}
+
         <div className="container-luxe relative grid items-center gap-10 py-24 md:grid-cols-2 md:py-36">
           <div>
-            <p className="eyebrow text-gold">The Bridal Atelier</p>
+            <p className="eyebrow text-gold">Curated Collection</p>
+
             <h2 className="mt-5 font-display text-4xl leading-tight md:text-6xl">
-              For the bride who whispers, not shouts.
+              Sarees for Every Occasion
             </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-background/75">
-              A private, by-appointment trousseau experience with our master weavers — in South
-              Mumbai, or via virtual consult. Choose from rare weaves, custom border motifs, and
-              personalized borders for your forever saree.
+
+            <p className="mt-6 max-w-xl text-sm leading-relaxed text-background/75">
+              Discover a thoughtfully curated collection of sarees designed for
+              weddings, festive celebrations, office wear, family gatherings, and
+              everyday elegance. At Drapeva, we bring together styles that combine
+              comfort, quality, and timeless beauty, helping you find the perfect
+              saree for every moment that matters.
             </p>
+
             <Link
               to="/shop"
-              search={{ occasion: "Bridal" }}
               className="mt-9 inline-flex items-center gap-3 border border-gold px-7 py-4 text-xs tracking-[0.25em] uppercase text-gold hover:bg-gold hover:text-gold-foreground transition-colors"
             >
-              Book an appointment <ArrowRight className="h-4 w-4" />
+              Explore Collection
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* NEW ARRIVALS */}
+      {/* NEW ARRIVALS — Dynamic from Supabase */}
       <section className="container-luxe py-24 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
             <p className="eyebrow">Just in</p>
             <h2 className="mt-3 font-display text-3xl md:text-4xl">New arrivals</h2>
           </div>
-          <Link
-            to="/shop"
-            search={{}}
-            className="eyebrow inline-flex items-center gap-2 hover:text-gold transition-colors"
-          >
+          <Link to="/shop" search={{}} className="eyebrow inline-flex items-center gap-2 hover:text-gold transition-colors">
             See more <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
         <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4 md:gap-x-8">
-          {newArrivals.map((p) => (
-            <ProductCard key={p.id + "-new"} product={p} />
-          ))}
+          {naLoading
+            ? Array.from({ length: 4 }).map((_, i) => <ProductSkeleton key={i} />)
+            : newArrivals.map((p: any) => <ProductCard key={p.id} product={p} />)}
         </div>
+        {!naLoading && newArrivals.length === 0 && (
+          <p className="text-center text-muted-foreground py-12 text-sm">
+            Mark products as "New Arrival" in the admin to feature them here.
+          </p>
+        )}
       </section>
 
       {/* TESTIMONIALS */}
@@ -260,27 +278,26 @@ function Home() {
         <div className="container-luxe">
           <div className="text-center">
             <p className="eyebrow flex items-center justify-center gap-3">
-              <span className="gold-divider" /> Words from our patrons{" "}
-              <span className="gold-divider" />
+              <span className="gold-divider" /> Words from our patrons <span className="gold-divider" />
             </p>
             <h2 className="mt-5 font-display text-4xl md:text-5xl">Worn with love</h2>
           </div>
           <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((t) => (
+            {testimonials.map((t: any, i: number) => (
               <figure
-                key={t.name}
+                key={i}
                 className="bg-background p-8 shadow-[var(--shadow-card)] hover-lift"
               >
                 <div className="flex gap-0.5 text-gold">
-                  {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-gold" />
+                  {Array.from({ length: t.rating }).map((_, j) => (
+                    <Star key={j} className="h-4 w-4 fill-gold" />
                   ))}
                 </div>
                 <blockquote className="mt-5 font-display text-xl leading-snug">
                   "{t.quote}"
                 </blockquote>
                 <figcaption className="mt-6 eyebrow">
-                  {t.name} <span className="text-muted-foreground">· {t.city}</span>
+                  {t.name} {t.city && <span className="text-muted-foreground">· {t.city}</span>}
                 </figcaption>
               </figure>
             ))}
@@ -288,34 +305,37 @@ function Home() {
         </div>
       </section>
 
-      {/* INSTAGRAM */}
+      {/* INSTAGRAM / STYLED BY YOU — Dynamic from featured products */}
       <section className="container-luxe py-24 md:py-32">
         <div className="flex flex-col items-center text-center">
           <p className="eyebrow flex items-center gap-3">
-            <Instagram className="h-3.5 w-3.5" /> @maaya.couture
+            <Instagram className="h-3.5 w-3.5" /> @drapeva
           </p>
           <h2 className="mt-4 font-display text-4xl md:text-5xl">As styled by you</h2>
         </div>
         <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-6">
-          {PRODUCTS.slice(0, 6).map((p, i) => (
-            <a
-              key={i}
-              href="https://instagram.com"
-              className="group relative aspect-square overflow-hidden bg-champagne/40"
-            >
-              <img
-                src={p.image}
-                alt=""
-                loading="lazy"
-                width={900}
-                height={900}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 grid place-items-center bg-ink/0 opacity-0 transition-all group-hover:bg-ink/30 group-hover:opacity-100">
-                <Instagram className="h-6 w-6 text-background" />
-              </div>
-            </a>
-          ))}
+          {featLoading
+            ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="animate-pulse aspect-square bg-champagne/40" />)
+            : featured.slice(0, 6).map((p: any, i: number) => (
+              <a
+                key={i}
+                href="https://instagram.com"
+                className="group relative aspect-square overflow-hidden bg-champagne/40"
+              >
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  loading="lazy"
+                  width={900}
+                  height={900}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-saree.jpg"; }}
+                />
+                <div className="absolute inset-0 grid place-items-center bg-ink/0 opacity-0 transition-all group-hover:bg-ink/30 group-hover:opacity-100">
+                  <Instagram className="h-6 w-6 text-background" />
+                </div>
+              </a>
+            ))}
         </div>
       </section>
     </div>

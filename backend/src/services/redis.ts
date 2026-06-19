@@ -3,11 +3,15 @@ import { createClient } from "redis";
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 let client: ReturnType<typeof createClient> | null = null;
 let isConnected = false;
+let hasWarnedError = false;
 
 if (!redisUrl.includes("mock")) {
   client = createClient({ url: redisUrl });
   client.on("error", (err: any) => {
-    console.warn("Redis client warning, caching disabled:", err.message);
+    if (!hasWarnedError) {
+      console.warn("Redis client warning, caching disabled:", err.message);
+      hasWarnedError = true;
+    }
     isConnected = false;
   });
   client
@@ -15,9 +19,13 @@ if (!redisUrl.includes("mock")) {
     .then(() => {
       console.log("Connected to Redis cache");
       isConnected = true;
+      hasWarnedError = false;
     })
     .catch((err: any) => {
-      console.warn("Failed to connect to Redis cache. Fallback to direct DB queries:", err.message);
+      if (!hasWarnedError) {
+        console.warn("Failed to connect to Redis cache. Fallback to direct DB queries:", err.message);
+        hasWarnedError = true;
+      }
       isConnected = false;
     });
 }

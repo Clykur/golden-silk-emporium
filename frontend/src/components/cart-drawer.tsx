@@ -51,7 +51,7 @@ export function CartDrawer() {
                 onClick={closeCart}
                 className="mt-6 border-b border-foreground pb-1 eyebrow"
               >
-                Browse couture
+                Browse Shop
               </Link>
             </div>
           ) : (
@@ -66,7 +66,7 @@ export function CartDrawer() {
                   <div className="flex flex-1 flex-col">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="eyebrow text-[0.6rem]">{item.product.collection}</p>
+                        <p className="eyebrow text-[0.6rem]">{item.product.collection_id}</p>
                         <p className="mt-1 font-display text-base leading-tight">
                           {item.product.name}
                         </p>
@@ -78,7 +78,7 @@ export function CartDrawer() {
                       <div className="inline-flex items-center border border-border">
                         <button
                           className="grid h-8 w-8 place-items-center hover:text-gold"
-                          onClick={() => updateQty(item.product.id, item.qty - 1)}
+                          onClick={() => updateQty(item.product.id, item.size, item.qty - 1)}
                           aria-label="Decrease"
                         >
                           <Minus className="h-3.5 w-3.5" />
@@ -86,7 +86,7 @@ export function CartDrawer() {
                         <span className="w-7 text-center text-sm">{item.qty}</span>
                         <button
                           className="grid h-8 w-8 place-items-center hover:text-gold"
-                          onClick={() => updateQty(item.product.id, item.qty + 1)}
+                          onClick={() => updateQty(item.product.id, item.size, item.qty + 1)}
                           aria-label="Increase"
                         >
                           <Plus className="h-3.5 w-3.5" />

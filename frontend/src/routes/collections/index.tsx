@@ -5,7 +5,7 @@ import { COLLECTION_IMAGES } from "@/lib/media";
 export const Route = createFileRoute("/collections/")({
   head: () => ({
     meta: [
-      { title: "Atelier Collections — Maaya Couture" },
+      { title: "Atelier Collections — Drapeva" },
       {
         name: "description",
         content: "Explore our curated edits of Banarasi, Kanjivaram, and designer silk sarees.",

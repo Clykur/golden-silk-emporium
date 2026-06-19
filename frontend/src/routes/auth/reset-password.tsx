@@ -12,8 +12,8 @@ export const Route = createFileRoute("/auth/reset-password")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Reset Password — Maaya Couture" },
-      { name: "description", content: "Reset your Maaya Couture account password." },
+      { title: "Reset Password — Drapeva" },
+      { name: "description", content: "Reset your Drapeva account password." },
     ],
   }),
   component: ResetPassword,

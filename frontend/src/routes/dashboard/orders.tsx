@@ -1,280 +1,338 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
-import {
-  User,
-  LogOut,
-  Package,
-  MapPin,
-  Settings,
-  Calendar,
-  ShieldCheck,
-  Download,
-} from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Package, Download, X, CheckCircle, Truck, RefreshCw, Clock, XCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { api } from "@/lib/api";
-import { formatINR } from "@/lib/products";
+import { ordersApi } from "@/lib/api";
+import { formatINR } from "@/lib/types";
+import type { DbOrder, OrderStatus } from "@/lib/types";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export const Route = createFileRoute("/dashboard/orders")({
   head: () => ({
     meta: [
-      { title: "Order History — Maaya Couture" },
-      { name: "description", content: "Review and track your couture commissions." },
+      { title: "My Orders — Drapeva" },
+      { name: "description", content: "Track and manage your Drapeva orders." },
     ],
   }),
   component: OrderHistory,
 });
 
-function OrderHistory() {
-  const { user, logout, isAuthenticated } = useAuth();
-  const router = useRouter();
-  const [orders, setOrders] = useState<any[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+const STATUS_STEPS: { key: OrderStatus; label: string; icon: any }[] = [
+  { key: "pending", label: "Order Placed", icon: Clock },
+  { key: "processing", label: "Processing", icon: RefreshCw },
+  { key: "shipped", label: "Shipped", icon: Truck },
+  { key: "delivered", label: "Delivered", icon: CheckCircle },
+];
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.navigate({ to: "/auth/login" });
-      return;
-    }
+const STATUS_COLORS: Record<string, string> = {
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  processing: "bg-blue-50 text-blue-700 border-blue-200",
+  shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  cancelled: "bg-red-50 text-red-700 border-red-200",
+  returned: "bg-orange-50 text-orange-700 border-orange-200",
+};
 
-    api.orders
-      .history()
-      .then((data) => setOrders(data))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [isAuthenticated]);
+const STEP_ORDER = ["pending", "processing", "shipped", "delivered"];
 
-  if (!user) return null;
+function getStepIndex(status: string) {
+  return STEP_ORDER.indexOf(status);
+}
+
+function OrderTracker({ status }: { status: string }) {
+  const current = getStepIndex(status);
+  if (status === "cancelled" || status === "returned") {
+    return (
+      <div className="flex items-center gap-2 py-2">
+        <XCircle className="h-5 w-5 text-red-500" />
+        <span className="text-sm text-red-600 font-medium capitalize">{status}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="relative">
+      <div className="flex items-center justify-between gap-2">
+        {STATUS_STEPS.map((step, i) => {
+          const done = i <= current;
+          const active = i === current;
+          return (
+            <div key={step.key} className="flex flex-col items-center gap-1 flex-1">
+              <div className={`h-7 w-7 rounded-full border-2 grid place-items-center transition-all ${
+                done
+                  ? "border-gold bg-gold text-gold-foreground"
+                  : "border-border bg-background text-muted-foreground"
+              } ${active ? "ring-2 ring-gold/30 ring-offset-1" : ""}`}>
+                <step.icon className="h-3 w-3" />
+              </div>
+              <span className={`text-[9px] uppercase tracking-wider text-center leading-tight ${done ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                {step.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      {/* Connecting line */}
+      <div className="absolute top-3.5 left-[14px] right-[14px] h-0.5 bg-border -z-10">
+        <div
+          className="h-full bg-gold transition-all duration-700"
+          style={{ width: current < 0 ? "0%" : `${(current / (STATUS_STEPS.length - 1)) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function OrderCard({ order, onExpand, expanded }: { order: DbOrder; onExpand: () => void; expanded: boolean }) {
+  const qc = useQueryClient();
+
+  const cancelMut = useMutation({
+    mutationFn: () => ordersApi.cancelOrder(order.id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-orders"] });
+      toast.success("Order cancelled successfully");
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to cancel order"),
+  });
+
+  const handleDownloadInvoice = () => {
+    // Build a simple invoice text and trigger download
+    const lines = [
+      `DRAPEVA — TAX INVOICE`,
+      `Order: #${order.id.slice(0, 8).toUpperCase()}`,
+      `Date: ${new Date(order.created_at).toLocaleDateString("en-IN")}`,
+      `Customer: ${order.customer_name}`,
+      `Email: ${order.customer_email}`,
+      ``,
+      `ITEMS:`,
+      ...(order.items as any[]).map((item: any) =>
+        `  ${item.product_name} (${item.size}) x${item.quantity} — ${formatINR(item.total)}`
+      ),
+      ``,
+      `Subtotal: ${formatINR(order.subtotal)}`,
+      order.discount > 0 ? `Discount: -${formatINR(order.discount)}` : null,
+      `Shipping: ${formatINR(order.shipping_cost)}`,
+      `TOTAL: ${formatINR(order.total)}`,
+      `Payment: ${order.payment_status}`,
+    ].filter(Boolean).join("\n");
+
+    const blob = new Blob([lines], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Drapeva-Invoice-${order.id.slice(0, 8).toUpperCase()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Invoice downloaded");
+  };
+
+  const canCancel = ["pending", "processing"].includes(order.status);
 
   return (
-    <div className="container-luxe py-12">
-      <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-        {/* Sidebar */}
-        <aside className="border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
-          <div className="flex items-center gap-3 pb-6 border-b border-border">
-            <div className="grid h-10 w-10 place-items-center rounded-full bg-champagne text-gold font-display text-lg">
-              {user.name.charAt(0)}
-            </div>
-            <div>
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
+    <div className="border border-border bg-background hover:border-gold/30 transition-colors">
+      {/* Header */}
+      <div className="px-6 py-4 flex flex-wrap justify-between items-start gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <Package className="h-4 w-4 text-gold stroke-1" />
+            <span className="font-display text-base">
+              Order #{order.id.slice(0, 8).toUpperCase()}
+            </span>
+            <span className={`border px-2 py-0.5 text-[10px] uppercase tracking-wider rounded ${STATUS_COLORS[order.status] || "bg-muted"}`}>
+              {order.status}
+            </span>
           </div>
+          <p className="text-xs text-muted-foreground mt-1 ml-7">
+            Placed {new Date(order.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}
+            {" · "}
+            {(order.items as any[])?.length} item(s)
+            {" · "}
+            <span className="font-medium text-foreground">{formatINR(order.total)}</span>
+          </p>
+        </div>
 
-          <nav className="mt-6 space-y-1 text-xs uppercase tracking-widest font-medium text-muted-foreground">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <User className="h-4 w-4" /> Account Overview
-            </Link>
-            <Link
-              to="/dashboard/orders"
-              className="flex items-center gap-3 px-3 py-2 bg-champagne text-foreground"
-            >
-              <Package className="h-4 w-4" /> Order History
-            </Link>
-            <Link
-              to="/dashboard/addresses"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <MapPin className="h-4 w-4" /> Address Book
-            </Link>
-            <Link
-              to="/dashboard/profile"
-              className="flex items-center gap-3 px-3 py-2 hover:text-foreground transition-colors"
-            >
-              <Settings className="h-4 w-4" /> Profile Settings
-            </Link>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadInvoice}
+            className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest hover:bg-muted transition-colors"
+          >
+            <Download className="h-3 w-3" />
+            Invoice
+          </button>
+          {canCancel && (
             <button
               onClick={() => {
-                logout();
-                router.navigate({ to: "/" });
+                if (confirm("Are you sure you want to cancel this order?")) {
+                  cancelMut.mutate();
+                }
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 text-destructive hover:text-destructive/80 text-left cursor-pointer"
+              disabled={cancelMut.isPending}
+              className="inline-flex items-center gap-1.5 border border-red-200 bg-red-50 text-red-700 px-3 py-1.5 text-[10px] uppercase tracking-widest hover:bg-red-100 transition-colors disabled:opacity-50"
             >
-              <LogOut className="h-4 w-4" /> Sign Out
+              <X className="h-3 w-3" />
+              Cancel
             </button>
-          </nav>
-        </aside>
+          )}
+          <button
+            onClick={onExpand}
+            className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest hover:bg-muted transition-colors"
+          >
+            {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            {expanded ? "Hide" : "Details"}
+          </button>
+        </div>
+      </div>
 
-        {/* Content */}
-        <main className="space-y-8">
+      {/* Tracker */}
+      <div className="px-6 pb-4">
+        <OrderTracker status={order.status} />
+      </div>
+
+      {/* Expanded Details */}
+      {expanded && (
+        <div className="border-t border-border px-6 py-5 space-y-5 bg-champagne/5">
+          {/* Items */}
           <div>
-            <p className="eyebrow text-gold">Commissions</p>
-            <h1 className="mt-1 font-display text-3xl">Order History</h1>
-            <span className="gold-divider mt-4 block" />
-          </div>
-
-          {loading ? (
-            <p className="text-sm text-muted-foreground py-10 animate-pulse">
-              Loading purchase history...
-            </p>
-          ) : orders.length === 0 ? (
-            <div className="py-16 text-center border border-dashed border-border">
-              <Package className="h-10 w-10 mx-auto text-muted-foreground stroke-1" />
-              <p className="mt-4 text-sm text-muted-foreground font-display">
-                You have not placed any orders yet.
-              </p>
-              <Link
-                to="/shop"
-                search={{ category: "all" }}
-                className="mt-6 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest"
-              >
-                Discover Couture
-              </Link>
-            </div>
-          ) : selectedOrder ? (
-            /* Order Detail / Tracking View */
-            <div className="border border-border p-6 md:p-8 space-y-6">
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border px-4 py-2"
-              >
-                &larr; Back to History
-              </button>
-
-              <div className="flex flex-wrap justify-between items-baseline gap-4 border-b border-border pb-5">
-                <div>
-                  <h2 className="font-display text-2xl">
-                    Order #{selectedOrder.id.substring(0, 8).toUpperCase()}
-                  </h2>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Placed on: {new Date(selectedOrder.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="bg-gold text-gold-foreground px-3 py-1 text-xs uppercase tracking-wider font-semibold">
-                    {selectedOrder.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Progress Tracker */}
-              <div className="py-6 border-b border-border">
-                <p className="eyebrow text-gold mb-6">Atelier Progress</p>
-                <div className="grid grid-cols-4 gap-2 text-center text-[10px] uppercase tracking-wider">
-                  {[
-                    { label: "Design Approved", done: true },
-                    {
-                      label: "Weaving & Embroidery",
-                      done: ["PROCESSING", "SHIPPED", "DELIVERED"].includes(selectedOrder.status),
-                    },
-                    {
-                      label: "Atelier Fitting / Dispatched",
-                      done: ["SHIPPED", "DELIVERED"].includes(selectedOrder.status),
-                    },
-                    { label: "Delivered", done: selectedOrder.status === "DELIVERED" },
-                  ].map((step, i) => (
-                    <div key={i} className="flex flex-col items-center">
-                      <div
-                        className={`h-6 w-6 rounded-full border grid place-items-center mb-2 font-semibold ${
-                          step.done
-                            ? "border-gold bg-gold text-gold-foreground"
-                            : "border-border text-muted-foreground"
-                        }`}
-                      >
-                        {i + 1}
-                      </div>
-                      <span
-                        className={
-                          step.done ? "text-foreground font-medium" : "text-muted-foreground"
-                        }
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Items List */}
-              <div>
-                <p className="eyebrow mb-4">Couture Pieces</p>
-                <ul className="divide-y divide-border">
-                  {selectedOrder.items.map((item: any) => (
-                    <li key={item.id} className="flex gap-4 py-4 items-center">
-                      <img
-                        src={
-                          item.variant.product.images?.[0]?.url ||
-                          "https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=200&q=80"
-                        }
-                        alt=""
-                        className="h-16 w-12 object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-display text-sm font-medium">
-                          {item.variant.product.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Size {item.variant.size} · Qty {item.quantity}
-                        </p>
-                      </div>
-                      <p className="text-sm font-medium">{formatINR(item.price * item.quantity)}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Invoice Generation Option */}
-              <div className="flex justify-between items-center flex-wrap gap-4 border-t border-border pt-6 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Order Total:</p>
-                  <p className="font-display text-2xl mt-1">{formatINR(selectedOrder.total)}</p>
-                </div>
-                <button
-                  onClick={() => toast.success("Invoice generated! Downloading PDF...")}
-                  className="inline-flex items-center gap-2 border border-foreground bg-foreground text-background px-5 py-3 text-xs uppercase tracking-wider font-semibold hover:bg-gold hover:text-gold-foreground transition-colors"
-                >
-                  <Download className="h-4 w-4" /> Download Invoice
-                </button>
-              </div>
-            </div>
-          ) : (
-            /* Orders List */
-            <div className="border border-border divide-y divide-border">
-              {orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="p-6 flex flex-wrap justify-between items-center gap-6"
-                >
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <Package className="h-5 w-5 text-gold stroke-1" />
-                      <span className="font-display text-lg">
-                        Order #{order.id.substring(0, 8).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center gap-6 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3.5 w-3.5" />{" "}
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <ShieldCheck className="h-3.5 w-3.5 text-gold" /> {order.status}
-                      </span>
-                    </div>
+            <p className="eyebrow text-[9px] mb-3">Items</p>
+            <div className="space-y-3">
+              {(order.items as any[]).map((item: any, i: number) => (
+                <div key={i} className="flex gap-4 items-center">
+                  {item.product_image && (
+                    <img src={item.product_image} className="h-14 w-10 object-cover border border-border shrink-0" alt={item.product_name} />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.product_name}</p>
+                    <p className="text-xs text-muted-foreground">Size: {item.size} · Qty: {item.quantity}</p>
                   </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Total Paid</p>
-                      <p className="font-medium mt-1">{formatINR(order.total)}</p>
-                    </div>
-                    <button
-                      onClick={() => setSelectedOrder(order)}
-                      className="border border-border px-4 py-2.5 text-xs uppercase tracking-wider font-medium hover:border-foreground"
-                    >
-                      Track Order
-                    </button>
-                  </div>
+                  <p className="text-sm font-semibold text-gold shrink-0">{formatINR(item.total)}</p>
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Shipping address */}
+          {order.shipping_address && (
+            <div>
+              <p className="eyebrow text-[9px] mb-2">Delivery Address</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {(order.shipping_address as any).name}<br />
+                {(order.shipping_address as any).line1}
+                {(order.shipping_address as any).line2 && `, ${(order.shipping_address as any).line2}`}<br />
+                {(order.shipping_address as any).city}, {(order.shipping_address as any).state} — {(order.shipping_address as any).postal_code}
+              </p>
+            </div>
           )}
-        </main>
-      </div>
+
+          {/* Tracking */}
+          {order.tracking_number && (
+            <div>
+              <p className="eyebrow text-[9px] mb-2">Tracking Number</p>
+              <code className="text-sm font-mono bg-champagne/30 px-3 py-1.5 border border-border">
+                {order.tracking_number}
+              </code>
+            </div>
+          )}
+
+          {/* Totals */}
+          <div className="border-t border-border pt-4 space-y-1 text-sm">
+            <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span>{formatINR(order.subtotal)}</span></div>
+            {order.discount > 0 && <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-{formatINR(order.discount)}</span></div>}
+            <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span>{formatINR(order.shipping_cost)}</span></div>
+            <div className="flex justify-between font-semibold text-gold text-base pt-2 border-t border-border">
+              <span>Total</span><span>{formatINR(order.total)}</span>
+            </div>
+          </div>
+
+          {/* Return link */}
+          {order.status === "delivered" && (
+            <div className="pt-2">
+              <Link
+                to="/dashboard/returns"
+                className="text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground border-b border-dashed border-muted-foreground pb-0.5"
+              >
+                Request Return or Exchange →
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
     </div>
+  );
+}
+
+function OrderHistory() {
+  const { user } = useAuth();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | OrderStatus>("all");
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ["my-orders", user?.id],
+    queryFn: () => user ? ordersApi.getUserOrders(user.id) : Promise.resolve([]),
+    enabled: !!user,
+  });
+
+  const filtered = filter === "all" ? orders : orders.filter((o: any) => o.status === filter);
+
+  return (
+    <DashboardLayout title="My Orders" subtitle="Order History">
+      {/* Filter tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {(["all", "pending", "processing", "shipped", "delivered", "cancelled"] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-4 py-2 text-[10px] uppercase tracking-widest border transition-colors ${
+              filter === f ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            {f === "all" ? "All Orders" : f}
+            {" "}
+            <span className="opacity-60">
+              ({f === "all" ? orders.length : orders.filter((o: any) => o.status === f).length})
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-4">
+          {[1, 2].map((i) => (
+            <div key={i} className="border border-border p-6 animate-pulse">
+              <div className="h-5 bg-champagne/50 rounded w-48 mb-3" />
+              <div className="h-3 bg-champagne/30 rounded w-64" />
+            </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="py-16 text-center border border-dashed border-border">
+          <Package className="h-10 w-10 mx-auto text-muted-foreground stroke-1 mb-4" />
+          <p className="font-display text-xl">No orders found</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            {filter === "all" ? "You haven't placed any orders yet." : `No ${filter} orders.`}
+          </p>
+          {filter === "all" && (
+            <Link
+              to="/shop"
+              search={{ category: "all" }}
+              className="mt-6 inline-block bg-foreground text-background px-6 py-3 text-xs uppercase tracking-widest"
+            >
+              Discover Collections
+            </Link>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filtered.map((order: DbOrder) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              expanded={expandedId === order.id}
+              onExpand={() => setExpandedId(expandedId === order.id ? null : order.id)}
+            />
+          ))}
+        </div>
+      )}
+    </DashboardLayout>
   );
 }

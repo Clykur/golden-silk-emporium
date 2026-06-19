@@ -1,55 +1,81 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export type UserProfile = {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string;
-  role: "CUSTOMER" | "ADMIN";
-};
+import { supabase } from "./supabase";
+import type { Profile } from "./types";
 
 type AuthState = {
-  user: UserProfile | null;
-  accessToken: string | null;
-  refreshToken: string | null;
-  setAuth: (user: UserProfile, accessToken: string, refreshToken: string) => void;
-  updateAccessToken: (token: string) => void;
-  logout: () => void;
+  user: Profile | null;
+  session: { access_token: string; refresh_token: string } | null;
+  loading: boolean;
+  setAuth: (user: Profile, session: { access_token: string; refresh_token: string }) => void;
+  setUser: (user: Profile | null) => void;
+  logout: () => Promise<void>;
   isAuthenticated: () => boolean;
   isAdmin: () => boolean;
+  initialize: () => Promise<void>;
 };
 
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: {
-        id: "mock-admin-id",
-        email: "admin@maayacouture.com",
-        name: "Sanjana Roy",
-        phone: "+91 98000 00000",
-        role: "ADMIN",
+      user: null,
+      session: null,
+      loading: true,
+      setAuth: (user, session) => set({ user, session, loading: false }),
+      setUser: (user) => set({ user, loading: false }),
+      logout: async () => {
+        await supabase.auth.signOut();
+        set({ user: null, session: null });
       },
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
-      setAuth: (user, accessToken, refreshToken) => {
-        set({ user, accessToken, refreshToken });
-      },
-      updateAccessToken: (accessToken) => {
-        set({ accessToken });
-      },
-      logout: () => {
-        // Keep mock admin session active to keep pages public
-      },
-      isAuthenticated: () => {
-        return true;
-      },
-      isAdmin: () => {
-        return true;
+      isAuthenticated: () => !!get().user,
+      isAdmin: () => get().user?.role === "admin",
+      initialize: async () => {
+        set({ loading: true });
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+          set({
+            user: profile || null,
+            session: { access_token: session.access_token, refresh_token: session.refresh_token },
+            loading: false,
+          });
+        } else {
+          set({ user: null, session: null, loading: false });
+        }
       },
     }),
     {
-      name: "maaya-auth",
-    },
-  ),
+      name: "drapeva-auth",
+      partialize: (state) => ({ user: state.user, session: state.session }),
+    }
+  )
 );
+
+// Re-export for backward compatibility
+export type UserProfile = Profile;
+
+// Listen for auth changes (call once at app root)
+export function initAuthListener() {
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    const { setUser, setAuth } = useAuth.getState();
+    if (session?.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+      if (profile) {
+        setAuth(profile, {
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        });
+      }
+    } else {
+      setUser(null);
+    }
+  });
+}

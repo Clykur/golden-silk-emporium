@@ -1,4 +1,4 @@
-// Centralized Media Architecture for Golden Silk Emporium (Maaya Couture)
+// Centralized Media Architecture for Golden Silk Emporium (Drapeva)
 // All assets here point to verified, publicly accessible, luxury saree-related URLs.
 
 // 1. Hero Section Assets

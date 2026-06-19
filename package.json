@@ -17,10 +17,11 @@
     "start:backend": "npm run start -w backend",
     "prisma:generate": "npm run prisma:generate -w backend",
     "prisma:migrate": "npm run prisma:migrate -w backend",
-    "db:seed": "npm run db:seed -w backend"
+    "db:seed": "npm run db:seed -w backend",
+    "seed:supabase": "node frontend/scripts/seed-supabase.cjs"
   },
   "dependencies": {
-    "supabase": "^2.107.0"
+    "react-icons": "^5.6.0"
   },
   "devDependencies": {
     "concurrently": "^10.0.3"
