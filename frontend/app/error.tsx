@@ -1,0 +1,61 @@
+"use client";
+
+import { useEffect } from "react";
+import Link from "next/link";
+import { AlertCircle, RotateCcw } from "lucide-react";
+
+export default function ErrorPage({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Log the error to console or error tracking system
+    console.error("Route Error Boundary Captured:", error);
+  }, [error]);
+
+  return (
+    <div className="bg-background min-h-[75vh] flex flex-col items-center justify-center px-6 text-center select-none relative overflow-hidden">
+      {/* Decorative Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.91_0.012_80/0.05)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.91_0.012_80/0.05)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
+
+      {/* Luxury Frame */}
+      <div className="absolute inset-8 border border-gold/10 pointer-events-none" />
+
+      <div className="relative z-10 max-w-md w-full border border-gold/20 bg-champagne/10 backdrop-blur-md p-10 shadow-soft space-y-6 animate-rise">
+        <div className="h-16 w-16 mx-auto rounded bg-destructive/10 grid place-items-center text-destructive border border-destructive/20">
+          <AlertCircle className="h-7 w-7" />
+        </div>
+
+        <div className="space-y-2">
+          <p className="eyebrow text-gold text-center">Server Exception (500)</p>
+          <h1 className="font-display text-3xl text-ink font-semibold tracking-wide">
+            Something Went Wrong
+          </h1>
+          <p className="text-sm text-muted-foreground leading-relaxed mt-4">
+            An unexpected error occurred while loading this page. Our craftsmen have been notified.
+            Please try reloading the page or return to the main collections.
+          </p>
+        </div>
+
+        <div className="space-y-3 pt-4">
+          <button
+            onClick={() => reset()}
+            className="w-full inline-flex items-center justify-center gap-2 bg-foreground text-background px-6 py-3.5 text-xs font-semibold tracking-widest uppercase hover:bg-gold hover:text-gold-foreground transition-all duration-300"
+          >
+            <RotateCcw className="h-4.5 w-4.5" />
+            Retry Page
+          </button>
+          <Link
+            href="/"
+            className="w-full inline-flex items-center justify-center border border-border bg-background px-6 py-3.5 text-xs font-semibold tracking-widest uppercase hover:border-gold hover:text-gold transition-all duration-300"
+          >
+            Go Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

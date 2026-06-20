@@ -24,7 +24,9 @@
     "resend": "^4.1.2",
     "stripe": "^17.6.0",
     "zod": "^3.24.2",
-    "@supabase/supabase-js": "^2.45.4"
+    "@supabase/supabase-js": "^2.45.4",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.5.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

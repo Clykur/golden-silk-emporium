@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://localhost:3000/</loc>
+    <loc>https://drapeva.com/</loc>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/shop</loc>
+    <loc>https://drapeva.com/shop</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/collections</loc>
+    <loc>https://drapeva.com/collections</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/lookbook</loc>
+    <loc>https://drapeva.com/lookbook</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/virtual-catalog</loc>
+    <loc>https://drapeva.com/virtual-catalog</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/about</loc>
+    <loc>https://drapeva.com/about</loc>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/blog</loc>
+    <loc>https://drapeva.com/blog</loc>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://localhost:3000/support</loc>
+    <loc>https://drapeva.com/support</loc>
     <priority>0.5</priority>
   </url>
 </urlset>

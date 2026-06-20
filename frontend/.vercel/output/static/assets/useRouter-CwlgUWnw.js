@@ -1,1 +1,0 @@
-import{o as e,r as t}from"./jsx-runtime-Bypl69v7.js";var n=e(t(),1),r=n.createContext(null);function i(e){return n.useContext(r)}export{r as n,i as t};

@@ -31,7 +31,7 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT NOT NULL,
+  email TEXT,
   name TEXT,
   phone TEXT,
   role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
@@ -39,6 +39,9 @@ CREATE TABLE IF NOT EXISTS profiles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure existing profiles table has nullable email
+ALTER TABLE profiles ALTER COLUMN email DROP NOT NULL;
 
 -- ============================================================
 -- CATEGORIES
@@ -171,18 +174,14 @@ CREATE TABLE IF NOT EXISTS orders (
   total DECIMAL(12,2) NOT NULL,
   coupon_id UUID REFERENCES coupons(id) ON DELETE SET NULL,
   coupon_code TEXT,
-  -- Shipping address stored as JSONB for flexibility
   shipping_address JSONB,
-  -- Customer contact (for guests)
   customer_name TEXT NOT NULL,
   customer_email TEXT NOT NULL,
   customer_phone TEXT,
-  -- Payment
   razorpay_order_id TEXT,
   razorpay_payment_id TEXT,
   razorpay_signature TEXT,
   payment_status TEXT DEFAULT 'pending',
-  -- Line items snapshot
   items JSONB NOT NULL DEFAULT '[]',
   notes TEXT,
   tracking_number TEXT,
@@ -267,15 +266,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER products_updated_at
+DROP TRIGGER IF EXISTS products_updated_at ON products;
+CREATE TRIGGER products_updated_at
   BEFORE UPDATE ON products
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER orders_updated_at
+DROP TRIGGER IF EXISTS orders_updated_at ON orders;
+CREATE TRIGGER orders_updated_at
   BEFORE UPDATE ON orders
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE OR REPLACE TRIGGER profiles_updated_at
+DROP TRIGGER IF EXISTS profiles_updated_at ON profiles;
+CREATE TRIGGER profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -286,11 +288,15 @@ CREATE OR REPLACE TRIGGER profiles_updated_at
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, email, name, role)
+  INSERT INTO profiles (id, email, name, phone, role)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+    COALESCE(
+      NEW.raw_user_meta_data->>'name',
+      COALESCE(split_part(NEW.email, '@', 1), NEW.phone)
+    ),
+    COALESCE(NEW.phone, NEW.raw_user_meta_data->>'phone'),
     COALESCE(NEW.raw_user_meta_data->>'role', 'customer')
   )
   ON CONFLICT (id) DO NOTHING;
@@ -330,64 +336,121 @@ RETURNS BOOLEAN AS $$
 $$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 -- PROFILES
+DROP POLICY IF EXISTS "Users can view own profile" ON profiles;
 CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
 CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can update all profiles" ON profiles;
 CREATE POLICY "Admins can update all profiles" ON profiles FOR UPDATE USING (is_admin());
 
--- PRODUCTS — public read for published, admin full access
+-- PRODUCTS
+DROP POLICY IF EXISTS "Anyone can view published products" ON products;
 CREATE POLICY "Anyone can view published products" ON products FOR SELECT USING (status = 'published');
+
+DROP POLICY IF EXISTS "Admins can view all products" ON products;
 CREATE POLICY "Admins can view all products" ON products FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can insert products" ON products;
 CREATE POLICY "Admins can insert products" ON products FOR INSERT WITH CHECK (is_admin());
+
+DROP POLICY IF EXISTS "Admins can update products" ON products;
 CREATE POLICY "Admins can update products" ON products FOR UPDATE USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can delete products" ON products;
 CREATE POLICY "Admins can delete products" ON products FOR DELETE USING (is_admin());
 
 -- PRODUCT IMAGES
+DROP POLICY IF EXISTS "Anyone can view product images" ON product_images;
 CREATE POLICY "Anyone can view product images" ON product_images FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Admins can manage product images" ON product_images;
 CREATE POLICY "Admins can manage product images" ON product_images FOR ALL USING (is_admin());
 
 -- CATEGORIES
+DROP POLICY IF EXISTS "Anyone can view active categories" ON categories;
 CREATE POLICY "Anyone can view active categories" ON categories FOR SELECT USING (is_active = TRUE);
+
+DROP POLICY IF EXISTS "Admins can view all categories" ON categories;
 CREATE POLICY "Admins can view all categories" ON categories FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can manage categories" ON categories;
 CREATE POLICY "Admins can manage categories" ON categories FOR ALL USING (is_admin());
 
 -- COLLECTIONS
+DROP POLICY IF EXISTS "Anyone can view active collections" ON collections;
 CREATE POLICY "Anyone can view active collections" ON collections FOR SELECT USING (is_active = TRUE);
+
+DROP POLICY IF EXISTS "Admins can view all collections" ON collections;
 CREATE POLICY "Admins can view all collections" ON collections FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can manage collections" ON collections;
 CREATE POLICY "Admins can manage collections" ON collections FOR ALL USING (is_admin());
 
 -- ORDERS
+DROP POLICY IF EXISTS "Users can view own orders" ON orders;
 CREATE POLICY "Users can view own orders" ON orders FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can insert own orders" ON orders;
 CREATE POLICY "Users can insert own orders" ON orders FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Admins can view all orders" ON orders;
 CREATE POLICY "Admins can view all orders" ON orders FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can update orders" ON orders;
 CREATE POLICY "Admins can update orders" ON orders FOR UPDATE USING (is_admin());
 
 -- REVIEWS
+DROP POLICY IF EXISTS "Anyone can view approved reviews" ON reviews;
 CREATE POLICY "Anyone can view approved reviews" ON reviews FOR SELECT USING (is_approved = TRUE);
+
+DROP POLICY IF EXISTS "Admins can view all reviews" ON reviews;
 CREATE POLICY "Admins can view all reviews" ON reviews FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Users can insert reviews" ON reviews;
 CREATE POLICY "Users can insert reviews" ON reviews FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Admins can manage reviews" ON reviews;
 CREATE POLICY "Admins can manage reviews" ON reviews FOR ALL USING (is_admin());
 
 -- WISHLIST
+DROP POLICY IF EXISTS "Users can manage own wishlist" ON wishlist;
 CREATE POLICY "Users can manage own wishlist" ON wishlist FOR ALL USING (auth.uid() = user_id);
 
 -- CART ITEMS
+DROP POLICY IF EXISTS "Users can manage own cart" ON cart_items;
 CREATE POLICY "Users can manage own cart" ON cart_items FOR ALL USING (auth.uid() = user_id);
 
--- COUPONS — anyone can read active coupons (to apply), only admins manage
+-- COUPONS
+DROP POLICY IF EXISTS "Anyone can view active coupons" ON coupons;
 CREATE POLICY "Anyone can view active coupons" ON coupons FOR SELECT USING (is_active = TRUE);
+
+DROP POLICY IF EXISTS "Admins can manage coupons" ON coupons;
 CREATE POLICY "Admins can manage coupons" ON coupons FOR ALL USING (is_admin());
 
 -- HOMEPAGE BANNERS
+DROP POLICY IF EXISTS "Anyone can view active banners" ON homepage_banners;
 CREATE POLICY "Anyone can view active banners" ON homepage_banners FOR SELECT USING (is_active = TRUE);
+
+DROP POLICY IF EXISTS "Admins can manage banners" ON homepage_banners;
 CREATE POLICY "Admins can manage banners" ON homepage_banners FOR ALL USING (is_admin());
 
 -- SITE SETTINGS
+DROP POLICY IF EXISTS "Anyone can view site settings" ON site_settings;
 CREATE POLICY "Anyone can view site settings" ON site_settings FOR SELECT USING (TRUE);
+
+DROP POLICY IF EXISTS "Admins can manage site settings" ON site_settings;
 CREATE POLICY "Admins can manage site settings" ON site_settings FOR ALL USING (is_admin());
 
 -- NEWSLETTER
+DROP POLICY IF EXISTS "Anyone can subscribe to newsletter" ON newsletter_subscribers;
 CREATE POLICY "Anyone can subscribe to newsletter" ON newsletter_subscribers FOR INSERT WITH CHECK (TRUE);
+
+DROP POLICY IF EXISTS "Admins can manage newsletter" ON newsletter_subscribers;
 CREATE POLICY "Admins can manage newsletter" ON newsletter_subscribers FOR ALL USING (is_admin());
 
 -- ============================================================
@@ -453,8 +516,12 @@ INSERT INTO site_settings (key, value) VALUES
 ON CONFLICT (key) DO NOTHING;
 
 -- ============================================================
--- STORAGE BUCKETS (run separately in Supabase dashboard)
+-- STORAGE BUCKETS (automatically created via database insert)
 -- ============================================================
--- CREATE bucket 'product-images' (public)
--- CREATE bucket 'collection-images' (public)
--- CREATE bucket 'banner-images' (public)
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES 
+  ('product-images', 'product-images', true),
+  ('collection-images', 'collection-images', true),
+  ('banner-images', 'banner-images', true)
+ON CONFLICT (id) DO NOTHING;

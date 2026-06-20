@@ -26,46 +26,150 @@ const supabaseUrl = env.VITE_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("Error: VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be defined in frontend/.env.local");
+  console.error(
+    "Error: VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be defined in frontend/.env.local",
+  );
   process.exit(1);
 }
 
 console.log("Connecting to Supabase at:", supabaseUrl);
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { persistSession: false }
+  auth: { persistSession: false },
 });
 
 const NAMES_PREFIX = [
-  "Varanasi Heritage", "Vaikuntha Gold", "Rajkumari", "Amrit", "Svarna", "Mayur", "Noor", "Ziba",
-  "Zoya", "Gauri", "Yamuna", "Madhubani", "Chitra", "Radha", "Sitara", "Devi", "Avani", "Vasundhara",
-  "Gayatri", "Shyama", "Meera", "Asha", "Dia", "Tara", "Utsav", "Manjula", "Kamala", "Kalyani",
-  "Nutan", "Hema", "Rekha", "Jaya", "Priya", "Kriti", "Deepika", "Aditi", "Zara", "Aria", "Laila",
-  "Kavya", "Ananya", "Veda", "Savitri", "Narmada", "Padma", "Uma", "Kashmiri", "Juhu Breeze",
-  "Malabar", "Deccan", "Nirvana", "Chanderi Night", "Nilgiri", "Darjeeling", "Brahmaputra",
-  "Saraswati", "Monalisa", "Aishwarya", "Rukmini", "Ahalya", "Draupadi", "Damayanti", "Shakuntala"
+  "Varanasi Heritage",
+  "Vaikuntha Gold",
+  "Rajkumari",
+  "Amrit",
+  "Svarna",
+  "Mayur",
+  "Noor",
+  "Ziba",
+  "Zoya",
+  "Gauri",
+  "Yamuna",
+  "Madhubani",
+  "Chitra",
+  "Radha",
+  "Sitara",
+  "Devi",
+  "Avani",
+  "Vasundhara",
+  "Gayatri",
+  "Shyama",
+  "Meera",
+  "Asha",
+  "Dia",
+  "Tara",
+  "Utsav",
+  "Manjula",
+  "Kamala",
+  "Kalyani",
+  "Nutan",
+  "Hema",
+  "Rekha",
+  "Jaya",
+  "Priya",
+  "Kriti",
+  "Deepika",
+  "Aditi",
+  "Zara",
+  "Aria",
+  "Laila",
+  "Kavya",
+  "Ananya",
+  "Veda",
+  "Savitri",
+  "Narmada",
+  "Padma",
+  "Uma",
+  "Kashmiri",
+  "Juhu Breeze",
+  "Malabar",
+  "Deccan",
+  "Nirvana",
+  "Chanderi Night",
+  "Nilgiri",
+  "Darjeeling",
+  "Brahmaputra",
+  "Saraswati",
+  "Monalisa",
+  "Aishwarya",
+  "Rukmini",
+  "Ahalya",
+  "Draupadi",
+  "Damayanti",
+  "Shakuntala",
 ];
 
 const NAMES_SUFFIX = [
-  "Katan Silk Saree", "Zardozi Brocade Saree", "Tissue Organza Saree", "Handwoven Kanjivaram",
-  "Ethereal Chiffon Saree", "Handblock Linen Saree", "Mulmul Cotton Saree", "Chanderi Silk Saree",
-  "Paithani Peacock Saree", "Patola Double Ikat Saree", "Jamdani Floral Saree", "Chikankari Georgette Saree",
-  "Bandhani Silk Saree", "Jacquard Organza Saree", "Raw Silk Heirloom Saree", "Muga Silk Saree",
-  "Tussar Handloom Saree", "Kota Doria Cotton Saree"
+  "Katan Silk Saree",
+  "Zardozi Brocade Saree",
+  "Tissue Organza Saree",
+  "Handwoven Kanjivaram",
+  "Ethereal Chiffon Saree",
+  "Handblock Linen Saree",
+  "Mulmul Cotton Saree",
+  "Chanderi Silk Saree",
+  "Paithani Peacock Saree",
+  "Patola Double Ikat Saree",
+  "Jamdani Floral Saree",
+  "Chikankari Georgette Saree",
+  "Bandhani Silk Saree",
+  "Jacquard Organza Saree",
+  "Raw Silk Heirloom Saree",
+  "Muga Silk Saree",
+  "Tussar Handloom Saree",
+  "Kota Doria Cotton Saree",
 ];
 
 const COLORS = [
-  "Crimson Red", "Emerald Green", "Royal Blue", "Mustard Yellow", "Blush Pink", "Ivory White",
-  "Champagne Gold", "Plum Violet", "Mint Green", "Turquoise Blue", "Peach Sorbet", "Teal Blue",
-  "Burnt Orange", "Midnight Black", "Lavender Mist", "Ruby Wine", "Copper Metallic", "Saffron Orange",
-  "Coral Pink", "Marigold Gold"
+  "Crimson Red",
+  "Emerald Green",
+  "Royal Blue",
+  "Mustard Yellow",
+  "Blush Pink",
+  "Ivory White",
+  "Champagne Gold",
+  "Plum Violet",
+  "Mint Green",
+  "Turquoise Blue",
+  "Peach Sorbet",
+  "Teal Blue",
+  "Burnt Orange",
+  "Midnight Black",
+  "Lavender Mist",
+  "Ruby Wine",
+  "Copper Metallic",
+  "Saffron Orange",
+  "Coral Pink",
+  "Marigold Gold",
 ];
 
 const FABRICS = [
-  "Kanjivaram", "Banarasi", "Silk", "Organza", "Chiffon", "Linen", "Cotton", "Designer", "Handloom", "Contemporary"
+  "Kanjivaram",
+  "Banarasi",
+  "Silk",
+  "Organza",
+  "Chiffon",
+  "Linen",
+  "Cotton",
+  "Designer",
+  "Handloom",
+  "Contemporary",
 ];
 
 const WEAVES = [
-  "Kanjivaram", "Banarasi", "Jamdani", "Patola", "Chanderi", "Chikankari", "Ikat", "Paithani", "None"
+  "Kanjivaram",
+  "Banarasi",
+  "Jamdani",
+  "Patola",
+  "Chanderi",
+  "Chikankari",
+  "Ikat",
+  "Paithani",
+  "None",
 ];
 
 const OCCASIONS = ["Bridal", "Festive", "Reception", "Casual", "Formal"];
@@ -101,7 +205,7 @@ const SAREE_UNSPLASH_IDS = [
   "photo-1756483571456-6fa86cb1ae53",
   "photo-1654764746590-841871176bc0",
   "photo-1618489335755-e3aa2b16cd7a",
-  "photo-1609748340756-aeb8223d6c64"
+  "photo-1609748340756-aeb8223d6c64",
 ];
 
 const getDescription = (name, fabric, color, occasion) => {
@@ -111,27 +215,42 @@ const getDescription = (name, fabric, color, occasion) => {
 async function seed() {
   try {
     console.log("Fetching categories & collections from Supabase...");
-    const { data: categories, error: catError } = await supabase.from("categories").select("id, slug");
+    const { data: categories, error: catError } = await supabase
+      .from("categories")
+      .select("id, slug");
     if (catError) throw catError;
 
-    const { data: collections, error: colError } = await supabase.from("collections").select("id, slug");
+    const { data: collections, error: colError } = await supabase
+      .from("collections")
+      .select("id, slug");
     if (colError) throw colError;
 
     const categoriesMap = {};
-    categories.forEach(c => { categoriesMap[c.slug] = c.id; });
+    categories.forEach((c) => {
+      categoriesMap[c.slug] = c.id;
+    });
 
     const collectionsMap = {};
-    collections.forEach(c => { collectionsMap[c.slug] = c.id; });
+    collections.forEach((c) => {
+      collectionsMap[c.slug] = c.id;
+    });
 
     console.log(`Found ${categories.length} categories and ${collections.length} collections.`);
 
     console.log("Checking if products already exist...");
-    const { data: existingProds, error: countError } = await supabase.from("products").select("id", { count: "exact" });
+    const { data: existingProds, error: countError } = await supabase
+      .from("products")
+      .select("id", { count: "exact" });
     if (countError) throw countError;
 
     if (existingProds && existingProds.length > 0) {
-      console.log(`Database already has ${existingProds.length} products. Cleaning up products before seed...`);
-      const { error: deleteError } = await supabase.from("products").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      console.log(
+        `Database already has ${existingProds.length} products. Cleaning up products before seed...`,
+      );
+      const { error: deleteError } = await supabase
+        .from("products")
+        .delete()
+        .neq("id", "00000000-0000-0000-0000-000000000000");
       if (deleteError) throw deleteError;
       console.log("Successfully cleared existing products.");
     }
@@ -211,10 +330,10 @@ async function seed() {
         "Includes matching 80cm unstitched blouse piece",
         "Finished with hand-knotted tassels on the pallu",
         "Dry clean only to maintain silk luster",
-        `Handcrafted over ${colSlug === "vivah-couture" ? "4–6 weeks" : "2–3 weeks"}`
+        `Handcrafted over ${colSlug === "vivah-couture" ? "4–6 weeks" : "2–3 weeks"}`,
       ];
 
-      const tags = [fabric, weave, color, occasion, colSlug].filter(t => t && t !== "None");
+      const tags = [fabric, weave, color, occasion, colSlug].filter((t) => t && t !== "None");
 
       productsToInsert.push({
         name,
@@ -236,7 +355,7 @@ async function seed() {
         is_new_arrival: i % 6 === 0,
         status: "published",
         weave,
-        badge: badge || ""
+        badge: badge || "",
       });
     }
 
@@ -264,7 +383,7 @@ async function seed() {
         `https://images.unsplash.com/${mainId}?auto=format&fit=crop&w=800&q=80&sig=gal0-${i}`,
         `https://images.unsplash.com/${gal1Id}?auto=format&fit=crop&w=800&q=80&sig=gal1-${i}`,
         `https://images.unsplash.com/${gal2Id}?auto=format&fit=crop&w=800&q=80&sig=gal2-${i}`,
-        `https://images.unsplash.com/${gal3Id}?auto=format&fit=crop&w=800&q=80&sig=gal3-${i}`
+        `https://images.unsplash.com/${gal3Id}?auto=format&fit=crop&w=800&q=80&sig=gal3-${i}`,
       ];
 
       images.forEach((url, index) => {
@@ -273,7 +392,7 @@ async function seed() {
           url,
           is_featured: index === 0,
           sort_order: index,
-          alt_text: `${product.name} Image ${index + 1}`
+          alt_text: `${product.name} Image ${index + 1}`,
         });
       });
     }
@@ -283,7 +402,9 @@ async function seed() {
       const chunk = imagesToInsert.slice(i, i + chunkSize * 5);
       const { error } = await supabase.from("product_images").insert(chunk);
       if (error) throw error;
-      console.log(`Inserted images ${Math.min(i + chunkSize * 5, imagesToInsert.length)}/${imagesToInsert.length}`);
+      console.log(
+        `Inserted images ${Math.min(i + chunkSize * 5, imagesToInsert.length)}/${imagesToInsert.length}`,
+      );
     }
 
     // Seed test coupons
@@ -299,7 +420,7 @@ async function seed() {
           min_order_value: 25000,
           max_discount_value: 5000,
           expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-          is_active: true
+          is_active: true,
         },
         {
           code: "WELCOME5000",
@@ -307,8 +428,8 @@ async function seed() {
           discount_value: 5000,
           min_order_value: 50000,
           expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString(),
-          is_active: true
-        }
+          is_active: true,
+        },
       ];
       const { error: couponError } = await supabase.from("coupons").insert(coupons);
       if (couponError) throw couponError;

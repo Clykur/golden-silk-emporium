@@ -50,13 +50,18 @@ CREATE TRIGGER on_default_address_set
   FOR EACH ROW EXECUTE FUNCTION ensure_single_default_address();
 
 -- Updated_at trigger
-CREATE OR REPLACE TRIGGER customer_addresses_updated_at
+DROP TRIGGER IF EXISTS customer_addresses_updated_at ON customer_addresses;
+CREATE TRIGGER customer_addresses_updated_at
   BEFORE UPDATE ON customer_addresses
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- RLS
 ALTER TABLE customer_addresses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can manage own addresses" ON customer_addresses;
 CREATE POLICY "Users can manage own addresses" ON customer_addresses FOR ALL USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can view all addresses" ON customer_addresses;
 CREATE POLICY "Admins can view all addresses" ON customer_addresses FOR SELECT USING (is_admin());
 
 -- ============================================================
@@ -104,7 +109,8 @@ CREATE INDEX IF NOT EXISTS idx_support_tickets_user ON support_tickets(user_id);
 CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
 CREATE INDEX IF NOT EXISTS idx_support_messages_ticket ON support_messages(ticket_id);
 
-CREATE OR REPLACE TRIGGER support_tickets_updated_at
+DROP TRIGGER IF EXISTS support_tickets_updated_at ON support_tickets;
+CREATE TRIGGER support_tickets_updated_at
   BEFORE UPDATE ON support_tickets
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -112,18 +118,28 @@ CREATE OR REPLACE TRIGGER support_tickets_updated_at
 ALTER TABLE support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE support_messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own tickets" ON support_tickets;
 CREATE POLICY "Users can view own tickets" ON support_tickets FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can create tickets" ON support_tickets;
 CREATE POLICY "Users can create tickets" ON support_tickets FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+DROP POLICY IF EXISTS "Admins can manage all tickets" ON support_tickets;
 CREATE POLICY "Admins can manage all tickets" ON support_tickets FOR ALL USING (is_admin());
 
+DROP POLICY IF EXISTS "Users can view messages on own tickets" ON support_messages;
 CREATE POLICY "Users can view messages on own tickets" ON support_messages
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM support_tickets WHERE id = ticket_id AND user_id = auth.uid())
   );
+
+DROP POLICY IF EXISTS "Users can add messages to own tickets" ON support_messages;
 CREATE POLICY "Users can add messages to own tickets" ON support_messages
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM support_tickets WHERE id = ticket_id AND user_id = auth.uid())
   );
+
+DROP POLICY IF EXISTS "Admins can manage all messages" ON support_messages;
 CREATE POLICY "Admins can manage all messages" ON support_messages FOR ALL USING (is_admin());
 
 -- ============================================================
@@ -157,8 +173,14 @@ CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is
 
 -- RLS
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own notifications" ON notifications;
 CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
 CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "System/admins can insert notifications" ON notifications;
 CREATE POLICY "System/admins can insert notifications" ON notifications FOR INSERT WITH CHECK (is_admin() OR auth.uid() IS NOT NULL);
 
 -- ============================================================
@@ -184,7 +206,11 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs(created_at DESC)
 
 -- RLS
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can view audit logs" ON audit_logs;
 CREATE POLICY "Admins can view audit logs" ON audit_logs FOR SELECT USING (is_admin());
+
+DROP POLICY IF EXISTS "Admins can insert audit logs" ON audit_logs;
 CREATE POLICY "Admins can insert audit logs" ON audit_logs FOR INSERT WITH CHECK (is_admin());
 
 -- ============================================================
@@ -204,10 +230,14 @@ CREATE INDEX IF NOT EXISTS idx_order_status_history_order ON order_status_histor
 
 -- RLS
 ALTER TABLE order_status_history ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own order history" ON order_status_history;
 CREATE POLICY "Users can view own order history" ON order_status_history
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM orders WHERE id = order_id AND user_id = auth.uid())
   );
+
+DROP POLICY IF EXISTS "Admins can manage order history" ON order_status_history;
 CREATE POLICY "Admins can manage order history" ON order_status_history FOR ALL USING (is_admin());
 
 -- ============================================================
@@ -236,14 +266,21 @@ CREATE TABLE IF NOT EXISTS return_requests (
 CREATE INDEX IF NOT EXISTS idx_return_requests_order ON return_requests(order_id);
 CREATE INDEX IF NOT EXISTS idx_return_requests_user ON return_requests(user_id);
 
-CREATE OR REPLACE TRIGGER return_requests_updated_at
+DROP TRIGGER IF EXISTS return_requests_updated_at ON return_requests;
+CREATE TRIGGER return_requests_updated_at
   BEFORE UPDATE ON return_requests
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- RLS
 ALTER TABLE return_requests ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own returns" ON return_requests;
 CREATE POLICY "Users can view own returns" ON return_requests FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can create returns" ON return_requests;
 CREATE POLICY "Users can create returns" ON return_requests FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Admins can manage all returns" ON return_requests;
 CREATE POLICY "Admins can manage all returns" ON return_requests FOR ALL USING (is_admin());
 
 -- ============================================================
@@ -331,4 +368,3 @@ ALTER TABLE reviews DROP CONSTRAINT IF EXISTS fk_reviews_user_id_profiles;
 ALTER TABLE reviews
   ADD CONSTRAINT fk_reviews_user_id_profiles
   FOREIGN KEY (user_id) REFERENCES profiles(id) ON DELETE SET NULL;
-
