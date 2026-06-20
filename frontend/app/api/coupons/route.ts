@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// Uses Supabase SSR cookie APIs \u2014 pin to Node.js runtime.
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const { code, cartTotal } = await request.json();

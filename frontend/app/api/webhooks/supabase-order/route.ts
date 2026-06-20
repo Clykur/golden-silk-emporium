@@ -2,14 +2,24 @@ import { NextResponse } from "next/server";
 import { EmailService } from "@/lib/services/email";
 import { WhatsAppService } from "@/lib/services/whatsapp";
 
-const ORDER_WEBHOOK_SECRET =
-  process.env.ORDER_WEBHOOK_SECRET || "super-secure-webhook-token-placeholder";
+// Uses Resend (Node.js HTTP) — pin to Node.js runtime.
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    // Resolve secret at runtime so it always reads the live env var.
+    const ORDER_WEBHOOK_SECRET = process.env.ORDER_WEBHOOK_SECRET || "";
+
     const token = request.headers.get("x-webhook-secret");
-    if (token !== ORDER_WEBHOOK_SECRET && process.env.NODE_ENV === "production") {
+    if (!token || (ORDER_WEBHOOK_SECRET && token !== ORDER_WEBHOOK_SECRET)) {
       return NextResponse.json({ error: "Unauthorized webhook caller" }, { status: 401 });
+    }
+    if (!ORDER_WEBHOOK_SECRET && process.env.NODE_ENV === "production") {
+      // Production requires the secret to be configured
+      return NextResponse.json(
+        { error: "Webhook secret not configured on server" },
+        { status: 500 },
+      );
     }
 
     const body = await request.json();

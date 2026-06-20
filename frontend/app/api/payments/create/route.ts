@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { PaymentService } from "@/lib/services/payment";
 
+// Razorpay SDK uses Node.js crypto \u2014 must run on Node.js runtime.
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const { orderId, amount } = await request.json();

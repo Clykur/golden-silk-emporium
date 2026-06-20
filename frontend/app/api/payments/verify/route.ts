@@ -4,6 +4,9 @@ import { PaymentService } from "@/lib/services/payment";
 import { EmailService } from "@/lib/services/email";
 import { WhatsAppService } from "@/lib/services/whatsapp";
 
+// Razorpay SDK uses Node.js crypto \u2014 must run on Node.js runtime.
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const { orderId, razorpayPaymentId, razorpayOrderId, signature } = await request.json();

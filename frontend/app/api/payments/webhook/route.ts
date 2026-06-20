@@ -4,10 +4,8 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { EmailService } from "@/lib/services/email";
 import { WhatsAppService } from "@/lib/services/whatsapp";
 
-const RAZORPAY_WEBHOOK_SECRET =
-  process.env.RAZORPAY_WEBHOOK_SECRET ||
-  process.env.RAZORPAY_KEY_SECRET ||
-  "rzp_test_mock_razorpay_key_secret";
+// This route uses Node.js crypto — must run on Node.js runtime, not Edge.
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
@@ -16,21 +14,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing x-razorpay-signature header" }, { status: 400 });
     }
 
+    // Resolve secret inside handler so it reads the live env var at runtime.
+    const RAZORPAY_WEBHOOK_SECRET =
+      process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET || "";
+
     const rawBody = await request.text();
 
-    // Verify webhook signature
-    const expectedSignature = crypto
-      .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
-      .update(rawBody)
-      .digest("hex");
+    // Verify webhook signature (skip in non-production if secret is absent)
+    if (RAZORPAY_WEBHOOK_SECRET) {
+      const expectedSignature = crypto
+        .createHmac("sha256", RAZORPAY_WEBHOOK_SECRET)
+        .update(rawBody)
+        .digest("hex");
 
-    if (expectedSignature !== signature && process.env.NODE_ENV === "production") {
-      return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
+      if (expectedSignature !== signature) {
+        return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
+      }
+    } else if (process.env.NODE_ENV === "production") {
+      // In production, secret MUST be set
+      return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
     }
 
     const payload = JSON.parse(rawBody);
     const event = payload.event;
-    console.log(`[Razorpay Webhook] Received event: ${event}`);
+    console.info(`[Razorpay Webhook] Received event: ${event}`);
 
     if (event === "payment.captured") {
       const payment = payload.payload.payment.entity;

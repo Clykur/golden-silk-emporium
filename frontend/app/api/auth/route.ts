@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// Uses Supabase SSR (Node.js cookie APIs) — pin to Node.js runtime.
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const { email, password, action } = await request.json();
@@ -8,8 +11,6 @@ export async function POST(request: Request) {
 
     if (action === "login") {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      console.log("LOGIN ERROR", JSON.stringify(error, null, 2));
-      console.log("LOGIN DATA", data);
       if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       return NextResponse.json(data);
     } else if (action === "register") {
