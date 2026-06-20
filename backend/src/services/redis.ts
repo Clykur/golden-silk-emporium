@@ -23,7 +23,10 @@ if (!redisUrl.includes("mock")) {
     })
     .catch((err: any) => {
       if (!hasWarnedError) {
-        console.warn("Failed to connect to Redis cache. Fallback to direct DB queries:", err.message);
+        console.warn(
+          "Failed to connect to Redis cache. Fallback to direct DB queries:",
+          err.message,
+        );
         hasWarnedError = true;
       }
       isConnected = false;

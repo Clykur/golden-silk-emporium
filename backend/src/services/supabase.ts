@@ -58,9 +58,7 @@ export class SupabaseStorageService {
         return `https://images.unsplash.com/photo-1610189012906-4c0aa9b9781e?w=600&q=80`;
       }
 
-      const { data: urlData } = client.storage
-        .from("maaya-assets")
-        .getPublicUrl(filename);
+      const { data: urlData } = client.storage.from("maaya-assets").getPublicUrl(filename);
 
       return urlData.publicUrl;
     } catch (err: any) {

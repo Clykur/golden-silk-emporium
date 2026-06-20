@@ -16,7 +16,10 @@ async function authenticateSupabase(req: any, res: Response, next: any) {
       return res.status(500).json({ error: "Supabase client not initialized" });
     }
     try {
-      const { data: { user }, error } = await client.auth.getUser(token);
+      const {
+        data: { user },
+        error,
+      } = await client.auth.getUser(token);
       if (error || !user) {
         return res.status(403).json({ error: "Invalid or expired Supabase token" });
       }

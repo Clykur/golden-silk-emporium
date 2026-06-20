@@ -101,8 +101,9 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
 
         {/* Sidebar */}
         <aside
-          className={`${mobileOpen ? "block" : "hidden"
-            } lg:block border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8`}
+          className={`${
+            mobileOpen ? "block" : "hidden"
+          } lg:block border-b border-border pb-6 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8`}
         >
           {/* Desktop user info */}
           <div className="hidden lg:flex items-center gap-3 pb-6 border-b border-border">
@@ -125,10 +126,11 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
                   key={to}
                   href={to}
                   onClick={() => setMobileOpen(false)}
-                  className={`group flex items-center justify-between rounded px-3 py-2.5 text-xs uppercase tracking-widest font-medium transition-all ${isActive
+                  className={`group flex items-center justify-between rounded px-3 py-2.5 text-xs uppercase tracking-widest font-medium transition-all ${
+                    isActive
                       ? "bg-champagne text-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-champagne/40"
-                    }`}
+                  }`}
                 >
                   <span className="flex items-center gap-3">
                     <Icon className="h-4 w-4 shrink-0" />

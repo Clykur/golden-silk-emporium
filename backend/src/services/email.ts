@@ -87,4 +87,3 @@ export class EmailService {
     return this.sendEmail(to, "Atelier Consultation Scheduled — Drapeva", html);
   }
 }
-

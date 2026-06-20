@@ -2,19 +2,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Validate required environment variables
-const requiredEnv = [
-  "DATABASE_URL",
-  "JWT_SECRET",
-  "RAZORPAY_KEY_ID",
-  "RAZORPAY_KEY_SECRET",
-];
+const requiredEnv = ["DATABASE_URL", "JWT_SECRET", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET"];
 
 const missingEnv = requiredEnv.filter((envVar) => !process.env[envVar]);
 if (missingEnv.length > 0) {
   const timestamp = new Date().toISOString();
-  console.warn(`[${timestamp}] WARNING: Missing recommended environment variables: ${missingEnv.join(", ")}`);
+  console.warn(
+    `[${timestamp}] WARNING: Missing recommended environment variables: ${missingEnv.join(", ")}`,
+  );
   if (process.env.NODE_ENV === "production") {
-    console.error(`[${timestamp}] CRITICAL: Server starting in production mode but missing required secrets. Application might fail.`);
+    console.error(
+      `[${timestamp}] CRITICAL: Server starting in production mode but missing required secrets. Application might fail.`,
+    );
   }
 }
 

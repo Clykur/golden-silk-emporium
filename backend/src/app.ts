@@ -22,7 +22,9 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     const duration = Date.now() - start;
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`);
+    console.log(
+      `[${timestamp}] ${req.method} ${req.originalUrl} - ${res.statusCode} (${duration}ms)`,
+    );
   });
   next();
 });
@@ -40,11 +42,9 @@ app.use("/api", limiter);
 // CORS Middlewares
 const rawFrontendUrl = process.env.FRONTEND_URL;
 const cleanFrontendUrl = rawFrontendUrl ? rawFrontendUrl.replace(/\/$/, "") : null;
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  cleanFrontendUrl
-].filter(Boolean) as string[];
+const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000", cleanFrontendUrl].filter(
+  Boolean,
+) as string[];
 
 app.use(
   cors({
