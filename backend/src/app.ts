@@ -13,6 +13,9 @@ import paymentRoutes from "./routes/payment.js";
 
 const app = express();
 
+// Trust proxy for rate limiter behind next.js rewrites
+app.set("trust proxy", 1);
+
 // Security: Helmet headers
 app.use(helmet());
 

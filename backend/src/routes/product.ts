@@ -109,6 +109,10 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       include: {
         images: true,
         variants: true,
+        reviews: {
+          where: { isApproved: true },
+          select: { rating: true },
+        },
       },
       orderBy,
     });
@@ -135,6 +139,10 @@ router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
         variants: true,
         category: true,
         collection: true,
+        reviews: {
+          where: { isApproved: true },
+          select: { rating: true },
+        },
       },
     });
 

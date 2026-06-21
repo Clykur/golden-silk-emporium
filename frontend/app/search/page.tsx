@@ -75,7 +75,7 @@ function SearchContent() {
   return (
     <div className="container-luxe py-16">
       <div className="max-w-2xl mx-auto mb-12 text-center">
-        <p className="eyebrow">Search the Atelier</p>
+        <p className="eyebrow">Search the Maison</p>
         <h1 className="mt-3 font-display text-4xl md:text-5xl">Find your saree</h1>
         <form onSubmit={handleSearch} className="mt-8 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />

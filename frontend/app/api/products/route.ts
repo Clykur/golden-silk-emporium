@@ -9,7 +9,9 @@ export async function GET(request: Request) {
   const featured = searchParams.get("featured") === "true";
 
   const supabase = await createClient();
-  let query = supabase.from("products").select("*, images:product_images(*)");
+  let query = supabase
+    .from("products")
+    .select("*, images:product_images(*), reviews:reviews(rating, is_approved)");
   if (featured) {
     query = query.eq("is_featured", true);
   }

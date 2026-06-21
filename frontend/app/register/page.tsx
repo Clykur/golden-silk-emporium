@@ -143,7 +143,7 @@ export default function Register() {
     <div className="flex h-[100svh] overflow-hidden items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <p className="eyebrow text-gold">The Atelier</p>
+          <p className="eyebrow text-gold">The Maison</p>
           <h1 className="mt-3 font-display text-3xl md:text-4xl">Create Account</h1>
           <span className="gold-divider mt-4 block mx-auto" />
         </div>

@@ -66,7 +66,7 @@ export default function OtpVerification() {
         toast.success(
           profile?.name
             ? `Verified! Welcome back, ${profile.name.split(" ")[0]}.`
-            : "Verified! Welcome to the atelier.",
+            : "Verified! Welcome to the Maison.",
         );
         if (profile?.role === "admin") {
           router.push("/admin");

@@ -109,12 +109,28 @@ function CheckoutContent() {
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`,
           );
           const data = await res.json();
-          const addr = data.address;
+          const addr = data.address || {};
+
+          const locality =
+            addr.suburb ||
+            addr.neighbourhood ||
+            addr.village ||
+            addr.sublocality ||
+            addr.locality ||
+            "";
+          const streetRoad = addr.road || addr.street || addr.pedestrian || "";
+          const line1 = [locality, streetRoad].filter(Boolean).join(", ");
+
+          const line2 = [addr.city_district, addr.county].filter(Boolean).join(", ");
+
           setAddress((a) => ({
             ...a,
-            city: addr.city || addr.town || addr.village || a.city,
+            line1: line1 || a.line1,
+            line2: line2 || a.line2,
+            city: addr.city || addr.town || addr.village || addr.county || a.city,
             state: addr.state || a.state,
             postal_code: addr.postcode || a.postal_code,
+            country: addr.country || a.country || "India",
           }));
           toast.success("Location detected! Please verify the address fields.");
         } catch {

@@ -32,7 +32,8 @@ export const productsApi = {
         *,
         images:product_images(*),
         category:categories(*),
-        collection:collections(*)
+        collection:collections(*),
+        reviews:reviews(rating, is_approved)
       `,
       )
       .eq("status", "published");
@@ -78,7 +79,8 @@ export const productsApi = {
         *,
         images:product_images(*),
         category:categories(*),
-        collection:collections(*)
+        collection:collections(*),
+        reviews:reviews(rating, is_approved)
       `);
 
     if (isUuid) {
@@ -109,7 +111,9 @@ export const productsApi = {
   async getRelated(productId: string, categoryId: string | null, limit = 4) {
     let query = supabase
       .from("products")
-      .select(`*, images:product_images(*), category:categories(*), collection:collections(*)`)
+      .select(
+        `*, images:product_images(*), category:categories(*), collection:collections(*), reviews:reviews(rating, is_approved)`,
+      )
       .eq("status", "published")
       .neq("id", productId)
       .limit(limit);
@@ -475,9 +479,20 @@ export const ordersApi = {
   },
 
   async cancelOrder(id: string) {
-    const { error } = await supabase.from("orders").update({ status: "cancelled" }).eq("id", id);
-    if (error) throw error;
-    await auditLogApi.log({ action: `Cancelled order`, resource_type: "order", resource_id: id });
+    const response = await fetch(`/api/orders/cancel`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ orderId: id }),
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || "Failed to cancel order");
+    }
+
+    return await response.json();
   },
 
   // ADMIN

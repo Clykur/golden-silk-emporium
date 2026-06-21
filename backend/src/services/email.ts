@@ -38,7 +38,7 @@ export class EmailService {
         <p>Welcome to the Drapeva atelier. Your account has been successfully registered.</p>
         <p>Discover our heirloom Banarasi weaves, bridal Kanjivarams, and styling consultations designed to celebrate your most precious moments.</p>
         <div style="text-align: center; margin: 40px 0;">
-          <a href="http://localhost:3000/shop" style="background-color: #1a1612; color: #faf9f6; padding: 15px 30px; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;">Explore the Atelier</a>
+          <a href="http://localhost:3000/shop" style="background-color: #1a1612; color: #faf9f6; padding: 15px 30px; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;">Explore the Collection</a>
         </div>
         <p style="font-size: 0.85rem; color: #8c7853; line-height: 1.6;">Warmest regards,<br/>The Drapeva Concierge Team</p>
       </div>

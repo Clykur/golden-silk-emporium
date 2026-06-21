@@ -34,6 +34,19 @@ export const useShop = create<ShopState>()(
       addToCart: (product, size = "Standard", qty = 1) =>
         set((s) => {
           const existing = s.cart.find((c) => c.product.id === product.id && c.size === size);
+          const currentQty = existing ? existing.qty : 0;
+          const maxStock = product.stock_quantity;
+
+          if (currentQty + qty > maxStock) {
+            import("sonner").then(({ toast }) => {
+              toast.error(`Only ${maxStock} units are available in stock.`);
+            });
+            qty = maxStock - currentQty;
+            if (qty <= 0) {
+              return {};
+            }
+          }
+
           const cart = existing
             ? s.cart.map((c) => (c === existing ? { ...c, qty: c.qty + qty } : c))
             : [...s.cart, { product, size, qty }];
@@ -76,6 +89,13 @@ export const useShop = create<ShopState>()(
         }),
       updateQty: (id, size, qty) =>
         set((s) => {
+          const item = s.cart.find((c) => c.product.id === id && c.size === size);
+          if (item && qty > item.product.stock_quantity) {
+            import("sonner").then(({ toast }) => {
+              toast.error(`Only ${item.product.stock_quantity} units are available in stock.`);
+            });
+            qty = item.product.stock_quantity;
+          }
           const cart = s.cart
             .map((c) => (c.product.id === id && c.size === size ? { ...c, qty } : c))
             .filter((c) => c.qty > 0);

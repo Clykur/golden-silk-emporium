@@ -136,45 +136,303 @@ function OrderCard({
     mutationFn: () => ordersApi.cancelOrder(order.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my-orders"] });
+      qc.invalidateQueries({ queryKey: ["my-orders", order.user_id] });
       toast.success("Order cancelled successfully");
     },
     onError: (e: any) => toast.error(e.message || "Failed to cancel order"),
   });
 
   const handleDownloadInvoice = () => {
-    const lines = [
-      `DRAPEVA : TAX INVOICE`,
-      `Order: ${order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}`,
-      `Date: ${new Date(order.created_at).toLocaleDateString("en-IN")}`,
-      `Customer: ${order.customer_name}`,
-      `Email: ${order.customer_email}`,
-      ``,
-      `ITEMS:`,
-      ...(order.items as any[]).map(
-        (item: any) =>
-          `  ${item.product_name} (${item.size}) x${item.quantity} : ${formatINR(item.total)}`,
-      ),
-      ``,
-      `Subtotal: ${formatINR(order.subtotal)}`,
-      order.discount > 0 ? `Discount: -${formatINR(order.discount)}` : null,
-      `Shipping: ${formatINR(order.shipping_cost)}`,
-      `TOTAL: ${formatINR(order.total)}`,
-      `Payment: ${order.payment_status}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    const invoiceNum = order.order_number || order.id.slice(0, 8).toUpperCase();
+    const orderDateFormatted = new Date(order.created_at).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
 
-    const blob = new Blob([lines], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Drapeva-Invoice-${order.order_number || order.id.slice(0, 8).toUpperCase()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Invoice downloaded");
+    const itemsHtml = (order.items as any[])
+      .map(
+        (item: any) => `
+        <tr>
+          <td style="padding: 12px 10px; border-bottom: 1px solid #f5f5f4;">
+            <div style="font-weight: 500; font-size: 13px;">${item.product_name}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Size: ${item.size}</div>
+          </td>
+          <td style="padding: 12px 10px; border-bottom: 1px solid #f5f5f4; text-align: center;">${item.quantity}</td>
+          <td style="padding: 12px 10px; border-bottom: 1px solid #f5f5f4; text-align: right;">${formatINR(item.price)}</td>
+          <td style="padding: 12px 10px; border-bottom: 1px solid #f5f5f4; text-align: right; font-weight: 500;">${formatINR(item.total)}</td>
+        </tr>
+      `,
+      )
+      .join("");
+
+    const discountRowHtml =
+      order.discount > 0
+        ? `
+        <tr>
+          <td style="padding: 6px 10px; color: #16a34a;">Discount</td>
+          <td style="padding: 6px 10px; text-align: right; color: #16a34a;">-${formatINR(order.discount)}</td>
+        </tr>`
+        : "";
+
+    const shippingAddressHtml = order.shipping_address
+      ? `
+        <p style="margin: 4px 0; font-weight: 500;">${(order.shipping_address as any).name}</p>
+        <p style="margin: 4px 0;">${(order.shipping_address as any).line1}</p>
+        ${(order.shipping_address as any).line2 ? `<p style="margin: 4px 0;">${(order.shipping_address as any).line2}</p>` : ""}
+        <p style="margin: 4px 0;">${(order.shipping_address as any).city}, ${(order.shipping_address as any).state} - ${(order.shipping_address as any).postal_code}</p>
+      `
+      : "<p>N/A</p>";
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Failed to open print window. Please allow popups.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Invoice - ${invoiceNum}</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+          body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #1c1917;
+            background-color: #ffffff;
+            font-size: 13px;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #e7e5e4;
+            padding: 40px;
+            background: #ffffff;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f5f5f4;
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+          }
+          .logo-container h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #1c1917;
+          }
+          .logo-container p {
+            margin: 4px 0 0 0;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #d97706;
+            font-weight: 600;
+          }
+          .invoice-title {
+            text-align: right;
+          }
+          .invoice-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1c1917;
+          }
+          .invoice-title p {
+            margin: 4px 0 0 0;
+            color: #78716c;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          }
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+          }
+          .section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #d97706;
+            font-weight: 700;
+            border-bottom: 1px solid #f5f5f4;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+          }
+          .info-block p {
+            margin: 4px 0;
+            color: #44403c;
+          }
+          .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+          }
+          .table th {
+            background-color: #fafaf9;
+            border-bottom: 2px solid #e7e5e4;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #44403c;
+          }
+          .totals-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+          }
+          .totals-table {
+            width: 320px;
+            border-collapse: collapse;
+          }
+          .totals-table td {
+            padding: 6px 10px;
+            color: #44403c;
+          }
+          .totals-table tr.grand-total td {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1c1917;
+            border-top: 1px solid #e7e5e4;
+            padding-top: 12px;
+          }
+          .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 11px;
+            color: #a8a29e;
+            border-top: 1px solid #f5f5f4;
+            padding-top: 20px;
+          }
+          @media print {
+            body {
+              padding: 0;
+            }
+            .invoice-container {
+              border: none;
+              padding: 0;
+              max-width: 100%;
+            }
+            @page {
+              margin: 1.5cm;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="invoice-container">
+          <div class="header">
+            <div class="logo-container">
+              <h1>Drapeva</h1>
+              <p>Timeless Elegance in Every Drape</p>
+            </div>
+            <div class="invoice-title">
+              <h2>Tax Invoice</h2>
+              <p style="margin: 4px 0 0 0;"><strong>Invoice ID:</strong> ${invoiceNum}</p>
+              <p style="margin: 2px 0 0 0;"><strong>Date:</strong> ${orderDateFormatted}</p>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="info-block">
+              <div class="section-title">Shipping & Billing Address</div>
+              ${shippingAddressHtml}
+            </div>
+            <div class="info-block">
+              <div class="section-title">Order Information</div>
+              <p><strong>Order Date:</strong> ${orderDateFormatted}</p>
+              <p><strong>Payment Status:</strong> <span style="text-transform: uppercase; font-weight: 500;">${order.payment_status}</span></p>
+              <p><strong>Customer Name:</strong> ${order.customer_name}</p>
+              <p><strong>Email:</strong> ${order.customer_email}</p>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 50%;">Product Details</th>
+                <th style="width: 10%; text-align: center;">Qty</th>
+                <th style="width: 20%; text-align: right;">Unit Price</th>
+                <th style="width: 20%; text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+
+          <div class="totals-container">
+            <table class="totals-table">
+              <tr>
+                <td style="padding: 6px 10px;">Subtotal</td>
+                <td style="padding: 6px 10px; text-align: right;">${formatINR(order.subtotal)}</td>
+              </tr>
+              ${discountRowHtml}
+              <tr>
+                <td style="padding: 6px 10px;">Shipping & Handling</td>
+                <td style="padding: 6px 10px; text-align: right;">${formatINR(order.shipping_cost)}</td>
+              </tr>
+              <tr class="grand-total">
+                <td style="padding: 12px 10px 6px 10px;">Grand Total</td>
+                <td style="padding: 12px 10px 6px 10px; text-align: right;">${formatINR(order.total)}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="footer">
+            <p>Thank you for your patronage. Drapeva — Timeless Elegance in Every Drape</p>
+            <p style="font-size: 9px; margin-top: 5px; color: #d6d3d1;">This is a computer-generated document and does not require a physical signature.</p>
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 300);
+          }
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    toast.success("Invoice ready to print / save as PDF");
   };
 
-  const canCancel = ["pending", "processing"].includes(order.status);
+  const canCancel = (() => {
+    if (!["pending", "processing"].includes(order.status)) return false;
+    const orderDate = new Date(order.created_at);
+    const currentDate = new Date();
+    const orderStart = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
+    const currentStart = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+    );
+    const diffTime = currentStart.getTime() - orderStart.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 1;
+  })();
 
   return (
     <div className="border border-border bg-background hover:border-gold/30 transition-colors shadow-sm">

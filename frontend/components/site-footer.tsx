@@ -65,13 +65,18 @@ export function SiteFooter() {
               DRAPEVA
             </h2>
 
-            <p className="mt-6 max-w-sm text-sm leading-loose text-background/60 font-light">
+            <a
+              href="https://www.google.com/maps/place/NPS+School+Rd,+Karnataka+560035/@12.9043695,77.7132067,905m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3bae12c487865af7:0x20bf39759c1a8694!8m2!3d12.9043695!4d77.7157816!16s%2Fg%2F11t5cv9ypp?entry=ttu&g_ep=EgoyMDI2MDYxNi4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 block max-w-sm text-sm leading-loose text-background/60 font-light hover:text-background transition-colors cursor-pointer"
+            >
               NPS School Road, Ambedkar Nagar,
               <br />
               Chikkabellandur, Mullur,
               <br />
               Karnataka 560035, India
-            </p>
+            </a>
           </div>
 
           {/* Shop */}
@@ -267,8 +272,7 @@ export function SiteFooter() {
               href="https://wa.me/919949740776"
               className="flex items-center gap-2 transition-colors hover:text-background"
             >
-              <FaWhatsapp className="h-4 w-4" />
-              Whatsapp
+              <FaWhatsapp className="h-6 w-6" />
             </a>
             <a
               href="https://instagram.com/drapeva"
@@ -276,8 +280,23 @@ export function SiteFooter() {
               rel="noreferrer"
               className="inline-flex items-center gap-2 transition-colors hover:text-background"
             >
-              <Instagram className="h-4 w-4" />
-              Instagram
+              <Instagram className="h-6 w-6" />
+            </a>
+            <a
+              href="https://threads.net/@drapeva"
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
+            >
+              <FaThreads className="h-6 w-6 opacity-60 group-hover:opacity-100 transition-opacity" />
+            </a>
+            <a
+              href="https://youtube.com/@drapeva"
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
+            >
+              <Youtube className="h-6 w-6 opacity-60 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>
         </div>

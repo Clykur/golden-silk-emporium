@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, Plus, Minus, Ruler } from "lucide-react";
+import { Heart, Plus, Minus, Ruler, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useShop } from "@/lib/store";
 import { formatINR } from "@/lib/types";
@@ -27,6 +27,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const originalPrice = product.sale_price ? product.price : product.compare_at || null;
   const cartItem = cart.find((c) => c.product.id === product.id);
   const qty = cartItem ? cartItem.qty : 0;
+
+  // Calculate average rating from approved reviews
+  const approvedReviews = product.reviews?.filter((r) => r.is_approved !== false) || [];
+  const avgRating =
+    approvedReviews.length > 0
+      ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
+      : 0;
 
   return (
     <article className="group relative">
@@ -167,11 +174,13 @@ export function ProductCard({ product }: ProductCardProps) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (!product.inStock) return;
                 setSelectingSize(true);
               }}
-              className="w-full bg-foreground py-3 text-[10px] uppercase tracking-[0.2em] text-background font-medium hover:bg-gold hover:text-gold-foreground transition-colors"
+              disabled={!product.inStock}
+              className="w-full bg-foreground py-3 text-[10px] uppercase tracking-[0.2em] text-background font-medium hover:bg-gold hover:text-gold-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add to Bag
+              {product.inStock ? "Add to Bag" : "Sold Out"}
             </button>
           )}
         </div>
@@ -183,10 +192,20 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.collection?.name || product.fabric}
         </p>
         <Link href={`/product/${product.slug}`}>
-          <h3 className="font-display text-base leading-snug hover:text-gold transition-colors line-clamp-2 min-h-[2.75rem] flex items-start">
+          <h3 className="font-display text-base leading-snug hover:text-gold transition-colors line-clamp-2 min-h-[2rem] flex items-start mb-1">
             {product.name}
           </h3>
         </Link>
+        <div className="flex items-center gap-1 mb-1 h-4">
+          <Star
+            className={`h-3.5 w-3.5 ${
+              avgRating > 0 ? "fill-yellow-400 text-yellow-400" : "text-yellow-400"
+            }`}
+          />
+          <span className="text-[10px] text-muted-foreground font-medium">
+            {avgRating > 0 ? `${avgRating.toFixed(1)} (${approvedReviews.length})` : "0.0 (0)"}
+          </span>
+        </div>
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex items-baseline gap-2">
             <span className="text-sm font-semibold">{formatINR(displayPrice)}</span>
@@ -196,6 +215,11 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
+          {!product.inStock && (
+            <span className="text-[9px] uppercase tracking-widest text-destructive font-semibold">
+              Sold Out
+            </span>
+          )}
         </div>
       </div>
     </article>

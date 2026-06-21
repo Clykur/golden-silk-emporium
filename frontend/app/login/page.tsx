@@ -63,7 +63,7 @@ function LoginContent() {
       toast.success(
         profile?.name
           ? `Welcome back, ${profile.name.split(" ")[0]}!`
-          : "Welcome back to the atelier",
+          : "Welcome back to the Maison",
       );
       if (profile?.role === "admin") {
         router.push("/admin");
@@ -81,7 +81,7 @@ function LoginContent() {
     <div className="flex h-[100svh] overflow-hidden items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <p className="eyebrow text-gold">The Atelier</p>
+          <p className="eyebrow text-gold">The Maison</p>
           <h1 className="mt-3 font-display text-3xl md:text-4xl">Welcome Back</h1>
           <span className="gold-divider mt-4 block mx-auto" />
         </div>
@@ -188,7 +188,7 @@ function LoginContent() {
             )}
 
             <p className="mt-8 text-center text-xs text-muted-foreground">
-              New to the atelier?{" "}
+              New to the Drapeva?{" "}
               <Link
                 href="/register"
                 className="border-b border-muted-foreground pb-0.5 text-foreground hover:border-foreground"

@@ -56,8 +56,8 @@ export default function EditorialLookbook() {
           <h1 className="mt-3 font-display text-4xl md:text-6xl">Editorial Lookbook</h1>
           <span className="gold-divider mt-4 block mx-auto" />
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground leading-relaxed">
-            Click on the atelier markers (+) on the styled model look below to shop the
-            hand-finished sarees.
+            Click on the Maison markers (+) on the styled model look below to shop the hand-finished
+            sarees.
           </p>
         </div>
       </div>

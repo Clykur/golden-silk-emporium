@@ -351,6 +351,7 @@ export interface Product extends DbProduct {
   gallery: string[]; // all image URLs
   inStock: boolean;
   compareAt: number | null; // alias for compare_at
+  reviews?: { rating: number; is_approved: boolean }[];
 }
 
 // Product form data for admin
@@ -656,6 +657,7 @@ export function normalizeProduct(
     images?: ProductImage[];
     category?: Category | null;
     collection?: Collection | null;
+    reviews?: { rating: number; is_approved: boolean }[];
   },
 ): Product {
   const images = p.images || [];
@@ -698,5 +700,6 @@ export function normalizeProduct(
     inStock: p.stock_quantity > 0,
     compareAt: p.compare_at,
     sizes: undefined,
+    reviews: p.reviews,
   };
 }

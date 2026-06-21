@@ -10,6 +10,7 @@ import {
   Ruler,
   ChevronDown,
   ArrowRight,
+  ArrowLeft,
   RotateCw,
   Star,
   CreditCard,
@@ -119,6 +120,16 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
   const avgRating =
     reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
+  // Dynamically generate gallery images from the first image to ensure same saree is shown in different crops/zooms
+  const baseImage = product.gallery[0] || product.image || "/media/placeholder-saree.jpg";
+  const cleanBase = baseImage.split("?")[0];
+  const dynamicGallery = [
+    `${cleanBase}?auto=format&fit=crop&w=800&q=80`,
+    `${cleanBase}?auto=format&fit=crop&w=800&q=80&zoom=1.4`,
+    `${cleanBase}?auto=format&fit=crop&w=800&q=80&fp-y=0.25`,
+    `${cleanBase}?auto=format&fit=crop&w=800&q=80&fp-y=0.75`,
+  ];
+
   const handleLoginRedirect = () => {
     router.push(
       `/login?redirect=${encodeURIComponent(pathname)}&message=${encodeURIComponent("Please sign in to continue shopping.")}`,
@@ -135,7 +146,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
             "@context": "https://schema.org/",
             "@type": "Product",
             name: product.name,
-            image: product.gallery,
+            image: dynamicGallery,
             description: product.description,
             sku: product.sku || product.id,
             offers: {
@@ -150,37 +161,22 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
         }}
       />
 
-      <div className="container-luxe pt-6">
-        <nav className="text-xs uppercase tracking-[0.2em] text-muted-foreground flex flex-wrap items-center">
-          <Link href="/" className="hover:text-foreground transition-colors">
-            Home
-          </Link>
-          <span className="mx-2 text-border">/</span>
-          <Link href="/collections" className="hover:text-foreground transition-colors">
-            Shop
-          </Link>
-          {product.category && (
-            <>
-              <span className="mx-2 text-border">/</span>
-              <Link
-                href={`/shop?category=${product.category.slug}`}
-                className="hover:text-foreground transition-colors"
-              >
-                {product.category.name}
-              </Link>
-            </>
-          )}
-          <span className="mx-2 text-border">/</span>
-          <span className="text-foreground line-clamp-1">{product.name}</span>
-        </nav>
+      <div className="container-luxe pt-2">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          Back
+        </button>
       </div>
 
-      <div className="container-luxe grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr] lg:gap-20 lg:items-start">
+      <div className="container-luxe grid gap-10 pb-12 pt-2 lg:grid-cols-[1.4fr_1fr] lg:gap-20 lg:items-start">
         {/* Gallery */}
-        <div className="grid gap-4 md:grid-cols-[80px_1fr] lg:sticky lg:top-28 h-fit">
+        <div className="grid gap-4 md:grid-cols-[80px_1fr] lg:sticky lg:top-24 h-fit">
           {/* Thumbnails */}
           <div className="order-2 flex flex-row gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:order-1 md:flex-col scrollbar-none snap-x snap-mandatory">
-            {product.gallery.map((img, i) => (
+            {dynamicGallery.map((img, i) => (
               <button
                 key={i}
                 onClick={() => {
@@ -203,7 +199,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                 />
               </button>
             ))}
-            {product.gallery.length > 1 && (
+            {dynamicGallery.length > 1 && (
               <button
                 onClick={() => setView360(true)}
                 className={`aspect-[3/4] w-16 md:w-24 shrink-0 flex flex-col items-center justify-center border text-[9px] uppercase tracking-wider transition-all duration-300 snap-start ${
@@ -220,16 +216,16 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
           {/* Main Viewer */}
           <div className="order-1 aspect-[3/4] md:order-2 w-full">
             {view360 ? (
-              <Product360Viewer images={product.gallery} />
+              <Product360Viewer images={dynamicGallery} />
             ) : (
-              <ProductZoom src={product.gallery[active] || product.image} alt={product.name} />
+              <ProductZoom src={dynamicGallery[active] || product.image} alt={product.name} />
             )}
           </div>
         </div>
 
         {/* Info */}
-        <div className="flex flex-col space-y-8">
-          <div className="space-y-4 border-b border-border/40 pb-8">
+        <div className="flex flex-col space-y-4">
+          <div className="space-y-4 border-b border-border/40 pb-4">
             <p className="eyebrow text-gold font-bold tracking-[0.25em] text-[0.65rem]">
               {product.collection?.name || product.fabric}
             </p>
@@ -240,12 +236,14 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
 
           {/* Rating */}
           {reviews.length > 0 && (
-            <div className="mt-3 flex items-center gap-2 border-b border-border/40 pb-4">
+            <div className="flex items-center gap-2 border-b border-border/40 pb-2">
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-3.5 w-3.5 ${i < Math.round(avgRating) ? "fill-gold text-gold" : "text-border"}`}
+                    className={`h-3.5 w-3.5 ${
+                      i < Math.round(avgRating) ? "fill-yellow-400 text-yellow-400" : "text-border"
+                    }`}
                   />
                 ))}
               </div>
@@ -495,7 +493,7 @@ Could you please share more details?`,
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-3.5 w-3.5 ${i < r.rating ? "fill-gold text-gold" : "text-border"}`}
+                            className={`h-3.5 w-3.5 ${i < r.rating ? "fill-yellow-400 text-yellow-400" : "text-border"}`}
                           />
                         ))}
                       </div>
@@ -541,7 +539,7 @@ Could you please share more details?`,
                             <Star
                               className={`h-5 w-5 ${
                                 starVal <= reviewRating
-                                  ? "fill-gold text-gold"
+                                  ? "fill-yellow-400 text-yellow-400"
                                   : "text-muted-foreground/30"
                               }`}
                             />

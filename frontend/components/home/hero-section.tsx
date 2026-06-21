@@ -58,7 +58,6 @@ export function HeroSection() {
           muted
           playsInline
           className="h-full w-full object-cover opacity-80"
-          poster={HERO_POSTER}
         >
           <source src={HERO_VIDEO} type="video/mp4" />
         </video>

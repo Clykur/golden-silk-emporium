@@ -40,11 +40,15 @@ export function Product360Viewer({ images }: Product360ViewerProps) {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       className="relative aspect-[3/4] w-full select-none overflow-hidden bg-champagne/40 cursor-grab active:cursor-grabbing border border-border"
+      style={{ perspective: "1000px" }}
     >
       <img
         src={images[index]}
         alt="Product 360 view"
-        className="h-full w-full object-cover pointer-events-none"
+        className="h-full w-full object-cover pointer-events-none transition-transform duration-300 ease-out"
+        style={{
+          transform: `scale(1.05) rotateY(${(index - images.length / 2) * 12}deg)`,
+        }}
       />
 
       {/* 360 Badge Indicator */}

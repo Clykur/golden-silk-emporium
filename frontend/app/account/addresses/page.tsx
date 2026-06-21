@@ -159,12 +159,28 @@ export default function AddressBook() {
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
           );
           const data = await res.json();
-          const addr = data.address;
+          const addr = data.address || {};
+
+          const locality =
+            addr.suburb ||
+            addr.neighbourhood ||
+            addr.village ||
+            addr.sublocality ||
+            addr.locality ||
+            "";
+          const streetRoad = addr.road || addr.street || addr.pedestrian || "";
+          const line1 = [locality, streetRoad].filter(Boolean).join(", ");
+
+          const line2 = [addr.city_district, addr.county].filter(Boolean).join(", ");
+
           setForm((f) => ({
             ...f,
-            city: addr.city || addr.town || addr.village || addr.county || "",
-            state: addr.state || "",
-            postal_code: addr.postcode || "",
+            line1: line1 || f.line1,
+            line2: line2 || f.line2,
+            city: addr.city || addr.town || addr.village || addr.county || f.city,
+            state: addr.state || f.state,
+            postal_code: addr.postcode || f.postal_code,
+            country: addr.country || f.country || "India",
           }));
           toast.success("Location detected! Please verify the fields.");
         } catch {
