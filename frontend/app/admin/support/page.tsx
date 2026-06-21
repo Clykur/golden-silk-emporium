@@ -19,6 +19,7 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { supportApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth-store";
 import type { SupportTicket } from "@/lib/types";
+import { Combobox } from "@/components/combobox";
 
 const STATUS_OPTIONS = ["open", "in_progress", "resolved", "closed"];
 const STATUS_COLORS: Record<string, string> = {
@@ -155,21 +156,19 @@ export default function AdminSupport() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {/* Status selector */}
-                    <select
-                      value={ticket.status}
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        updateStatusMut.mutate({ id: ticket.id, status: e.target.value });
-                      }}
-                      className="border border-border bg-background text-xs px-2 py-1 focus:outline-none focus:border-foreground"
-                    >
-                      {STATUS_OPTIONS.map((s) => (
-                        <option key={s} value={s}>
-                          {s.replace("_", " ")}
-                        </option>
-                      ))}
-                    </select>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Combobox
+                        value={ticket.status}
+                        onChange={(val) => {
+                          updateStatusMut.mutate({ id: ticket.id, status: val });
+                        }}
+                        options={STATUS_OPTIONS.map((s) => ({
+                          label: s.replace("_", " "),
+                          value: s,
+                        }))}
+                        className="w-[140px] h-8"
+                      />
+                    </div>
                     {expanded ? (
                       <ChevronUp className="h-4 w-4 text-muted-foreground" />
                     ) : (

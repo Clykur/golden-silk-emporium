@@ -135,7 +135,7 @@ export default function Returns() {
                 <option value="">- Select a delivered order -</option>
                 {deliveredOrders.map((o: any) => (
                   <option key={o.id} value={o.id}>
-                    #{o.id.slice(0, 8).toUpperCase()} -{" "}
+                    {o.order_number || "#" + o.id.slice(0, 8).toUpperCase()} -{" "}
                     {new Date(o.created_at).toLocaleDateString("en-IN")} - {formatINR(o.total)}
                   </option>
                 ))}
@@ -237,7 +237,10 @@ export default function Returns() {
                         year: "numeric",
                       })}
                       {" · "}
-                      Order #{ret.order_id.slice(0, 8).toUpperCase()}
+                      <span className="font-medium text-ink">
+                        Order{" "}
+                        {ret.order?.order_number || "#" + ret.order_id.slice(0, 8).toUpperCase()}
+                      </span>
                     </p>
                   </div>
                   {expandedId === ret.id ? (

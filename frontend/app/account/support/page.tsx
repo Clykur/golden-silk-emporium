@@ -177,7 +177,7 @@ export default function Support() {
                 <option value="">- Select an order -</option>
                 {orders.map((o: any) => (
                   <option key={o.id} value={o.id}>
-                    #{o.id.slice(0, 8).toUpperCase()} -{" "}
+                    {o.order_number || "#" + o.id.slice(0, 8).toUpperCase()} -{" "}
                     {new Date(o.created_at).toLocaleDateString("en-IN")}
                   </option>
                 ))}

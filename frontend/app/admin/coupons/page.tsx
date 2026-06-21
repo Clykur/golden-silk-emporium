@@ -10,6 +10,7 @@ import { couponsApi } from "@/lib/api";
 import type { Coupon } from "@/lib/types";
 import { Plus, Edit, Trash2, Ticket, Copy } from "lucide-react";
 import { formatINR } from "@/lib/types";
+import { Combobox } from "@/components/combobox";
 
 const empty = {
   code: "",
@@ -141,16 +142,15 @@ export default function AdminCoupons() {
             <div className="grid grid-cols-2 gap-4">
               <label className="block">
                 <span className="eyebrow text-[10px] mb-1.5 block">Discount Type</span>
-                <select
+                <Combobox
                   value={form.discount_type}
-                  onChange={(e) =>
-                    setField("discount_type", e.target.value as "percentage" | "fixed")
-                  }
-                  className={inp}
-                >
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="fixed">Fixed Amount (₹)</option>
-                </select>
+                  onChange={(val) => setField("discount_type", val as "percentage" | "fixed")}
+                  options={[
+                    { label: "Percentage (%)", value: "percentage" },
+                    { label: "Fixed Amount (₹)", value: "fixed" },
+                  ]}
+                  className="w-full"
+                />
               </label>
               <label className="block">
                 <span className="eyebrow text-[10px] mb-1.5 block">Discount Value *</span>

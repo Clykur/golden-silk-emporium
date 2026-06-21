@@ -34,14 +34,14 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-[3/4] overflow-hidden bg-champagne/30">
         <Link href={`/product/${product.slug}`}>
           <img
-            src={product.image || "/placeholder-saree.jpg"}
+            src={product.image || "/media/placeholder-saree.jpg"}
             alt={product.name}
             loading="lazy"
             width={600}
             height={800}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder-saree.jpg";
+              (e.target as HTMLImageElement).src = "/media/placeholder-saree.jpg";
             }}
           />
         </Link>

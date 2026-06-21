@@ -144,7 +144,7 @@ function OrderCard({
   const handleDownloadInvoice = () => {
     const lines = [
       `DRAPEVA : TAX INVOICE`,
-      `Order: #${order.id.slice(0, 8).toUpperCase()}`,
+      `Order: ${order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}`,
       `Date: ${new Date(order.created_at).toLocaleDateString("en-IN")}`,
       `Customer: ${order.customer_name}`,
       `Email: ${order.customer_email}`,
@@ -168,7 +168,7 @@ function OrderCard({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Drapeva-Invoice-${order.id.slice(0, 8).toUpperCase()}.txt`;
+    a.download = `Drapeva-Invoice-${order.order_number || order.id.slice(0, 8).toUpperCase()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Invoice downloaded");
@@ -183,7 +183,7 @@ function OrderCard({
         <div>
           <div className="flex items-center gap-3">
             <span className="font-display text-lg font-medium text-ink">
-              Order #{order.id.slice(0, 8).toUpperCase()}
+              Order {order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}
             </span>
             <span
               className={`border px-2 py-0.5 text-[10px] uppercase tracking-wider rounded font-medium ${STATUS_COLORS[order.status] || "bg-muted"}`}
@@ -458,36 +458,6 @@ export default function OrderHistory() {
                 </div>
               )}
             </div>
-
-            {filter === "all" && collections.length > 0 && (
-              <section className="space-y-6 pt-6">
-                <h3 className="font-display text-lg border-b border-border pb-3">
-                  Explore Collections
-                </h3>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {collections.slice(0, 3).map((col: any) => (
-                    <Link
-                      key={col.id}
-                      href={`/collections/${col.slug}`}
-                      className="group relative h-48 overflow-hidden border border-border flex flex-col justify-end p-5 bg-ink text-background"
-                    >
-                      {col.image && (
-                        <img
-                          src={col.image}
-                          alt={col.name}
-                          className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
-                      <div className="relative z-10">
-                        <p className="text-[9px] eyebrow text-gold">{col.tagline || "ATELIER"}</p>
-                        <h4 className="font-display text-lg">{col.name}</h4>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
           </div>
         ) : (
           filtered.map((order: any) => (

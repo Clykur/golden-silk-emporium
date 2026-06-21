@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("reviews")
-      .select("*, profile:profiles(name)")
+      .select("*")
       .eq("product_id", productId)
       .eq("is_approved", true)
       .order("created_at", { ascending: false });

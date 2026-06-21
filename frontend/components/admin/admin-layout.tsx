@@ -26,21 +26,43 @@ import {
   Settings,
 } from "lucide-react";
 
-const NAV_ITEMS = [
-  { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/admin/products", label: "Products", icon: ShoppingBag },
-  { to: "/admin/categories", label: "Categories", icon: Tags },
-  { to: "/admin/collections", label: "Collections", icon: Layers },
-  { to: "/admin/orders", label: "Orders", icon: FileText },
-  { to: "/admin/inventory", label: "Inventory", icon: Package },
-  { to: "/admin/reviews", label: "Reviews", icon: Star },
-  { to: "/admin/coupons", label: "Coupons", icon: Ticket },
-  { to: "/admin/homepage", label: "Homepage", icon: Home },
-  { to: "/admin/customers", label: "Customers", icon: Users },
-  { to: "/admin/analytics", label: "Analytics", icon: TrendingUp },
-  { to: "/admin/support", label: "Support Tickets", icon: HelpCircle },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
-  { to: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
+const NAV_GROUPS = [
+  {
+    title: "Main",
+    items: [
+      { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+      { to: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+    ],
+  },
+  {
+    title: "Catalog",
+    items: [
+      { to: "/admin/products", label: "Products", icon: ShoppingBag },
+      { to: "/admin/inventory", label: "Inventory", icon: Package },
+      { to: "/admin/categories", label: "Categories", icon: Tags },
+      { to: "/admin/collections", label: "Collections", icon: Layers },
+    ],
+  },
+  {
+    title: "Sales & Customers",
+    items: [
+      { to: "/admin/orders", label: "Orders", icon: FileText },
+      { to: "/admin/customers", label: "Customers", icon: Users },
+      { to: "/admin/reviews", label: "Reviews", icon: Star },
+      { to: "/admin/support", label: "Support Tickets", icon: HelpCircle },
+    ],
+  },
+  {
+    title: "Marketing",
+    items: [{ to: "/admin/coupons", label: "Coupons", icon: Ticket }],
+  },
+  {
+    title: "System",
+    items: [
+      { to: "/admin/settings", label: "Settings", icon: Settings },
+      { to: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
+    ],
+  },
 ];
 
 interface AdminLayoutProps {
@@ -98,27 +120,43 @@ export function AdminLayout({ children, title, subtitle, actions, activeHref }: 
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-          {NAV_ITEMS.map(({ to, label, icon: Icon, exact }: any) => {
-            const isActive = exact
-              ? currentPath === to || currentPath === `${to}/`
-              : to !== "/admin" && (currentPath === to || currentPath.startsWith(to));
-            return (
-              <Link
-                key={to}
-                href={to}
-                className={`group flex items-center gap-3 px-3 py-2.5 text-xs font-semibold uppercase tracking-widest transition-all ${
-                  isActive
-                    ? "bg-gold/10 text-gold"
-                    : "text-muted-foreground hover:bg-champagne/40 hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                <span className="flex-1">{label}</span>
-                {isActive && <ChevronRight className="h-3 w-3 opacity-50" />}
-              </Link>
-            );
-          })}
+        <nav
+          className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-6 custom-scrollbar"
+          data-lenis-prevent="true"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {NAV_GROUPS.map((group) => (
+            <div key={group.title}>
+              <h4 className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/50">
+                {group.title}
+              </h4>
+              <div className="space-y-0.5">
+                {group.items.map(({ to, label, icon: Icon, exact }: any) => {
+                  const isActive = exact
+                    ? currentPath === to || currentPath === `${to}/`
+                    : to !== "/admin" && (currentPath === to || currentPath.startsWith(to));
+                  return (
+                    <Link
+                      key={to}
+                      href={to}
+                      prefetch={true}
+                      className={`group flex items-center gap-3 px-3 py-2.5 text-xs font-semibold uppercase tracking-widest transition-all rounded-md ${
+                        isActive
+                          ? "bg-gold/10 text-gold"
+                          : "text-muted-foreground hover:bg-champagne/40 hover:text-foreground"
+                      }`}
+                    >
+                      <Icon
+                        className={`h-4 w-4 shrink-0 transition-colors ${isActive ? "text-gold" : "text-muted-foreground group-hover:text-foreground"}`}
+                      />
+                      <span className="flex-1">{label}</span>
+                      {isActive && <ChevronRight className="h-3 w-3 opacity-50" />}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* User */}
@@ -154,7 +192,7 @@ export function AdminLayout({ children, title, subtitle, actions, activeHref }: 
         </header>
 
         {/* Page content */}
-        <main className="p-8">{children}</main>
+        <main className="w-[95%] mx-auto py-8">{children}</main>
       </div>
     </div>
   );

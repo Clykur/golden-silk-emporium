@@ -271,6 +271,7 @@ export interface Profile {
   avatar_url: string | null;
   created_at: string;
   updated_at: string;
+  customer_id?: string;
 }
 
 export interface Category {
@@ -310,6 +311,7 @@ export interface ProductImage {
 // Raw DB product row
 export interface DbProduct {
   id: string;
+  product_code?: string;
   name: string;
   slug: string;
   sku: string | null;
@@ -366,6 +368,7 @@ export interface ProductFormData {
   color: string;
   occasion: string;
   tags: string[];
+  product_code?: string;
   details: string[];
   stock_quantity: number;
   is_featured: boolean;
@@ -480,6 +483,7 @@ export interface OrderItem {
 
 export interface DbOrder {
   id: string;
+  order_number?: string;
   user_id: string | null;
   status: OrderStatus;
   subtotal: number;
@@ -595,10 +599,12 @@ export interface AuditLog {
 
 export interface ReturnRequest {
   id: string;
+  return_id?: string;
   order_id: string;
   user_id: string;
   items: OrderItem[];
   reason: string;
+  order?: DbOrder;
   comments: string | null;
   status: ReturnStatus;
   refund_amount: number | null;
@@ -656,6 +662,7 @@ export function normalizeProduct(
   const featured = images.find((i) => i.is_featured) || images[0];
   return {
     id: p.id,
+    product_code: p.product_code,
     name: p.name,
     slug: p.slug,
     sku: p.sku,
@@ -686,7 +693,7 @@ export function normalizeProduct(
     images,
     category: p.category || null,
     collection: p.collection || null,
-    image: featured?.url || "/placeholder-saree.jpg",
+    image: featured?.url || "/media/placeholder-saree.jpg",
     gallery: images.sort((a, b) => a.sort_order - b.sort_order).map((i) => i.url),
     inStock: p.stock_quantity > 0,
     compareAt: p.compare_at,

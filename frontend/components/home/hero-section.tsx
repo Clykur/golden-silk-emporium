@@ -96,7 +96,7 @@ export function HeroSection() {
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex shrink-0 gap-12 px-6 items-center">
               <span className="pt-1">DRAPEVA</span>
-              <img src="/correct.png" alt="*" className="h-3.5 w-3.5 invert brightness-0" />
+              <img src="/media/correct.png" alt="*" className="h-3.5 w-3.5 invert brightness-0" />
             </div>
           ))}
         </div>

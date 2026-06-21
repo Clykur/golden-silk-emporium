@@ -11,6 +11,8 @@ import { Pagination } from "@/components/pagination";
 import { productsApi, categoriesApi, collectionsApi } from "@/lib/api";
 import { formatINR } from "@/lib/types";
 import type { Product, ProductFormData, Category, Collection, ProductStatus } from "@/lib/types";
+import { Select } from "@/components/select";
+import { Combobox, ComboboxOption } from "@/components/combobox";
 import {
   Plus,
   Search,
@@ -219,13 +221,13 @@ function AdminProductsContent() {
     else createMut.mutate(data);
   };
 
-  const filtered = products.filter((p) => {
-    const matchSearch =
-      !search ||
+  const filtered = (products || []).filter((p: Product) => {
+    const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.sku || "").toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" || p.status === statusFilter;
-    return matchSearch && matchStatus;
+      p.sku?.toLowerCase().includes(search.toLowerCase()) ||
+      p.product_code?.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "all" || p.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   const itemsPerPage = 10;
@@ -289,22 +291,31 @@ function AdminProductsContent() {
     >
       {showForm ? (
         /* ── PRODUCT FORM ── */
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
+        <form onSubmit={handleSubmit} className="space-y-10 w-full">
+          <h2 className="text-xl font-display tracking-widest text-foreground">
+            {editingId
+              ? form.product_code
+                ? `Edit Product (${form.product_code})`
+                : "Edit Product"
+              : "Add New Product"}
+          </h2>
           {/* Basic Info */}
           <Section title="Basic Information">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Product Name *">
-                <input
-                  value={form.name}
-                  onChange={(e) => {
-                    setField("name", e.target.value);
-                    if (!editingId) setField("slug", slugify(e.target.value));
-                  }}
-                  className={inputCls}
-                  placeholder="Varanasi Heritage Katan Silk Saree"
-                  required
-                />
-              </Field>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="lg:col-span-2">
+                <Field label="Product Name *">
+                  <input
+                    value={form.name}
+                    onChange={(e) => {
+                      setField("name", e.target.value);
+                      if (!editingId) setField("slug", slugify(e.target.value));
+                    }}
+                    className={inputCls}
+                    placeholder="Varanasi Heritage Katan Silk Saree"
+                    required
+                  />
+                </Field>
+              </div>
               <Field label="SKU">
                 <input
                   value={form.sku}
@@ -321,35 +332,35 @@ function AdminProductsContent() {
                   placeholder="auto-generated-from-name"
                 />
               </Field>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
+              <div className="lg:col-span-3">
+                <Field label="Description *">
+                  <textarea
+                    value={form.description}
+                    onChange={(e) => setField("description", e.target.value)}
+                    rows={4}
+                    className={inputCls + " resize-y"}
+                    placeholder="An exquisite..."
+                    required
+                  />
+                </Field>
+              </div>
               <Field label="Badge">
-                <select
+                <Combobox
                   value={form.badge}
-                  onChange={(e) => setField("badge", e.target.value)}
-                  className={inputCls}
-                >
-                  {BADGE_OPTIONS.map((b) => (
-                    <option key={b} value={b}>
-                      {b || "None"}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("badge", val)}
+                  options={BADGE_OPTIONS.map((b) => ({ label: b || "None", value: b }))}
+                  placeholder="Select badge..."
+                  className="w-full"
+                />
               </Field>
             </div>
-            <Field label="Description *">
-              <textarea
-                value={form.description}
-                onChange={(e) => setField("description", e.target.value)}
-                rows={4}
-                className={inputCls + " resize-y"}
-                placeholder="An exquisite..."
-                required
-              />
-            </Field>
           </Section>
 
           {/* Pricing & Stock */}
           <Section title="Pricing & Inventory">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Field label="Price (₹) *">
                 <input
                   type="number"
@@ -396,78 +407,64 @@ function AdminProductsContent() {
 
           {/* Classification */}
           <Section title="Classification">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <Field label="Category">
-                <select
+                <Combobox
                   value={form.category_id}
-                  onChange={(e) => setField("category_id", e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="">Select category...</option>
-                  {categories.map((c: Category) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("category_id", val)}
+                  options={categories.map((c: Category) => ({ label: c.name, value: c.id }))}
+                  placeholder="Select category..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Collection">
-                <select
+                <Combobox
                   value={form.collection_id}
-                  onChange={(e) => setField("collection_id", e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="">Select collection...</option>
-                  {collections.map((c: Collection) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("collection_id", val)}
+                  options={collections.map((c: Collection) => ({ label: c.name, value: c.id }))}
+                  placeholder="Select collection..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Status">
-                <select
+                <Combobox
                   value={form.status}
-                  onChange={(e) => setField("status", e.target.value as ProductStatus)}
-                  className={inputCls}
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="archived">Archived</option>
-                </select>
+                  onChange={(val) => setField("status", val as ProductStatus)}
+                  options={[
+                    { label: "Draft", value: "draft" },
+                    { label: "Published", value: "published" },
+                    { label: "Archived", value: "archived" },
+                  ]}
+                  placeholder="Select status..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Fabric Type">
-                <select
+                <Combobox
                   value={form.fabric}
-                  onChange={(e) => setField("fabric", e.target.value)}
-                  className={inputCls}
-                >
-                  {FABRICS.map((f) => (
-                    <option key={f}>{f}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("fabric", val)}
+                  options={FABRICS.map((f) => ({ label: f, value: f }))}
+                  placeholder="Select fabric..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Weave Type">
-                <select
+                <Combobox
                   value={form.weave}
-                  onChange={(e) => setField("weave", e.target.value)}
-                  className={inputCls}
-                >
-                  {WEAVES.map((w) => (
-                    <option key={w}>{w}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("weave", val)}
+                  options={WEAVES.map((w) => ({ label: w, value: w }))}
+                  placeholder="Select weave..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Occasion">
-                <select
+                <Combobox
                   value={form.occasion}
-                  onChange={(e) => setField("occasion", e.target.value)}
-                  className={inputCls}
-                >
-                  {OCCASIONS.map((o) => (
-                    <option key={o}>{o}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setField("occasion", val)}
+                  options={OCCASIONS.map((o) => ({ label: o, value: o }))}
+                  placeholder="Select occasion..."
+                  className="w-full"
+                />
               </Field>
               <Field label="Color">
                 <input
@@ -654,9 +651,6 @@ function AdminProductsContent() {
               </Field>
             </div>
           </Section>
-
-          {/* Submit */}
-          <div className="flex items-center gap-3 pt-4 border-t border-border">{formActions}</div>
         </form>
       ) : (
         /* ── PRODUCT LIST ── */
@@ -668,20 +662,21 @@ function AdminProductsContent() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or SKU..."
+                placeholder="Search by name, SKU, or Code..."
                 className="w-full border border-border bg-background pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-foreground"
               />
             </div>
-            <select
+            <Combobox
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as ProductStatus | "all")}
-              className="border border-border bg-background px-3 py-2.5 text-sm focus:outline-none"
-            >
-              <option value="all">All Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
+              onChange={(val) => setStatusFilter(val as ProductStatus | "all")}
+              options={[
+                { label: "All Status", value: "all" },
+                { label: "Published", value: "published" },
+                { label: "Draft", value: "draft" },
+                { label: "Archived", value: "archived" },
+              ]}
+              className="w-[180px]"
+            />
             <p className="text-sm text-muted-foreground ml-auto">{filtered.length} products</p>
           </div>
 
@@ -722,38 +717,49 @@ function AdminProductsContent() {
                     {paginatedProducts.map((p) => (
                       <tr key={p.id} className="hover:bg-champagne/5 group">
                         <td className="p-4">
-                          <img
-                            src={p.image || "/placeholder-saree.jpg"}
-                            alt={p.name}
-                            className="h-12 w-9 object-cover border border-border"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = "/placeholder-saree.jpg";
-                            }}
-                          />
-                        </td>
-                        <td className="p-4">
-                          <p className="font-medium text-sm leading-snug line-clamp-2 max-w-[200px]">
-                            {p.name}
-                          </p>
-                          {p.sku && (
-                            <p className="text-[10px] text-muted-foreground mt-0.5">{p.sku}</p>
-                          )}
-                          <div className="flex gap-1 mt-1">
-                            {p.is_featured && (
-                              <span className="text-[9px] bg-gold/10 text-gold px-1 py-0.5 rounded">
-                                Featured
-                              </span>
-                            )}
-                            {p.is_bestseller && (
-                              <span className="text-[9px] bg-emerald-50 text-emerald-600 px-1 py-0.5 rounded">
-                                Bestseller
-                              </span>
-                            )}
-                            {p.is_new_arrival && (
-                              <span className="text-[9px] bg-blue-50 text-blue-600 px-1 py-0.5 rounded">
-                                New
-                              </span>
-                            )}
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 shrink-0 bg-muted overflow-hidden rounded-md border border-border">
+                              {p.images?.[0]?.url ? (
+                                <img
+                                  src={p.images[0].url}
+                                  alt={p.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-[10px] text-muted-foreground">
+                                  No img
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <p
+                                className="font-semibold text-sm max-w-[200px] truncate"
+                                title={p.name}
+                              >
+                                {p.name}
+                              </p>
+                              <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                                {p.product_code || p.id.slice(0, 8)}{" "}
+                                {p.sku ? `• SKU: ${p.sku}` : ""}
+                              </p>
+                              <div className="flex gap-1 mt-1">
+                                {p.is_featured && (
+                                  <span className="text-[9px] bg-gold/10 text-gold px-1 py-0.5 rounded">
+                                    Featured
+                                  </span>
+                                )}
+                                {p.is_bestseller && (
+                                  <span className="text-[9px] bg-emerald-50 text-emerald-600 px-1 py-0.5 rounded">
+                                    Bestseller
+                                  </span>
+                                )}
+                                {p.is_new_arrival && (
+                                  <span className="text-[9px] bg-blue-50 text-blue-600 px-1 py-0.5 rounded">
+                                    New
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="p-4 text-muted-foreground text-xs">
@@ -766,14 +772,14 @@ function AdminProductsContent() {
                             {formatINR(p.sale_price || p.price)}
                           </p>
                           {p.sale_price && (
-                            <p className="text-[10px] text-muted-foreground line-through">
+                            <p className="text-[10px] text-muted-foreground line-through mt-0.5">
                               {formatINR(p.price)}
                             </p>
                           )}
                         </td>
                         <td className="p-4">
                           <span
-                            className={`text-xs font-medium ${p.stock_quantity === 0 ? "text-destructive" : p.stock_quantity <= 5 ? "text-amber-600" : "text-foreground"}`}
+                            className={`text-xs font-medium ${p.stock_quantity === 0 ? "text-destructive" : p.stock_quantity <= 3 ? "text-amber-600" : "text-foreground"}`}
                           >
                             {p.stock_quantity === 0 ? "Out of stock" : `${p.stock_quantity} units`}
                           </span>
@@ -810,13 +816,7 @@ function AdminProductsContent() {
                             >
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button
-                              onClick={() => duplicateMut.mutate(p.id)}
-                              className="p-1.5 hover:text-gold transition-colors"
-                              title="Duplicate"
-                            >
-                              <Copy className="h-4 w-4" />
-                            </button>
+
                             <button
                               onClick={() => {
                                 if (confirm(`Delete "${p.name}"?`)) deleteMut.mutate(p.id);

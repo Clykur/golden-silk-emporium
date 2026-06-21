@@ -242,7 +242,7 @@ function CheckoutContent() {
               amount: rzpOrder.amount,
               currency: rzpOrder.currency || "INR",
               name: "Drapeva",
-              description: `Payment for Order #${order.id.slice(0, 8).toUpperCase()}`,
+              description: `Payment for Order ${order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}`,
               order_id: rzpOrder.id,
               handler: async function (response: any) {
                 try {
@@ -379,7 +379,7 @@ function CheckoutContent() {
             <p className="mt-3 text-sm text-muted-foreground">
               Your order{" "}
               <span className="font-mono text-foreground font-semibold">
-                #{orderId.slice(0, 8).toUpperCase()}
+                {pendingOrder?.order_number || orderId.slice(0, 8).toUpperCase()}
               </span>{" "}
               has been placed successfully. Thank you for shopping with us!
             </p>
@@ -861,7 +861,7 @@ function CheckoutContent() {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Order Ref:</span>
                 <span className="font-mono font-medium">
-                  #{pendingOrder.id.slice(0, 8).toUpperCase()}
+                  {pendingOrder.order_number || "#" + pendingOrder.id.slice(0, 8).toUpperCase()}
                 </span>
               </div>
               <div className="flex justify-between">

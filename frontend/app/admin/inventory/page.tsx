@@ -38,13 +38,13 @@ export default function AdminInventory() {
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.sku || "").toLowerCase().includes(search.toLowerCase());
     if (stockFilter === "out") return matchSearch && p.stock_quantity === 0;
-    if (stockFilter === "low") return matchSearch && p.stock_quantity > 0 && p.stock_quantity <= 5;
+    if (stockFilter === "low") return matchSearch && p.stock_quantity > 0 && p.stock_quantity <= 3;
     return matchSearch;
   });
 
   const outOfStock = products.filter((p: Product) => p.stock_quantity === 0).length;
   const lowStock = products.filter(
-    (p: Product) => p.stock_quantity > 0 && p.stock_quantity <= 5,
+    (p: Product) => p.stock_quantity > 0 && p.stock_quantity <= 3,
   ).length;
 
   const handleStockUpdate = (id: string) => {
@@ -126,7 +126,7 @@ export default function AdminInventory() {
                 {filtered.map((p: Product) => {
                   const isEditing = p.id in editing;
                   const stockStatus =
-                    p.stock_quantity === 0 ? "out" : p.stock_quantity <= 5 ? "low" : "ok";
+                    p.stock_quantity === 0 ? "out" : p.stock_quantity <= 3 ? "low" : "ok";
                   return (
                     <tr
                       key={p.id}
@@ -134,7 +134,7 @@ export default function AdminInventory() {
                     >
                       <td className="p-4">
                         <img
-                          src={p.image || "/placeholder-saree.jpg"}
+                          src={p.image || "/media/placeholder-saree.jpg"}
                           className="h-10 w-8 object-cover border border-border"
                         />
                       </td>

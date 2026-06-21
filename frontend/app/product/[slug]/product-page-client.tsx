@@ -175,9 +175,9 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
         </nav>
       </div>
 
-      <div className="container-luxe grid gap-10 py-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+      <div className="container-luxe grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr] lg:gap-20 lg:items-start">
         {/* Gallery */}
-        <div className="grid gap-4 md:grid-cols-[100px_1fr] h-fit">
+        <div className="grid gap-4 md:grid-cols-[80px_1fr] lg:sticky lg:top-28 h-fit">
           {/* Thumbnails */}
           <div className="order-2 flex flex-row gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:order-1 md:flex-col scrollbar-none snap-x snap-mandatory">
             {product.gallery.map((img, i) => (
@@ -198,7 +198,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                   alt=""
                   className="h-full w-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder-saree.jpg";
+                    (e.target as HTMLImageElement).src = "/media/placeholder-saree.jpg";
                   }}
                 />
               </button>
@@ -228,13 +228,15 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
         </div>
 
         {/* Info */}
-        <div className="lg:sticky lg:top-28 lg:self-start">
-          <p className="eyebrow text-gold font-bold tracking-[0.25em]">
-            {product.collection?.name || product.fabric}
-          </p>
-          <h1 className="mt-3 font-display text-3xl leading-tight md:text-4xl text-ink font-semibold tracking-wide">
-            {product.name}
-          </h1>
+        <div className="flex flex-col space-y-8">
+          <div className="space-y-4 border-b border-border/40 pb-8">
+            <p className="eyebrow text-gold font-bold tracking-[0.25em] text-[0.65rem]">
+              {product.collection?.name || product.fabric}
+            </p>
+            <h1 className="font-display text-3xl leading-[1.15] md:text-4xl text-ink font-semibold tracking-wide">
+              {product.name}
+            </h1>
+          </div>
 
           {/* Rating */}
           {reviews.length > 0 && (
@@ -253,68 +255,70 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
             </div>
           )}
 
-          <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-2xl font-serif text-ink tracking-wide font-medium">
-              {formatINR(displayPrice)}
-            </span>
-            {product.sale_price && (
-              <span className="text-sm text-muted-foreground line-through font-medium">
-                {formatINR(product.price)}
+          <div className="flex flex-col space-y-5">
+            <div className="flex items-baseline gap-3">
+              <span className="text-2xl font-display text-ink tracking-wide font-medium">
+                {formatINR(displayPrice)}
               </span>
+              {product.sale_price && (
+                <span className="text-sm text-muted-foreground line-through font-medium">
+                  {formatINR(product.price)}
+                </span>
+              )}
+              {product.compare_at && !product.sale_price && (
+                <span className="text-sm text-muted-foreground line-through font-medium">
+                  {formatINR(product.compare_at)}
+                </span>
+              )}
+              <span className="text-xs text-muted-foreground font-medium">incl. GST</span>
+            </div>
+
+            {!product.inStock && (
+              <p className="mt-3 text-xs text-destructive font-semibold uppercase tracking-wider">
+                Currently out of stock
+              </p>
             )}
-            {product.compare_at && !product.sale_price && (
-              <span className="text-sm text-muted-foreground line-through font-medium">
-                {formatINR(product.compare_at)}
-              </span>
+
+            <p className="text-sm leading-[1.8] text-muted-foreground/90 font-medium max-w-[95%]">
+              {product.description}
+            </p>
+
+            {/* Tags */}
+            {product.fabric && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {product.fabric && (
+                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+                    {product.fabric}
+                  </span>
+                )}
+                {product.weave && product.weave !== "None" && (
+                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+                    {product.weave}
+                  </span>
+                )}
+                {product.occasion && (
+                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+                    {product.occasion}
+                  </span>
+                )}
+                {product.color && (
+                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+                    {product.color}
+                  </span>
+                )}
+              </div>
             )}
-            <span className="text-xs text-muted-foreground font-medium">incl. GST</span>
           </div>
 
-          {!product.inStock && (
-            <p className="mt-3 text-xs text-destructive font-semibold uppercase tracking-wider">
-              Currently out of stock
-            </p>
-          )}
-
-          <p className="mt-5 text-sm leading-relaxed text-muted-foreground font-medium">
-            {product.description}
-          </p>
-
-          {/* Tags */}
-          {product.fabric && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {product.fabric && (
-                <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                  {product.fabric}
-                </span>
-              )}
-              {product.weave && product.weave !== "None" && (
-                <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                  {product.weave}
-                </span>
-              )}
-              {product.occasion && (
-                <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                  {product.occasion}
-                </span>
-              )}
-              {product.color && (
-                <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                  {product.color}
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Size selector */}
-          <div className="mt-8 border-t border-border/60 pt-6">
+          <div className="pt-2">
             <div className="flex items-center justify-between">
               <p className="eyebrow text-foreground/80 font-bold">Size / Length</p>
               <button className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors">
                 <Ruler className="h-3.5 w-3.5 text-gold" /> Size guide
               </button>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="mt-4 flex flex-wrap gap-2.5 grid grid-cols-4">
               {SIZES.map((s) => (
                 <button
                   key={s}
@@ -332,8 +336,8 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
           </div>
 
           {/* Actions */}
-          <div className="mt-8">
-            <div className="flex gap-3 h-14">
+          <div className="pt-4">
+            <div className="flex gap-3 h-[3.5rem]">
               <button
                 onClick={() => {
                   if (!isAuthenticated) {
@@ -386,7 +390,17 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
           </div>
 
           <a
-            href={`https://wa.me/919949740776?text=${encodeURIComponent(`Hi Drapeva, I'd love to know more about the ${product.name}.`)}`}
+            href={`https://wa.me/919949740776?text=${encodeURIComponent(
+              `Hello *Drapeva*,
+
+I'm interested in the following saree:
+
+*Saree Name:* *${product.name}*
+
+*Product ID:* *${product.product_code}*
+
+Could you please share more details?`,
+            )}`}
             target="_blank"
             rel="noreferrer"
             className="mt-4 inline-flex w-full items-center justify-center border border-[#25D366]/40 py-3.5 text-xs uppercase tracking-[0.25em] text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300 font-semibold"

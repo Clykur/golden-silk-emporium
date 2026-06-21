@@ -40,7 +40,11 @@ export async function POST(request: Request) {
       );
 
       if (record.customer_phone) {
-        await WhatsAppService.sendOrderUpdate(record.customer_phone, record.id, "pending");
+        await WhatsAppService.sendOrderUpdate(
+          record.customer_phone,
+          record.order_number || record.id,
+          "pending",
+        );
       }
       console.log(
         `[Supabase Webhook] Dispatched COD confirmation notifications for order ${record.id}`,
@@ -66,7 +70,11 @@ export async function POST(request: Request) {
       );
 
       if (record.customer_phone) {
-        await WhatsAppService.sendOrderUpdate(record.customer_phone, record.id, record.status);
+        await WhatsAppService.sendOrderUpdate(
+          record.customer_phone,
+          record.order_number || record.id,
+          record.status,
+        );
       }
       console.log(
         `[Supabase Webhook] Dispatched status update notifications for order ${record.id} -> ${record.status}`,

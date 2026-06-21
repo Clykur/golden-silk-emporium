@@ -91,41 +91,47 @@ export default function AdminSettings() {
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
+        <form onSubmit={handleSubmit} className="space-y-8 w-full">
           {/* Brand Settings */}
-          <div className="border border-border bg-background">
-            <div className="border-b border-border bg-champagne/10 px-6 py-4 flex items-center gap-2">
-              <Settings className="h-4 w-4 text-gold" />
-              <h3 className="eyebrow text-xs">General Branding</h3>
+          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="border-b border-border bg-gray-50/50 px-6 py-4 flex items-center gap-2">
+              <Settings className="h-5 w-5 text-gold" />
+              <h3 className="font-semibold text-lg">General Branding</h3>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+            <div className="p-6 space-y-6">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <label className="block">
-                  <span className="eyebrow text-[10px] mb-1.5 block">Store Name *</span>
+                  <span className="text-sm font-medium text-gray-700 mb-1.5 block">
+                    Store Name *
+                  </span>
                   <input
                     value={storeName}
                     onChange={(e) => setStoreName(e.target.value)}
                     required
-                    className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                    className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                     placeholder="e.g. Drapeva"
                   />
                 </label>
                 <label className="block">
-                  <span className="eyebrow text-[10px] mb-1.5 block">WhatsApp Number</span>
+                  <span className="text-sm font-medium text-gray-700 mb-1.5 block">
+                    WhatsApp Number
+                  </span>
                   <input
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
-                    className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                    className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                     placeholder="e.g. +919949740776"
                   />
                 </label>
               </div>
               <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Store Tagline</span>
+                <span className="text-sm font-medium text-gray-700 mb-1.5 block">
+                  Store Tagline
+                </span>
                 <input
                   value={storeTagline}
                   onChange={(e) => setStoreTagline(e.target.value)}
-                  className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                  className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                   placeholder="e.g. Heirloom Indian Silk Sarees"
                 />
               </label>
@@ -133,26 +139,28 @@ export default function AdminSettings() {
           </div>
 
           {/* Pricing & Checkout Rules */}
-          <div className="border border-border bg-background">
-            <div className="border-b border-border bg-champagne/10 px-6 py-4 flex items-center gap-2">
-              <Settings className="h-4 w-4 text-gold" />
-              <h3 className="eyebrow text-xs">Shipping & Taxes</h3>
+          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+            <div className="border-b border-border bg-gray-50/50 px-6 py-4 flex items-center gap-2">
+              <Settings className="h-5 w-5 text-gold" />
+              <h3 className="font-semibold text-lg">Shipping & Taxes</h3>
             </div>
-            <div className="p-6 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-3">
+            <div className="p-6 space-y-6">
+              <div className="grid gap-6 sm:grid-cols-3">
                 <label className="block">
-                  <span className="eyebrow text-[10px] mb-1.5 block">Flat Shipping Cost (₹)</span>
+                  <span className="text-sm font-medium text-gray-700 mb-1.5 block">
+                    Flat Shipping Cost (₹)
+                  </span>
                   <input
                     type="number"
                     value={shippingCost}
                     onChange={(e) => setShippingCost(Number(e.target.value))}
                     min={0}
-                    className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                    className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                     placeholder="e.g. 299"
                   />
                 </label>
                 <label className="block">
-                  <span className="eyebrow text-[10px] mb-1.5 block">
+                  <span className="text-sm font-medium text-gray-700 mb-1.5 block">
                     Free Shipping Threshold (₹)
                   </span>
                   <input
@@ -160,12 +168,14 @@ export default function AdminSettings() {
                     value={freeShippingThreshold}
                     onChange={(e) => setFreeShippingThreshold(Number(e.target.value))}
                     min={0}
-                    className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                    className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                     placeholder="e.g. 5000"
                   />
                 </label>
                 <label className="block">
-                  <span className="eyebrow text-[10px] mb-1.5 block">GST / Tax Rate (0 to 1)</span>
+                  <span className="text-sm font-medium text-gray-700 mb-1.5 block">
+                    GST / Tax Rate (0 to 1)
+                  </span>
                   <input
                     type="number"
                     step="0.01"
@@ -173,27 +183,31 @@ export default function AdminSettings() {
                     onChange={(e) => setTaxRate(Number(e.target.value))}
                     min={0}
                     max={1}
-                    className="w-full border border-border bg-background px-3 py-2.5 text-sm focus:outline-none focus:border-foreground"
+                    className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
                     placeholder="e.g. 0.18"
                   />
                 </label>
               </div>
-              <p className="text-xs text-muted-foreground bg-champagne/10 p-3 border border-border/60">
-                💡 <strong>GST Tip:</strong> A value of <code>0.18</code> corresponds to a 18% Goods
-                and Services Tax added at checkout. Set to <code>0</code> if pricing is
-                tax-inclusive.
-              </p>
+              <div className="bg-blue-50/50 text-blue-800 text-sm p-4 rounded-lg border border-blue-100 flex items-start gap-3">
+                <span className="text-xl">💡</span>
+                <p>
+                  <strong>GST Tip:</strong> A value of <code>0.18</code> corresponds to an 18% Goods
+                  and Services Tax added at checkout. Set to <code>0</code> if your pricing is
+                  already tax-inclusive.
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Security Banner */}
-          <div className="border border-amber-200 bg-amber-50 p-4 text-amber-800 text-xs flex gap-3 items-start">
-            <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="bg-amber-50 rounded-xl border border-amber-200 p-5 text-amber-800 text-sm flex gap-4 items-start shadow-sm">
+            <ShieldAlert className="h-6 w-6 text-amber-600 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold">Caution: System Configuration</p>
-              <p className="mt-1">
+              <p className="font-semibold text-base">Caution: System Configuration</p>
+              <p className="mt-1.5 text-amber-700 leading-relaxed">
                 Updating these settings affects live calculations on the checkout page, WhatsApp
-                widgets, and invoice receipts immediately. Ensure values are accurate.
+                widgets, and invoice receipts immediately. Please ensure these values are accurate
+                before saving.
               </p>
             </div>
           </div>

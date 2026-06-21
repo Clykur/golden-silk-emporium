@@ -16,7 +16,7 @@
     "lint": "npm run lint -w frontend",
     "lint:fix": "npm run lint:fix -w frontend",
     "typecheck": "npm run typecheck -w frontend",
-    "format": "npm run format -w frontend",
+    "format": "prettier --write \"frontend/**/*.{ts,tsx,js,jsx,json,css}\" \"backend/**/*.{ts,js,json}\" \"*.{ts,js,json}\"",
     "format:check": "npm run format:check -w frontend",
     "clean": "npm run clean -w frontend && rm -rf node_modules",
     "seed:supabase": "node frontend/scripts/seed-supabase.cjs",

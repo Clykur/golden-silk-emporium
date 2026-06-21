@@ -35,8 +35,8 @@ export class WhatsAppService {
     }
   }
 
-  static async sendOrderUpdate(to: string, orderId: string, status: string) {
-    const msg = `Drapeva: Your order #${orderId} status has been updated to "${status}". Track progress details in your account dashboard. For immediate enquiries, please reply directly.`;
+  static async sendOrderUpdate(to: string, orderNumber: string, status: string) {
+    const msg = `Drapeva: Your order ${orderNumber} status has been updated to "${status}". Track progress details in your account dashboard. For immediate enquiries, please reply directly.`;
     return this.sendNotification(to, msg);
   }
 

@@ -103,10 +103,25 @@ router.post(
           });
 
           // Decrement stock
-          await tx.productVariant.update({
+          const updatedVariant = await tx.productVariant.update({
             where: { id: item.variantId },
             data: { stock: { decrement: item.quantity } },
+            include: { product: true },
           });
+
+          // Notify admins if stock is 3 or less
+          if (updatedVariant.stock <= 3) {
+            const admins = await tx.user.findMany({ where: { role: "ADMIN" } });
+            if (admins.length > 0) {
+              const notifications = admins.map((admin: any) => ({
+                userId: admin.id,
+                type: "LOW_STOCK",
+                title: "Low Stock Alert",
+                message: `Product ${updatedVariant.product.name} (${updatedVariant.size}) has only ${updatedVariant.stock} units left in stock.`,
+              }));
+              await tx.notification.createMany({ data: notifications });
+            }
+          }
         }
 
         // Shipping & Tax

@@ -322,20 +322,20 @@ BEGIN
     WHEN 'processing' THEN
       notif_type := 'order_processing';
       notif_title := 'Order Confirmed';
-      notif_msg := 'Your order #' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8)) || ' is being processed.';
+      notif_msg := 'Your order ' || COALESCE(NEW.order_number, '#' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8))) || ' is being processed.';
     WHEN 'shipped' THEN
       notif_type := 'order_shipped';
       notif_title := 'Order Shipped';
-      notif_msg := 'Your order #' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8)) || ' has been shipped!' ||
+      notif_msg := 'Your order ' || COALESCE(NEW.order_number, '#' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8))) || ' has been shipped!' ||
         CASE WHEN NEW.tracking_number IS NOT NULL THEN ' Tracking: ' || NEW.tracking_number ELSE '' END;
     WHEN 'delivered' THEN
       notif_type := 'order_delivered';
       notif_title := 'Order Delivered';
-      notif_msg := 'Your order #' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8)) || ' has been delivered. Enjoy your saree!';
+      notif_msg := 'Your order ' || COALESCE(NEW.order_number, '#' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8))) || ' has been delivered. Enjoy your saree!';
     WHEN 'cancelled' THEN
       notif_type := 'order_cancelled';
       notif_title := 'Order Cancelled';
-      notif_msg := 'Your order #' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8)) || ' has been cancelled.';
+      notif_msg := 'Your order ' || COALESCE(NEW.order_number, '#' || UPPER(SUBSTRING(NEW.id::TEXT FROM 1 FOR 8))) || ' has been cancelled.';
     ELSE
       RETURN NEW;
   END CASE;

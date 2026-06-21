@@ -11,7 +11,7 @@ export function SiteFooter() {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  const getFooterType = (path: string): "none" | "minimal" | "full" => {
+  const getFooterType = (path: string): "none" | "full" => {
     const normalizedPath = path === "/" ? "/" : path.replace(/\/$/, "");
 
     // 1. Hide footer completely
@@ -33,21 +33,6 @@ export function SiteFooter() {
       return "none";
     }
 
-    // 2. Minimal footer patterns (authenticated customer account / dashboard pages)
-    const minimalPatterns = [
-      /^\/dashboard(\/.*)?$/,
-      /^\/orders(\/.*)?$/,
-      /^\/profile(\/.*)?$/,
-      /^\/wishlist(\/.*)?$/,
-      /^\/settings(\/.*)?$/,
-      /^\/addresses(\/.*)?$/,
-      /^\/account(\/.*)?$/,
-    ];
-
-    if (minimalPatterns.some((pattern) => pattern.test(normalizedPath))) {
-      return "minimal";
-    }
-
     return "full";
   };
 
@@ -57,104 +42,73 @@ export function SiteFooter() {
     return null;
   }
 
-  // Show the simple minimal footer on customer account pages or everywhere if the user is logged in
-  if (footerType === "minimal" || user) {
-    return (
-      <footer className="w-full border-t border-border bg-champagne/10 mt-auto">
-        <div className="mx-auto mt-5 max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Drapeva. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-6">
-            <Link href="/support" className="transition-colors hover:text-foreground">
-              Terms & Conditions
-            </Link>
-            <Link href="/support" className="transition-colors hover:text-foreground">
-              Support
-            </Link>
-          </div>
-        </div>
-        <div className="bg-ink text-background overflow-hidden h-14 md:h-20 flex items-center mt-5 border-t border-border/20">
-          <div className="flex animate-marquee whitespace-nowrap text-lg md:text-2xl tracking-[0.32em] uppercase font-limelight">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="flex shrink-0 gap-12 px-6 items-center">
-                <span className="pt-1.5">DRAPEVA</span>
+  return (
+    <footer className="mt-20 border-t-0 bg-ink text-background">
+      <div className="mx-auto max-w-7xl px-4 py-20 lg:py-32">
+        <div className="grid gap-16 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+          {/* Brand */}
+          <div className="flex flex-col items-start pr-8">
+            <Link href="/" className="inline-block select-none group" aria-label="Drapeva home">
+              <div className="relative rounded-full overflow-hidden h-32 w-32 border border-background/20 p-2 transition-transform duration-700 group-hover:scale-105">
                 <img
-                  src="/correct.png"
-                  alt="*"
-                  className="h-6 w-6 md:h-8 md:w-8 invert brightness-0"
+                  src="/media/logo.png"
+                  alt="Drapeva"
+                  className="h-full w-full rounded-full object-cover"
                 />
               </div>
-            ))}
-          </div>
-        </div>
-      </footer>
-    );
-  }
-
-  return (
-    <footer className="mt-20 border-t border-border bg-champagne/20">
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
-          {/* Brand */}
-          <div className="-mt-6">
-            <Link href="/" className="inline-block select-none" aria-label="Drapeva home">
-              <img src="/logo.png" alt="Drapeva" className="h-36 w-36 rounded-full object-cover" />
             </Link>
 
             <h2
-              className="mt-5 text-4xl tracking-[0.22em] text-foreground"
+              className="mt-8 text-3xl tracking-[0.3em] text-background uppercase"
               style={{ fontFamily: "'limelight', serif" }}
             >
               DRAPEVA
             </h2>
 
-            <a
-              href="https://maps.google.com/?q=NPS+School+Road,+Ambedkar+Nagar,+Chikkabellandur,+Mullur,+Karnataka+560035"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 block max-w-sm text-sm leading-relaxed text-muted-foreground transition-colors hover:text-foreground hover:underline"
-            >
-              NPS School Road, Ambedkar Nagar, Chikkabellandur, Mullur, Karnataka 560035, India
-            </a>
+            <p className="mt-6 max-w-sm text-sm leading-loose text-background/60 font-light">
+              NPS School Road, Ambedkar Nagar,
+              <br />
+              Chikkabellandur, Mullur,
+              <br />
+              Karnataka 560035, India
+            </p>
           </div>
 
           {/* Shop */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/40 mb-8">
               Collection
             </h4>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/collections"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   All Sarees
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/bestsellers?category=best-sellers"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Best Sellers
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/collections?category=wedding-sarees"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Collection
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/new-arrivals"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   New Arrivals
                 </Link>
@@ -164,42 +118,39 @@ export function SiteFooter() {
 
           {/* Customer Care */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/40 mb-8">
               Customer Care
             </h4>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/support"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Contact Us
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/support"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Shipping Policy
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/support"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Returns & Exchanges
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/support"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Terms & Conditions
                 </Link>
@@ -209,42 +160,39 @@ export function SiteFooter() {
 
           {/* Company */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/40 mb-8">
               Company
             </h4>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="/about"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   About Us
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/collections"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Collections
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/wishlist"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Wishlist
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="/support"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Support
                 </Link>
@@ -254,55 +202,52 @@ export function SiteFooter() {
 
           {/* Social */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground">
+            <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/40 mb-8">
               Social
             </h4>
 
-            <ul className="mt-5 space-y-3">
+            <ul className="space-y-4">
               <li>
                 <a
                   href="https://instagram.com/drapeva"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                  className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  <Instagram className="h-4 w-4" />
+                  <Instagram className="h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                   Instagram
                 </a>
               </li>
-
               <li>
                 <a
                   href="https://wa.me/919999999999"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                  className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  <FaWhatsapp className="h-4 w-4" />
+                  <FaWhatsapp className="h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                   WhatsApp
                 </a>
               </li>
-
               <li>
                 <a
                   href="https://youtube.com/@drapeva"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                  className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  <Youtube className="h-4 w-4" />
+                  <Youtube className="h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                   YouTube
                 </a>
               </li>
-
               <li>
                 <a
                   href="https://threads.net/@drapeva"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                  className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  <FaThreads className="h-4 w-4" />
+                  <FaThreads className="h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
                   Threads
                 </a>
               </li>
@@ -311,22 +256,25 @@ export function SiteFooter() {
         </div>
 
         {/* Divider */}
-        <div className="mt-10 border-t border-border" />
+        <div className="mt-24 border-t border-background/10" />
 
         {/* Bottom Bar */}
-        <div className="mt-6 flex flex-col gap-4 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
+        <div className="mt-8 flex flex-col gap-6 text-[11px] uppercase tracking-widest text-background/40 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Drapeva. All rights reserved.</p>
 
-          <div className="flex flex-wrap items-center gap-6">
-            <a href="" className="flex items-center gap-2 transition-colors hover:text-foreground">
-              <FaWhatsapp className="h-5 w-5" />
+          <div className="flex flex-wrap items-center gap-8">
+            <a
+              href="https://wa.me/919949740776"
+              className="flex items-center gap-2 transition-colors hover:text-background"
+            >
+              <FaWhatsapp className="h-4 w-4" />
               Whatsapp
             </a>
             <a
               href="https://instagram.com/drapeva"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 transition-colors hover:text-foreground"
+              className="inline-flex items-center gap-2 transition-colors hover:text-background"
             >
               <Instagram className="h-4 w-4" />
               Instagram
@@ -336,15 +284,15 @@ export function SiteFooter() {
       </div>
 
       {/* Large Footer Marquee */}
-      <div className="bg-ink text-background overflow-hidden h-14 md:h-20 flex items-center mt-1 border-t border-border/20">
-        <div className="flex animate-marquee whitespace-nowrap text-lg md:text-2xl tracking-[0.32em] uppercase font-limelight">
+      <div className="bg-background text-ink overflow-hidden h-16 md:h-24 flex items-center">
+        <div className="flex animate-marquee whitespace-nowrap text-2xl md:text-4xl tracking-[0.32em] uppercase font-limelight">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="flex shrink-0 gap-12 px-6 items-center">
-              <span className="pt-1.5">DRAPEVA</span>
+            <div key={i} className="flex shrink-0 gap-16 px-8 items-center">
+              <span className="pt-2">DRAPEVA</span>
               <img
-                src="/correct.png"
+                src="/media/correct.png"
                 alt="*"
-                className="h-6 w-6 md:h-8 md:w-8 invert brightness-0"
+                className="h-8 w-8 md:h-10 md:w-10 opacity-80"
               />
             </div>
           ))}

@@ -86,7 +86,7 @@ export function CartDrawer() {
                   <div className="flex flex-1 flex-col">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="eyebrow text-[0.6rem]">{item.product.collection_id}</p>
+                        <p className="eyebrow text-[0.6rem]">{item.product.product_code}</p>
                         <p className="mt-1 font-display text-base leading-tight">
                           {item.product.name}
                         </p>

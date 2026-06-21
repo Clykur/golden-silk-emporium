@@ -70,7 +70,11 @@ export async function POST(request: Request) {
       );
 
       if (order.customer_phone) {
-        await WhatsAppService.sendOrderUpdate(order.customer_phone, order.id, "processing");
+        await WhatsAppService.sendOrderUpdate(
+          order.customer_phone,
+          order.order_number || order.id,
+          "processing",
+        );
       }
     } catch (notifyErr) {
       console.error("Failed to send payment verification notifications:", notifyErr);

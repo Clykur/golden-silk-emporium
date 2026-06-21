@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         if (updatedOrder.customer_phone) {
           await WhatsAppService.sendOrderUpdate(
             updatedOrder.customer_phone,
-            updatedOrder.id,
+            updatedOrder.order_number || updatedOrder.id,
             "processing",
           );
         }
