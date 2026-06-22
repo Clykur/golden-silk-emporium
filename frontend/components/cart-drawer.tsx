@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useShop, cartTotal } from "@/lib/store";
 import { formatINR } from "@/lib/products";
+import { useCheckoutStore } from "@/lib/checkout-store";
 
 export function CartDrawer() {
   const cartOpen = useShop((s) => s.cartOpen);
@@ -12,6 +13,7 @@ export function CartDrawer() {
   const cart = useShop((s) => s.cart);
   const updateQty = useShop((s) => s.updateQty);
   const removeFromCart = useShop((s) => s.removeFromCart);
+  const resetCheckout = useCheckoutStore((s) => s.resetCheckout);
   const [renderCart, setRenderCart] = useState(false);
 
   useEffect(() => {
@@ -137,7 +139,10 @@ export function CartDrawer() {
             </p>
             <Link
               href="/checkout"
-              onClick={closeCart}
+              onClick={() => {
+                resetCheckout();
+                closeCart();
+              }}
               className="mt-5 inline-flex w-full items-center justify-center bg-foreground py-4 text-xs font-medium tracking-[0.25em] uppercase text-background transition-colors hover:bg-gold hover:text-gold-foreground"
             >
               Secure checkout

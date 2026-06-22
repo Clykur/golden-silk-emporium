@@ -1848,7 +1848,15 @@ export const authApi = {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to register account");
+      const errorMsg =
+        typeof err.error === "string"
+          ? err.error
+          : err.error?.message
+            ? err.error.message
+            : typeof err.error === "object" && err.error !== null
+              ? JSON.stringify(err.error)
+              : "Failed to register account";
+      throw new Error(errorMsg);
     }
 
     return await res.json();

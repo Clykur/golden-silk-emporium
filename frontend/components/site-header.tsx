@@ -29,13 +29,24 @@ export function SiteHeader() {
     // Intersection observer for section-wise active state
     const observer = new IntersectionObserver(
       (entries) => {
+        let activeSection = "";
+
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveHash(`#${entry.target.id}`);
+            activeSection = `#${entry.target.id}`;
+          }
+
+          // Clear active state when bestsellers is completely above viewport
+          if (entry.target.id === "bestsellers" && entry.boundingClientRect.bottom < 0) {
+            activeSection = "";
           }
         });
+
+        setActiveHash(activeSection);
       },
-      { rootMargin: "-20% 0px -60% 0px" },
+      {
+        threshold: 0.3,
+      },
     );
 
     const sections = document.querySelectorAll("section[id]");
@@ -127,7 +138,7 @@ export function SiteHeader() {
     queryKey: ["unread-notifications-count", user?.id],
     queryFn: () => (user ? notificationsApi.unreadCount(user.id) : Promise.resolve(0)),
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 4000,
   });
 
   // Real-time notifications and order status updates subscription

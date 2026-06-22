@@ -7,12 +7,13 @@ import { cartApi, wishlistApi } from "./api";
 type ShopState = {
   cart: CartItem[];
   wishlist: string[];
+  wishlistItems: Product[];
   cartOpen: boolean;
   quickView: Product | null;
   addToCart: (product: Product, size?: string, qty?: number) => void;
   removeFromCart: (id: string, size?: string) => void;
   updateQty: (id: string, size: string, qty: number) => void;
-  toggleWishlist: (id: string) => void;
+  toggleWishlist: (product: Product) => void;
   openCart: () => void;
   closeCart: () => void;
   setQuickView: (p: Product | null) => void;
@@ -29,6 +30,7 @@ export const useShop = create<ShopState>()(
     (set, get) => ({
       cart: [],
       wishlist: [],
+      wishlistItems: [],
       cartOpen: false,
       quickView: null,
       addToCart: (product, size = "Standard", qty = 1) =>
@@ -114,30 +116,44 @@ export const useShop = create<ShopState>()(
 
           return { cart };
         }),
-      toggleWishlist: (id) =>
+      toggleWishlist: (product) =>
         set((s) => {
-          const isWishlisted = s.wishlist.includes(id);
-          const wishlist = isWishlisted ? s.wishlist.filter((w) => w !== id) : [...s.wishlist, id];
+          const isWishlisted = s.wishlist.includes(product.id);
+          const wishlist = isWishlisted
+            ? s.wishlist.filter((w) => w !== product.id)
+            : [...s.wishlist.filter((w) => w !== product.id), product.id];
+          const wishlistItems = isWishlisted
+            ? s.wishlistItems.filter((w) => w.id !== product.id)
+            : [...s.wishlistItems.filter((w) => w.id !== product.id), product];
 
           // Sync with database if logged in
           import("./auth-store").then(({ useAuth }) => {
             const user = useAuth.getState().user;
             if (user) {
               if (isWishlisted) {
-                wishlistApi.remove(user.id, id).catch(console.error);
+                wishlistApi.remove(user.id, product.id).catch(console.error);
               } else {
-                wishlistApi.add(user.id, id).catch(console.error);
+                wishlistApi.add(user.id, product.id).catch(console.error);
               }
             }
           });
 
-          return { wishlist };
+          return { wishlist, wishlistItems };
         }),
       openCart: () => set({ cartOpen: true }),
       closeCart: () => set({ cartOpen: false }),
       setQuickView: (p) => set({ quickView: p }),
-      clearCart: () => set({ cart: [] }),
-      clearWishlist: () => set({ wishlist: [] }),
+      clearCart: () => {
+        set({ cart: [] });
+        // Also clear the database cart for the logged-in user
+        import("./auth-store").then(({ useAuth }) => {
+          const user = useAuth.getState().user;
+          if (user) {
+            cartApi.clear(user.id).catch(console.error);
+          }
+        });
+      },
+      clearWishlist: () => set({ wishlist: [], wishlistItems: [] }),
       syncWithDatabase: async () => {
         // Prevent concurrent sync calls (e.g. triggered by multiple auth events)
         if (_isSyncing) return;
@@ -187,8 +203,14 @@ export const useShop = create<ShopState>()(
           // Fetch final wishlist from DB
           const finalDbWishlistItems = (await wishlistApi.get(user.id)) as any[];
           const mergedWishlist = finalDbWishlistItems.map((item) => item.product_id);
+          const mergedWishlistItems = finalDbWishlistItems.map((item) =>
+            normalizeProduct({
+              ...item.product,
+              images: item.product?.images || [],
+            } as any),
+          );
 
-          set({ cart: mergedCart, wishlist: mergedWishlist });
+          set({ cart: mergedCart, wishlist: mergedWishlist, wishlistItems: mergedWishlistItems });
         } catch (err) {
           console.error("Error syncing cart/wishlist with database:", err);
         } finally {

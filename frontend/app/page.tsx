@@ -8,7 +8,8 @@ import { ProductCard } from "@/components/product-card";
 import { ProductCarousel } from "@/components/product-carousel";
 import { productsApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth-store";
-import { useRef, useEffect } from "react";
+import { useProductsStore } from "@/lib/products-store";
+import { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -44,6 +45,25 @@ function ProductSkeleton() {
 // ============================================================
 function PublicHome() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const newArrivals = useProductsStore((state) => state.newArrivals).slice(0, 8);
+  const bestsellers = useProductsStore((state) => state.bestsellers).slice(0, 8);
+  const [loading, setLoading] = useState(newArrivals.length === 0 || bestsellers.length === 0);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          useProductsStore.getState().fetchNewArrivals(8),
+          useProductsStore.getState().fetchBestsellers(8),
+        ]);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   useGSAP(
     () => {
@@ -69,16 +89,6 @@ function PublicHome() {
     { scope: containerRef },
   );
 
-  const { data: newArrivals = [], isLoading: naLoading } = useQuery({
-    queryKey: ["new-arrivals-public"],
-    queryFn: () => productsApi.getNewArrivals(8),
-  });
-
-  const { data: bestsellers = [], isLoading: bsLoading } = useQuery({
-    queryKey: ["bestsellers-public"],
-    queryFn: () => productsApi.getBestsellers(8),
-  });
-
   return (
     <div ref={containerRef}>
       <HeroSection />
@@ -100,7 +110,7 @@ function PublicHome() {
             See more <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <ProductCarousel products={newArrivals} loading={naLoading} />
+        <ProductCarousel products={newArrivals} loading={loading} />
       </section>
 
       <ShopByOccasion />
@@ -124,7 +134,7 @@ function PublicHome() {
             View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
-        <ProductCarousel products={bestsellers} loading={bsLoading} />
+        <ProductCarousel products={bestsellers} loading={loading} />
       </section>
 
       <VideoCommerce />

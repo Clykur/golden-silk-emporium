@@ -71,11 +71,16 @@ export default function Register() {
       toast.success("Account created successfully! Please sign in.");
       router.push("/login");
     } catch (err: any) {
-      if (err.message?.includes("already registered") || err.message?.includes("already exists")) {
+      const msg =
+        err.message && err.message !== "{}" && err.message !== "[object Object]"
+          ? err.message
+          : "Registration failed";
+
+      if (msg.includes("already registered") || msg.includes("already exists")) {
         toast.error("This identifier is already registered. Please sign in instead.");
       } else {
         toast.error(
-          `${err.message || "Registration failed"}. Note: Ensure provider confirmations are set up in your Supabase Dashboard, and the database SQL schema has been applied.`,
+          `${msg}. Note: Ensure provider confirmations are set up in your Supabase Dashboard, and the database SQL schema has been applied.`,
           { duration: 6000 },
         );
       }

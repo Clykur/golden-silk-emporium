@@ -99,7 +99,7 @@ export function SiteFooter() {
                   href="/support"
                   className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  Returns & Exchanges
+                  Returns, Exchanges & Refunds
                 </Link>
               </li>
               <li>
@@ -110,13 +110,21 @@ export function SiteFooter() {
                   Terms & Conditions
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/support"
+                  className="text-sm font-light text-background/70 transition-colors hover:text-background"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
             <h4 className="text-[10px] font-medium uppercase tracking-[0.3em] text-background/40 mb-8">
-              Company
+              Store
             </h4>
 
             <ul className="space-y-4">
@@ -195,17 +203,6 @@ export function SiteFooter() {
                   YouTube
                 </a>
               </li>
-              <li>
-                <a
-                  href="https://threads.net/@drapeva"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
-                >
-                  <FaThreads className="h-4 w-4 opacity-60 group-hover:opacity-100 transition-opacity" />
-                  Threads
-                </a>
-              </li>
             </ul>
           </div>
         </div>
@@ -231,14 +228,6 @@ export function SiteFooter() {
               className="inline-flex items-center gap-2 transition-colors hover:text-background"
             >
               <Instagram className="h-6 w-6" />
-            </a>
-            <a
-              href="https://threads.net/@drapeva"
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
-            >
-              <FaThreads className="h-6 w-6 opacity-60 group-hover:opacity-100 transition-opacity" />
             </a>
             <a
               href="https://youtube.com/@drapeva"

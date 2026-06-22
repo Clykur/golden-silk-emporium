@@ -106,7 +106,7 @@ export function QuickView() {
                   );
                   return;
                 }
-                toggleWishlist(quickView.id);
+                toggleWishlist(quickView);
               }}
               aria-label="Wishlist"
               className="grid place-items-center border border-border px-5 py-4 hover:border-foreground transition-colors"

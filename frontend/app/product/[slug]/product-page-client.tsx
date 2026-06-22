@@ -342,7 +342,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                     handleLoginRedirect();
                     return;
                   }
-                  toggleWishlist(product.id);
+                  toggleWishlist(product);
                 }}
                 aria-label="Wishlist"
                 className="w-14 shrink-0 grid place-items-center border border-border bg-background hover:border-foreground transition-all duration-300 group"
@@ -612,7 +612,7 @@ Could you please share more details?`,
                 handleLoginRedirect();
                 return;
               }
-              toggleWishlist(product.id);
+              toggleWishlist(product);
             }}
             aria-label="Wishlist"
             className="w-12 h-12 shrink-0 grid place-items-center border border-border bg-background rounded-none hover:border-foreground transition-colors"

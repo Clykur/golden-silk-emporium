@@ -56,18 +56,72 @@ export default function Notifications() {
     queryKey: ["my-notifications", user?.id],
     queryFn: () => (user ? notificationsApi.list(user.id) : Promise.resolve([])),
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 4000,
   });
 
   const markReadMut = useMutation({
     mutationFn: (id: string) => notificationsApi.markRead(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["my-notifications"] }),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["my-notifications", user?.id] });
+      await qc.cancelQueries({ queryKey: ["unread-notifications-count", user?.id] });
+
+      const previousNotifications = qc.getQueryData(["my-notifications", user?.id]);
+      const previousUnreadCount = qc.getQueryData(["unread-notifications-count", user?.id]);
+
+      if (previousNotifications) {
+        qc.setQueryData(["my-notifications", user?.id], (old: any) =>
+          old?.map((n: any) => (n.id === id ? { ...n, is_read: true } : n)),
+        );
+      }
+
+      if (typeof previousUnreadCount === "number") {
+        qc.setQueryData(
+          ["unread-notifications-count", user?.id],
+          Math.max(0, previousUnreadCount - 1),
+        );
+      }
+
+      return { previousNotifications, previousUnreadCount };
+    },
+    onError: (err, id, context: any) => {
+      if (context) {
+        qc.setQueryData(["my-notifications", user?.id], context.previousNotifications);
+        qc.setQueryData(["unread-notifications-count", user?.id], context.previousUnreadCount);
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-notifications", user?.id] });
+      qc.invalidateQueries({ queryKey: ["unread-notifications-count", user?.id] });
+    },
   });
 
   const markAllMut = useMutation({
     mutationFn: () => notificationsApi.markAllRead(user!.id),
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ["my-notifications", user?.id] });
+      await qc.cancelQueries({ queryKey: ["unread-notifications-count", user?.id] });
+
+      const previousNotifications = qc.getQueryData(["my-notifications", user?.id]);
+      const previousUnreadCount = qc.getQueryData(["unread-notifications-count", user?.id]);
+
+      if (previousNotifications) {
+        qc.setQueryData(["my-notifications", user?.id], (old: any) =>
+          old?.map((n: any) => ({ ...n, is_read: true })),
+        );
+      }
+      qc.setQueryData(["unread-notifications-count", user?.id], 0);
+
+      return { previousNotifications, previousUnreadCount };
+    },
+    onError: (err, variables, context: any) => {
+      if (context) {
+        qc.setQueryData(["my-notifications", user?.id], context.previousNotifications);
+        qc.setQueryData(["unread-notifications-count", user?.id], context.previousUnreadCount);
+      }
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-notifications"] });
+      qc.invalidateQueries({ queryKey: ["my-notifications", user?.id] });
+      qc.invalidateQueries({ queryKey: ["unread-notifications-count", user?.id] });
       toast.success("All notifications marked as read");
     },
   });

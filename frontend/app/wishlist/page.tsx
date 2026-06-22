@@ -9,26 +9,15 @@ import { ProductCard } from "@/components/product-card";
 import { Heart, ArrowRight } from "lucide-react";
 
 export default function Wishlist() {
-  const wishlist = useShop((s) => s.wishlist);
+  const wishlistItems = useShop((s) => s.wishlistItems);
 
   const { data: allFeatured = [], isLoading } = useQuery({
     queryKey: ["featured-for-wishlist"],
     queryFn: () => productsApi.getFeatured(8),
-    enabled: wishlist.length === 0,
+    enabled: wishlistItems.length === 0,
   });
 
-  const { data: products = [], isLoading: loadingProds } = useQuery({
-    queryKey: ["wishlist-products", wishlist.join(",")],
-    queryFn: async () => {
-      const results = await Promise.all(
-        wishlist.map((id) => productsApi.getBySlug(id).catch(() => null)),
-      );
-      return results.filter(Boolean);
-    },
-    enabled: wishlist.length > 0,
-  });
-
-  if (wishlist.length === 0) {
+  if (wishlistItems.length === 0) {
     return (
       <div className="container-luxe py-16 space-y-16">
         <div className="text-center py-20 border border-dashed border-border bg-champagne/5 relative overflow-hidden max-w-xl mx-auto space-y-5">
@@ -68,23 +57,13 @@ export default function Wishlist() {
     <div className="container-luxe py-16">
       <div className="border-b border-border pb-6 mb-10">
         <p className="eyebrow">Saved items</p>
-        <h1 className="mt-3 font-display text-4xl">Your Wishlist ({wishlist.length})</h1>
+        <h1 className="mt-3 font-display text-4xl">Your Wishlist ({wishlistItems.length})</h1>
       </div>
-      {loadingProds ? (
-        <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
-          {Array.from({ length: wishlist.length }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-[3/4] bg-champagne/40" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
-          {products.map((p: any) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-4">
+        {wishlistItems.map((p: any) => (
+          <ProductCard key={p.id} product={p} />
+        ))}
+      </div>
     </div>
   );
 }

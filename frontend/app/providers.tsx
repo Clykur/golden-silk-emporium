@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { initAuthListener } from "@/lib/auth-store";
+import { useProductsStore } from "@/lib/products-store";
 import { Toaster } from "sonner";
 import { OfflineDetector } from "@/components/offline-detector";
 import MaintenancePage from "./maintenance/page";
@@ -27,6 +28,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     initAuthListener();
+    useProductsStore.getState().fetchProducts().catch(console.error);
   }, []);
 
   const isAdminPath = pathname?.startsWith("/admin");

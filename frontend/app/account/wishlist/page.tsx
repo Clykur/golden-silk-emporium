@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Heart, ShoppingBag, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { wishlistApi, cartApi } from "@/lib/api";
+import { wishlistApi } from "@/lib/api";
 import { formatINR, normalizeProduct } from "@/lib/types";
 import { useShop } from "@/lib/store";
 import { toast } from "sonner";
@@ -13,47 +12,17 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export default function Wishlist() {
   const { user } = useAuth();
-  const qc = useQueryClient();
-  const { addToCart } = useShop();
+  const { addToCart, wishlistItems, toggleWishlist } = useShop();
 
-  const { data: wishlist = [], isLoading } = useQuery({
-    queryKey: ["my-wishlist", user?.id],
-    queryFn: () => (user ? wishlistApi.get(user.id) : Promise.resolve([])),
-    enabled: !!user,
-  });
-
-  const removeMut = useMutation({
-    mutationFn: (productId: string) => wishlistApi.remove(user!.id, productId),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-wishlist"] });
-      toast.success("Removed from wishlist");
-    },
-  });
-
-  const handleAddToCart = (item: any) => {
-    const product = normalizeProduct({
-      ...item.product,
-      images: item.product?.images || [],
-      category: null,
-      collection: null,
-    });
-    const defaultSize = product.sizes?.[0] || "Free Size";
+  const handleAddToCart = (product: any) => {
+    const defaultSize = product.sizes?.[0] || "Standard (5.5m)";
     addToCart(product, defaultSize);
     toast.success(`${product.name} added to bag`);
   };
 
   return (
     <DashboardLayout title="My Wishlist" subtitle="Saved Pieces">
-      {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="border border-border animate-pulse aspect-[3/4] bg-champagne/10"
-            />
-          ))}
-        </div>
-      ) : wishlist.length === 0 ? (
+      {wishlistItems.length === 0 ? (
         <div className="py-16 text-center border border-dashed border-border">
           <Heart className="h-10 w-10 mx-auto text-muted-foreground stroke-1 mb-4" />
           <p className="font-display text-xl">Your wishlist is empty</p>
@@ -69,25 +38,26 @@ export default function Wishlist() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-          {wishlist.map((item: any) => {
-            const product = item.product;
-            const image =
-              product?.images?.[0]?.url || product?.images?.find((i: any) => i.is_featured)?.url;
+          {wishlistItems.map((product: any) => {
+            const image = product.image;
             return (
               <div
-                key={item.id}
+                key={product.id}
                 className="group border border-border bg-background hover:border-gold/30 transition-colors relative"
               >
                 {/* Remove button */}
                 <button
-                  onClick={() => removeMut.mutate(product.id)}
+                  onClick={() => {
+                    toggleWishlist(product);
+                    toast.success("Removed from wishlist");
+                  }}
                   className="absolute top-3 right-3 z-10 h-7 w-7 rounded-full bg-background/80 backdrop-blur grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity border border-border hover:bg-red-50 hover:border-red-200 hover:text-red-600"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
 
                 {/* Image */}
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/product/${product.slug}`}>
                   <div className="aspect-[3/4] overflow-hidden bg-champagne/10">
                     {image ? (
                       <img
@@ -105,7 +75,7 @@ export default function Wishlist() {
 
                 {/* Info */}
                 <div className="p-4">
-                  <Link href={`/product/${product.id}`}>
+                  <Link href={`/product/${product.slug}`}>
                     <p className="font-medium text-sm leading-snug hover:text-gold transition-colors line-clamp-2">
                       {product.name}
                     </p>
@@ -118,7 +88,7 @@ export default function Wishlist() {
                   )}
 
                   <button
-                    onClick={() => handleAddToCart(item)}
+                    onClick={() => handleAddToCart(product)}
                     disabled={product.stock_quantity === 0}
                     className="mt-3 w-full bg-foreground text-background py-2.5 text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-gold hover:text-gold-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >

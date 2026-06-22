@@ -90,13 +90,13 @@ export function ProductCard({ product }: ProductCardProps) {
               );
               return;
             }
-            toggleWishlist(product.id);
+            toggleWishlist(product);
           }}
           className="absolute top-3 right-3 p-2 transition-transform hover:scale-110"
           aria-label={isWished ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart
-            className={`h-5 w-5 transition-colors ${isWished ? "fill-white text-white" : "text-white"}`}
+            className={`h-5 w-5 transition-colors ${isWished ? "fill-gold text-gold" : "text-white"}`}
           />
         </button>
 

@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MapPin, Plus, Trash2, Star, Navigation, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { addressesApi } from "@/lib/api";
+import { useAddressesStore } from "@/lib/addresses-store";
 import type { CustomerAddress } from "@/lib/types";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
@@ -64,57 +61,32 @@ const emptyForm = {
 
 export default function AddressBook() {
   const { user } = useAuth();
-  const qc = useQueryClient();
+
+  // Zustand address store
+  const {
+    addresses,
+    loading,
+    fetchAddresses,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    setDefaultAddress,
+  } = useAddressesStore();
+
+  // Ephemeral local UI state
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
   const [locating, setLocating] = useState(false);
   const [pinLoading, setPinLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const { data: addresses = [], isLoading } = useQuery({
-    queryKey: ["my-addresses", user?.id],
-    queryFn: () => (user ? addressesApi.list(user.id) : Promise.resolve([])),
-    enabled: !!user,
-  });
-
-  const createMut = useMutation({
-    mutationFn: (addr: Omit<CustomerAddress, "id" | "created_at" | "updated_at">) =>
-      addressesApi.create(addr),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-addresses"] });
-      toast.success("Address saved successfully");
-      resetForm();
-    },
-    onError: (e: any) => toast.error(e.message || "Failed to save address"),
-  });
-
-  const updateMut = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CustomerAddress> }) =>
-      addressesApi.update(id, data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-addresses"] });
-      toast.success("Address updated");
-      resetForm();
-    },
-    onError: (e: any) => toast.error(e.message || "Failed to update address"),
-  });
-
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => addressesApi.delete(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-addresses"] });
-      toast.success("Address removed");
-    },
-    onError: (e: any) => toast.error(e.message || "Failed to remove address"),
-  });
-
-  const setDefaultMut = useMutation({
-    mutationFn: (id: string) => addressesApi.setDefault(id, user!.id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["my-addresses"] });
-      toast.success("Default address updated");
-    },
-  });
+  // Fetch addresses on mount (returns cached instantly if available)
+  useEffect(() => {
+    if (user) {
+      fetchAddresses(user.id);
+    }
+  }, [user, fetchAddresses]);
 
   const resetForm = () => {
     setForm({ ...emptyForm });
@@ -154,7 +126,6 @@ export default function AddressBook() {
         setForm((f) => ({ ...f, latitude, longitude }));
 
         try {
-          // Use Open Street Map Nominatim for reverse geocoding (free, no API key)
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
           );
@@ -170,7 +141,6 @@ export default function AddressBook() {
             "";
           const streetRoad = addr.road || addr.street || addr.pedestrian || "";
           const line1 = [locality, streetRoad].filter(Boolean).join(", ");
-
           const line2 = [addr.city_district, addr.county].filter(Boolean).join(", ");
 
           setForm((f) => ({
@@ -213,15 +183,16 @@ export default function AddressBook() {
         toast.success(`Auto-filled: ${po.Division || po.Name}, ${po.State}`);
       }
     } catch {
-      // Silently fail — user can fill manually
+      /* silent */
     } finally {
       setPinLoading(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    setSaving(true);
 
     const addressData = {
       user_id: user.id,
@@ -229,14 +200,41 @@ export default function AddressBook() {
       line2: form.line2 || null,
     };
 
-    if (editId) {
-      updateMut.mutate({ id: editId, data: addressData });
-    } else {
-      createMut.mutate(addressData as Omit<CustomerAddress, "id" | "created_at" | "updated_at">);
+    try {
+      if (editId) {
+        await updateAddress(editId, addressData);
+        toast.success("Address updated");
+      } else {
+        await addAddress(addressData as Omit<CustomerAddress, "id" | "created_at" | "updated_at">);
+        toast.success("Address saved successfully");
+      }
+      resetForm();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save address");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const saving = createMut.isPending || updateMut.isPending;
+  const handleDelete = async (id: string) => {
+    if (!confirm("Remove this address?")) return;
+    try {
+      await deleteAddress(id);
+      toast.success("Address removed");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to remove address");
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    if (!user) return;
+    try {
+      await setDefaultAddress(id, user.id);
+      toast.success("Default address updated");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update default");
+    }
+  };
 
   return (
     <DashboardLayout
@@ -435,7 +433,7 @@ export default function AddressBook() {
       )}
 
       {/* Address List */}
-      {isLoading ? (
+      {loading && addresses.length === 0 ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2].map((i) => (
             <div key={i} className="border border-border p-6 animate-pulse h-40 bg-champagne/10" />
@@ -488,16 +486,14 @@ export default function AddressBook() {
                 </button>
                 {!addr.is_default && (
                   <button
-                    onClick={() => setDefaultMut.mutate(addr.id)}
+                    onClick={() => handleSetDefault(addr.id)}
                     className="text-xs uppercase tracking-wider text-muted-foreground hover:text-gold border-b border-dashed border-muted-foreground pb-0.5"
                   >
                     Set Default
                   </button>
                 )}
                 <button
-                  onClick={() => {
-                    if (confirm("Remove this address?")) deleteMut.mutate(addr.id);
-                  }}
+                  onClick={() => handleDelete(addr.id)}
                   className="text-xs uppercase tracking-wider text-destructive hover:text-destructive/80 flex items-center gap-1 ml-auto"
                 >
                   <Trash2 className="h-3 w-3" />
