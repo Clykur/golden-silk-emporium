@@ -426,10 +426,15 @@ function CheckoutContent() {
     onSuccess: async (order) => {
       if (paymentMethod === "cod") {
         await autoSaveAddressIfNeeded();
+
+        setOrderId(order.id);
+
+        toast.success("Order placed successfully via Cash on Delivery!");
+
         clearCart();
         resetCheckout();
-        toast.success("Order placed successfully via Cash on Delivery!");
-        router.push(`/order-success/${order.id}`);
+
+        router.replace(`/order-success/${order.id}`);
       } else {
         // Razorpay Payment Flow
         try {
@@ -467,10 +472,14 @@ function CheckoutContent() {
                   const verifyResult = await ordersApi.verifyRazorpayPayment(payload);
                   if (verifyResult.success) {
                     await autoSaveAddressIfNeeded();
+                    setOrderId(order.id);
+
+                    toast.success("Payment verified and order confirmed!");
+
                     clearCart();
                     resetCheckout();
-                    toast.success("Payment verified and order confirmed!");
-                    router.push(`/order-success/${order.id}`);
+
+                    router.replace(`/order-success/${order.id}`);
                   }
                 } catch (verifyErr: any) {
                   toast.error(verifyErr.message || "Payment signature verification failed.");
@@ -523,10 +532,14 @@ function CheckoutContent() {
       const verifyResult = await ordersApi.verifyRazorpayPayment(payload);
       if (verifyResult.success) {
         await autoSaveAddressIfNeeded();
+        setOrderId(pendingOrder.id);
+
+        toast.success("Simulated payment verified! Order placed.");
+
         clearCart();
         resetCheckout();
-        toast.success("Simulated payment verified! Order placed.");
-        router.push(`/order-success/${pendingOrder.id}`);
+
+        router.replace(`/order-success/${pendingOrder.id}`);
       }
     } catch (err: any) {
       toast.error(err.message || "Verification failed");
@@ -620,7 +633,7 @@ function CheckoutContent() {
     }
   };
 
-  if (cart.length === 0 && step !== "confirmed") {
+  if (cart.length === 0 && !orderId && !createOrderMut.isPending && !paymentLoading) {
     return (
       <div className="container-luxe py-24 text-center">
         <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
@@ -1119,9 +1132,7 @@ function CheckoutContent() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium line-clamp-2">{item.product.name}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      Size: {item.size} · Qty: {item.qty}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground">Qty: {item.qty}</p>
                   </div>
                   <p className="text-sm font-semibold shrink-0">
                     {formatINR((item.product.sale_price || item.product.price) * item.qty)}

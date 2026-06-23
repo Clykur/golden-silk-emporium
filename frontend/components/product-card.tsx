@@ -14,14 +14,11 @@ interface ProductCardProps {
   product: Product;
 }
 
-const SIZES = ["Standard (5.5m)", "Short (5m)", "Long (6m)", "Petite (5.2m)"];
-
 export function ProductCard({ product }: ProductCardProps) {
   const { wishlist, toggleWishlist, setQuickView, cart, addToCart, updateQty, removeFromCart } =
     useShop();
   const isAuthenticated = useAuth((s) => s.isAuthenticated());
   const router = useRouter();
-  const [selectingSize, setSelectingSize] = useState(false);
   const isWished = wishlist.includes(product.id);
   const displayPrice = product.sale_price || product.price;
   const originalPrice = product.sale_price ? product.price : product.compare_at || null;
@@ -102,20 +99,18 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Quick view / Add to Cart on hover */}
         <div
-          className={`absolute bottom-0 inset-x-0 bg-background/95 backdrop-blur-sm border-t border-border transition-all duration-300 ${qty > 0 || selectingSize ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0"}`}
+          className={`absolute bottom-0 inset-x-0 bg-background/95 backdrop-blur-sm border-t border-border transition-all duration-300 ${qty > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full group-hover:opacity-100 group-hover:translate-y-0"}`}
         >
           {qty > 0 ? (
             <div className="flex items-center justify-between px-4 py-2">
-              <span className="text-[10px] uppercase tracking-widest font-medium">
-                In Bag ({cartItem!.size})
-              </span>
+              <span className="text-[10px] uppercase tracking-widest font-medium">In Bag</span>
               <div className="flex items-center gap-4 bg-background border border-border px-2 py-1">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     if (qty === 1) removeFromCart(product.id);
-                    else updateQty(product.id, cartItem!.size, qty - 1);
+                    else updateQty(product.id, cartItem!.size || "Free Size", qty - 1);
                   }}
                   className="p-1 hover:text-gold transition-colors"
                 >
@@ -126,47 +121,12 @@ export function ProductCard({ product }: ProductCardProps) {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    updateQty(product.id, cartItem!.size, qty + 1);
+                    updateQty(product.id, cartItem!.size || "Free Size", qty + 1);
                   }}
                   className="p-1 hover:text-gold transition-colors"
                 >
                   <Plus className="h-3 w-3" />
                 </button>
-              </div>
-            </div>
-          ) : selectingSize ? (
-            <div className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-widest font-medium">
-                  Select Size
-                </span>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSelectingSize(false);
-                  }}
-                  className="text-[10px] text-muted-foreground hover:text-foreground"
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {SIZES.map((s) => (
-                  <button
-                    key={s}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      addToCart(product, s, 1);
-                      setSelectingSize(false);
-                      toast.success(`Added ${s} to bag`);
-                    }}
-                    className="flex-1 min-w-[45%] border border-border py-1.5 text-[9px] uppercase tracking-widest hover:border-foreground hover:bg-foreground hover:text-background transition-colors text-center"
-                  >
-                    {s}
-                  </button>
-                ))}
               </div>
             </div>
           ) : (
@@ -175,7 +135,8 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!product.inStock) return;
-                setSelectingSize(true);
+                addToCart(product, "Free Size", 1);
+                toast.success("Added to bag");
               }}
               disabled={!product.inStock}
               className="w-full bg-foreground py-3 text-[10px] uppercase tracking-[0.2em] text-background font-medium hover:bg-gold hover:text-gold-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

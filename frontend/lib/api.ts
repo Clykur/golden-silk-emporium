@@ -1523,15 +1523,90 @@ export const adminStatsApi = {
     };
   },
 
-  async getCommandCenterData(filters?: { dateRange?: string; category?: string; status?: string }) {
+  async getCommandCenterData(filters?: {
+    dateRange?: string;
+    startDate?: string;
+    endDate?: string;
+    category?: string;
+    status?: string;
+  }) {
+    // Determine ISO date strings for filtering
+    let startDateIso: string | null = null;
+    let endDateIso: string | null = null;
+
+    const now = new Date();
+
+    if (filters?.dateRange) {
+      if (filters.dateRange === "today") {
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        startDateIso = start.toISOString();
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+        endDateIso = end.toISOString();
+      } else if (filters.dateRange === "yesterday") {
+        const start = new Date();
+        start.setDate(now.getDate() - 1);
+        start.setHours(0, 0, 0, 0);
+        startDateIso = start.toISOString();
+        const end = new Date();
+        end.setDate(now.getDate() - 1);
+        end.setHours(23, 59, 59, 999);
+        endDateIso = end.toISOString();
+      } else if (filters.dateRange === "7d") {
+        const start = new Date();
+        start.setDate(now.getDate() - 7);
+        startDateIso = start.toISOString();
+      } else if (filters.dateRange === "30d") {
+        const start = new Date();
+        start.setDate(now.getDate() - 30);
+        startDateIso = start.toISOString();
+      } else if (filters.dateRange === "90d") {
+        const start = new Date();
+        start.setDate(now.getDate() - 90);
+        startDateIso = start.toISOString();
+      } else if (filters.dateRange === "custom" && filters.startDate) {
+        const start = new Date(filters.startDate);
+        start.setHours(0, 0, 0, 0);
+        startDateIso = start.toISOString();
+        if (filters.endDate) {
+          const end = new Date(filters.endDate);
+          end.setHours(23, 59, 59, 999);
+          endDateIso = end.toISOString();
+        }
+      }
+    }
+
+    // Build Supabase Queries with Date Filters where applicable
+    let ordersQuery = supabase.from("orders").select("*, items");
+    let profilesQuery = supabase
+      .from("profiles")
+      .select("id, name, created_at, role")
+      .eq("role", "customer");
+    let reviewsQuery = supabase.from("reviews").select("id, is_approved, created_at");
+    let supportQuery = supabase.from("support_tickets").select("id, status, created_at");
+
+    if (startDateIso) {
+      ordersQuery = ordersQuery.gte("created_at", startDateIso);
+      profilesQuery = profilesQuery.gte("created_at", startDateIso);
+      reviewsQuery = reviewsQuery.gte("created_at", startDateIso);
+      supportQuery = supportQuery.gte("created_at", startDateIso);
+    }
+    if (endDateIso) {
+      ordersQuery = ordersQuery.lte("created_at", endDateIso);
+      profilesQuery = profilesQuery.lte("created_at", endDateIso);
+      reviewsQuery = reviewsQuery.lte("created_at", endDateIso);
+      supportQuery = supportQuery.lte("created_at", endDateIso);
+    }
+
     // 1. Fetch all raw datasets in parallel
     const [ordersRes, productsRes, profilesRes, reviewsRes, supportRes, categoriesRes] =
       await Promise.all([
-        supabase.from("orders").select("*, items"),
+        ordersQuery,
         supabase.from("products").select("id, name, price, stock_quantity, category_id, status"),
-        supabase.from("profiles").select("id, name, created_at, role").eq("role", "customer"),
-        supabase.from("reviews").select("id, is_approved"),
-        supabase.from("support_messages").select("id, is_read"),
+        profilesQuery,
+        reviewsQuery,
+        supportQuery,
         supabase.from("categories").select("id, name"),
       ]);
 
@@ -1542,20 +1617,7 @@ export const adminStatsApi = {
     const support = supportRes.data || [];
     const categories = categoriesRes.data || [];
 
-    // Apply basic Date Range filtering in memory
-    const now = new Date();
-    const startDate = new Date(0); // Beginning of time
-
-    if (filters?.dateRange) {
-      if (filters.dateRange === "7d") startDate.setDate(now.getDate() - 7);
-      else if (filters.dateRange === "30d") startDate.setDate(now.getDate() - 30);
-      else if (filters.dateRange === "90d") startDate.setDate(now.getDate() - 90);
-      else if (filters.dateRange === "1y") startDate.setFullYear(now.getFullYear() - 1);
-      else if (filters.dateRange === "today") startDate.setHours(0, 0, 0, 0);
-    }
-
-    // Filtered Datasets
-    const filteredOrders = orders.filter((o) => new Date(o.created_at) >= startDate);
+    const filteredOrders = orders;
     const validOrders = filteredOrders.filter(
       (o) => o.status !== "cancelled" && o.status !== "returned",
     );
@@ -1602,7 +1664,7 @@ export const adminStatsApi = {
     const outOfStock = products.filter((p) => p.stock_quantity === 0).length;
     const pendingOrders = orders.filter((o) => o.status === "processing").length;
     const pendingReviews = reviews.filter((r) => !r.is_approved).length;
-    const unreadSupport = support.filter((s) => !s.is_read).length;
+    const unreadSupport = support.filter((s) => s.status === "open").length;
     const abandonedCarts = Math.round(baseVisitors * 0.05);
 
     const actionCenter = {
@@ -1615,14 +1677,11 @@ export const adminStatsApi = {
     };
 
     // ==========================================
-    // 3. Revenue Performance (Chart Data)
+    // 3. Executive Revenue Performance (Chart Data)
     // ==========================================
     const chartMap = new Map<string, { revenue: number; orders: number; profit: number }>();
     validOrders.forEach((o) => {
-      const d = new Date(o.created_at).toLocaleDateString("en-IN", {
-        month: "short",
-        day: "numeric",
-      });
+      const d = new Date(o.created_at).toISOString().split("T")[0]; // YYYY-MM-DD
       if (!chartMap.has(d)) chartMap.set(d, { revenue: 0, orders: 0, profit: 0 });
       const ex = chartMap.get(d)!;
       ex.revenue += o.total || 0;
@@ -1630,8 +1689,15 @@ export const adminStatsApi = {
       ex.profit += (o.total || 0) * 0.4;
     });
     const performanceChart = Array.from(chartMap.entries())
-      .map(([date, data]) => ({ date, ...data }))
-      .slice(-30);
+      .map(([dateStr, data]) => {
+        const d = new Date(dateStr);
+        const formattedDate = d.toLocaleDateString("en-IN", {
+          month: "short",
+          day: "numeric",
+        });
+        return { date: formattedDate, rawDate: dateStr, ...data };
+      })
+      .sort((a, b) => a.rawDate.localeCompare(b.rawDate));
 
     // ==========================================
     // 4 & 7. Top Products & Snapshot

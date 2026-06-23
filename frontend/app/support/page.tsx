@@ -84,29 +84,26 @@ export default function SupportCenter() {
             <div>
               <h3 className="font-display text-2xl mb-4">Get in Touch</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Have questions about our collections, sizing, or a recent order? Our concierge team
-                is here to assist you.
+                Need assistance with a product, order, or delivery? We're here to help. Reach out to
+                our team for prompt and personalized support.
               </p>
             </div>
 
-            <div className="space-y-4 text-sm">
+            <div className="space-y-10 text-sm">
               <div>
                 <p className="eyebrow mb-1">Email</p>
                 <p className="text-foreground">hello@drapeva.com</p>
               </div>
               <div>
-                <p className="eyebrow mb-1">Phone</p>
-                <p className="text-foreground">+91 98765 43210</p>
+                <p className="eyebrow mb-1">Customer Support</p>
+                <p className="text-foreground">+91 99497 40776</p>
                 <p className="text-muted-foreground mt-1">Mon - Sat, 10am to 7pm IST</p>
               </div>
               <div>
-                <p className="eyebrow mb-1">Studio</p>
+                <p className="eyebrow mb-1">Online Store</p>
                 <p className="text-foreground leading-relaxed">
-                  Drapeva Silks
-                  <br />
-                  100 Feet Road, Indiranagar
-                  <br />
-                  Bangalore - 560038
+                  Shop from anywhere in India through Drapeva's curated saree collection. Fast,
+                  secure, and reliable delivery nationwide.
                 </p>
               </div>
             </div>

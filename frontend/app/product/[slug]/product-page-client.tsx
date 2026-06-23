@@ -28,8 +28,6 @@ import { Product360Viewer } from "@/components/product-360-viewer";
 import { useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 
-const SIZES = ["Standard (5.5m)", "Short (5m)", "Long (6m)", "Petite (5.2m)"];
-
 interface ProductPageClientProps {
   initialProduct: Product;
   slug: string;
@@ -39,7 +37,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
   const addToCart = useShop((s) => s.addToCart);
   const wishlist = useShop((s) => s.wishlist);
   const toggleWishlist = useShop((s) => s.toggleWishlist);
-  const [size, setSize] = useState("Standard (5.5m)");
+  const size = "Free Size";
   const router = useRouter();
   const pathname = usePathname();
   const isAuthenticated = useAuth((s) => s.isAuthenticated());
@@ -316,20 +314,10 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                 <Ruler className="h-3.5 w-3.5 text-gold" /> Size guide
               </button>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2.5 grid grid-cols-4">
-              {SIZES.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSize(s)}
-                  className={`border px-5 py-2.5 text-xs uppercase tracking-wider transition-all duration-300 ${
-                    size === s
-                      ? "border-foreground bg-foreground text-background font-semibold"
-                      : "border-border text-muted-foreground bg-transparent hover:border-foreground hover:text-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              <button className="border border-foreground bg-foreground text-background font-semibold px-5 py-2.5 text-xs uppercase tracking-wider transition-all duration-300">
+                Free Size
+              </button>
             </div>
           </div>
 
@@ -351,7 +339,6 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                   className={`h-5 w-5 transition-transform duration-300 group-hover:scale-110 ${wished ? "fill-gold text-gold" : "text-muted-foreground group-hover:text-foreground"}`}
                 />
               </button>
-
               <button
                 onClick={() => {
                   if (!isAuthenticated) {

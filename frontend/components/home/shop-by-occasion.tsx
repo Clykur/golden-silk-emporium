@@ -5,9 +5,9 @@ import { ArrowRight } from "lucide-react";
 
 const occasions = [
   {
-    title: "Wedding Collection",
+    title: "Everyday Elegance",
     image: "/images/saree_wedding.png",
-    href: "/collections?category=wedding",
+    href: "/collections?category=everyday",
   },
   {
     title: "Festive Collection",
@@ -33,7 +33,7 @@ export function ShopByOccasion() {
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6 mb-12">
           <div>
             <p className="eyebrow">Curated for you</p>
-            <h2 className="mt-3 font-display text-3xl md:text-5xl">Shop By Occasion</h2>
+            <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">Shop By Occasion</h2>
           </div>
           <Link
             href="/collections"
@@ -43,7 +43,7 @@ export function ShopByOccasion() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px] md:auto-rows-[350px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 auto-rows-[220px] sm:auto-rows-[280px] md:auto-rows-[350px]">
           {occasions.map((occ, idx) => {
             // Determine grid placement based on index
             let spanClass = "md:col-span-1 md:row-span-1";
@@ -70,7 +70,7 @@ export function ShopByOccasion() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
 
                 <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 text-background">
-                  <h3 className="font-display text-2xl md:text-3xl mb-2 tracking-wide transform transition-transform duration-500 translate-y-4 group-hover:translate-y-0">
+                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl mb-2 tracking-wide transform transition-transform duration-500 translate-y-4 group-hover:translate-y-0">
                     {occ.title}
                   </h3>
                   <div className="overflow-hidden">

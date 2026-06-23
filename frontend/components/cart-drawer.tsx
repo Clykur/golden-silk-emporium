@@ -92,7 +92,6 @@ export function CartDrawer() {
                         <p className="mt-1 font-display text-base leading-tight">
                           {item.product.name}
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground">Size {item.size}</p>
                       </div>
                       <p className="text-sm">{formatINR(item.product.price * item.qty)}</p>
                     </div>

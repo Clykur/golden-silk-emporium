@@ -5,29 +5,29 @@ import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
-    question: "How do I know the silk is authentic?",
+    question: "How long does delivery take?",
     answer:
-      "Every pure silk saree from Drapeva comes with a Silk Mark Certification from the Silk Mark Organisation of India, guaranteeing 100% natural silk.",
+      "Every Drapeva saree undergoes careful quality inspection before dispatch. Orders are typically delivered within 10–15 business days. Tracking details will be shared via email once your order ships.",
   },
   {
-    question: "Do you ship internationally?",
+    question: "How can I track my order?",
     answer:
-      "Yes, we ship globally using premium courier partners like DHL and FedEx. International orders typically arrive within 5-7 business days.",
+      "Once your order is dispatched, you'll receive a tracking link via email. You can use this link to monitor your shipment in real time.",
   },
   {
-    question: "Can I exchange my saree if I don't like it?",
+    question: "What if I receive a damaged or incorrect product?",
     answer:
-      "Absolutely. We offer a seamless 7-day exchange policy. If the saree doesn't match your expectations, we will arrange a pickup and help you find the perfect alternative.",
+      "Customer satisfaction is our priority. If you receive a damaged, defective, or incorrect item, please contact us within 48 hours of delivery, and our team will assist you with a replacement or resolution.",
   },
   {
-    question: "Do you offer blouse stitching services?",
+    question: "Do the saree colors match the photos?",
     answer:
-      "Currently, we provide unstitched blouse pieces with our sarees. We recommend consulting your trusted local tailor for the perfect fit.",
+      "We strive to display product colors as accurately as possible. However, slight variations may occur due to different screen settings, lighting conditions, and photography.",
   },
   {
-    question: "How should I care for my Drapeva silk saree?",
+    question: "What payment methods do you accept?",
     answer:
-      "We recommend dry cleaning only for all our pure silk sarees. Store them in the provided breathable dust bag, folded carefully. Change the folds every few months to prevent creasing.",
+      "We accept UPI, credit cards, debit cards, net banking, and other secure payment methods to ensure a smooth shopping experience.",
   },
 ];
 

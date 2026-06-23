@@ -171,8 +171,10 @@ export default function OrderSuccessPage() {
                 <Calendar className="h-3.5 w-3.5" /> Estimated Delivery Timeline
               </p>
               <p className="text-muted-foreground">
-                Complimentary luxury hand-finishing takes about 2 to 4 weeks. Once your saree is
-                ready and dispatched, tracking details will be sent via SMS and email.
+                Every Drapeva saree is carefully prepared and undergoes a thorough quality
+                inspection to ensure it reaches you in perfect condition. As part of this commitment
+                to quality, delivery typically takes 10–15 business days. Once your order is
+                dispatched, tracking details will be shared via email.
               </p>
             </div>
           </div>

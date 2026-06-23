@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { couponsApi } from "@/lib/api";
 import type { Coupon } from "@/lib/types";
-import { Plus, Edit, Trash2, Ticket, Copy } from "lucide-react";
+import { Plus, Edit, Trash2, Ticket, X } from "lucide-react";
 import { formatINR } from "@/lib/types";
 import { Combobox } from "@/components/combobox";
 
@@ -33,7 +31,17 @@ export default function AdminCoupons() {
     queryKey: ["admin-coupons"],
     queryFn: couponsApi.adminList,
   });
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") resetForm();
+    };
 
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
   const createMut = useMutation({
     mutationFn: (d: typeof empty) => couponsApi.create(d as any),
     onSuccess: () => {
@@ -100,132 +108,20 @@ export default function AdminCoupons() {
       title="Coupons"
       subtitle={`${activeCoupons} active coupons`}
       actions={
-        showForm ? (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="border border-border px-5 py-2.5 text-xs uppercase tracking-widest hover:bg-muted"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="bg-foreground text-background px-6 py-2.5 text-xs uppercase tracking-widest hover:bg-gold hover:text-gold-foreground transition-colors"
-            >
-              {editId ? "Update" : "Create Coupon"}
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowForm(true)}
-            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 text-xs uppercase tracking-widest hover:bg-gold hover:text-gold-foreground transition-colors"
-          >
-            <Plus className="h-4 w-4" /> New Coupon
-          </button>
-        )
+        <button
+          onClick={() => {
+            setEditId(null);
+            setForm(empty);
+            setShowForm(true);
+          }}
+          className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 text-xs uppercase tracking-widest"
+        >
+          <Plus className="h-4 w-4" />
+          New Coupon
+        </button>
       }
     >
-      {showForm ? (
-        <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
-          <div className="border border-border p-6 space-y-4 bg-background">
-            <label className="block">
-              <span className="eyebrow text-[10px] mb-1.5 block">Coupon Code *</span>
-              <input
-                value={form.code}
-                onChange={(e) => setField("code", e.target.value.toUpperCase())}
-                required
-                className={inp}
-                placeholder="DIWALI20"
-              />
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Discount Type</span>
-                <Combobox
-                  value={form.discount_type}
-                  onChange={(val) => setField("discount_type", val as "percentage" | "fixed")}
-                  options={[
-                    { label: "Percentage (%)", value: "percentage" },
-                    { label: "Fixed Amount (₹)", value: "fixed" },
-                  ]}
-                  className="w-full"
-                />
-              </label>
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Discount Value *</span>
-                <input
-                  type="number"
-                  value={form.discount_value}
-                  onChange={(e) => setField("discount_value", parseFloat(e.target.value) || 0)}
-                  required
-                  className={inp}
-                  min={0}
-                  placeholder={form.discount_type === "percentage" ? "20" : "500"}
-                />
-              </label>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Min Order Value (₹)</span>
-                <input
-                  type="number"
-                  value={form.min_order_value}
-                  onChange={(e) => setField("min_order_value", parseFloat(e.target.value) || 0)}
-                  className={inp}
-                  min={0}
-                />
-              </label>
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Max Discount (₹)</span>
-                <input
-                  type="number"
-                  value={form.max_discount_value || ""}
-                  onChange={(e) =>
-                    setField("max_discount_value", parseFloat(e.target.value) || null)
-                  }
-                  className={inp}
-                  min={0}
-                  placeholder="No limit"
-                />
-              </label>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Usage Limit</span>
-                <input
-                  type="number"
-                  value={form.usage_limit || ""}
-                  onChange={(e) => setField("usage_limit", parseInt(e.target.value) || null)}
-                  className={inp}
-                  min={1}
-                  placeholder="Unlimited"
-                />
-              </label>
-              <label className="block">
-                <span className="eyebrow text-[10px] mb-1.5 block">Expiry Date</span>
-                <input
-                  type="date"
-                  value={form.expires_at || ""}
-                  onChange={(e) => setField("expires_at", e.target.value || null)}
-                  className={inp}
-                />
-              </label>
-            </div>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <div
-                onClick={() => setField("is_active", !form.is_active)}
-                className={`relative h-5 w-9 rounded-full transition-colors ${form.is_active ? "bg-gold" : "bg-border"}`}
-              >
-                <div
-                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${form.is_active ? "translate-x-4" : "translate-x-0.5"}`}
-                />
-              </div>
-              <span className="text-sm">Active</span>
-            </label>
-          </div>
-        </form>
-      ) : isLoading ? (
+      {isLoading ? (
         <div className="flex justify-center py-16">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
         </div>
@@ -277,16 +173,6 @@ export default function AdminCoupons() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(c.code);
-                      toast.success("Coupon code copied!");
-                    }}
-                    className="p-2 hover:text-gold transition-colors"
-                    title="Copy code"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </button>
-                  <button
                     onClick={() => startEdit(c)}
                     className="p-2 hover:text-gold transition-colors"
                     title="Edit"
@@ -306,6 +192,186 @@ export default function AdminCoupons() {
               </div>
             ))
           )}
+        </div>
+      )}
+      {showForm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4" onClick={resetForm}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mx-auto my-8 w-full max-w-2xl bg-background border border-border rounded-xl shadow-2xl"
+          >
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <h2 className="text-xl font-semibold">{editId ? "Edit Coupon" : "Create Coupon"}</h2>
+
+              <button onClick={resetForm}>
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div
+                className="overflow-y-auto px-8 py-8 space-y-6"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                {/* Coupon Code */}
+                <label className="block">
+                  <span className="eyebrow text-[10px] mb-2 block">Coupon Code *</span>
+                  <input
+                    value={form.code}
+                    onChange={(e) => setField("code", e.target.value.toUpperCase())}
+                    required
+                    placeholder="WELCOME10"
+                    className="w-full border border-border bg-background px-4 py-3 text-lg font-mono uppercase tracking-[0.15em] focus:outline-none focus:border-gold transition-colors"
+                  />
+                </label>
+
+                {/* Discount */}
+                <div className="grid md:grid-cols-2 gap-5">
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Discount Type</span>
+
+                    <Combobox
+                      value={form.discount_type}
+                      onChange={(val) => setField("discount_type", val as "percentage" | "fixed")}
+                      options={[
+                        {
+                          label: "Percentage (%)",
+                          value: "percentage",
+                        },
+                        {
+                          label: "Fixed Amount (₹)",
+                          value: "fixed",
+                        },
+                      ]}
+                      className="w-full"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Discount Value *</span>
+
+                    <input
+                      type="number"
+                      value={form.discount_value}
+                      onChange={(e) => setField("discount_value", parseFloat(e.target.value) || 0)}
+                      required
+                      min={0}
+                      placeholder={form.discount_type === "percentage" ? "20" : "500"}
+                      className={inp}
+                    />
+                  </label>
+                </div>
+
+                {/* Min / Max */}
+                <div className="grid md:grid-cols-2 gap-5">
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Minimum Order Value (₹)</span>
+
+                    <input
+                      type="number"
+                      value={form.min_order_value}
+                      onChange={(e) => setField("min_order_value", parseFloat(e.target.value) || 0)}
+                      min={0}
+                      className={inp}
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Maximum Discount (₹)</span>
+
+                    <input
+                      type="number"
+                      value={form.max_discount_value || ""}
+                      onChange={(e) =>
+                        setField("max_discount_value", parseFloat(e.target.value) || null)
+                      }
+                      min={0}
+                      placeholder="No limit"
+                      className={inp}
+                    />
+                  </label>
+                </div>
+
+                {/* Usage / Expiry */}
+                <div className="grid md:grid-cols-2 gap-5">
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Usage Limit</span>
+
+                    <input
+                      type="number"
+                      value={form.usage_limit || ""}
+                      onChange={(e) => setField("usage_limit", parseInt(e.target.value) || null)}
+                      min={1}
+                      placeholder="Unlimited"
+                      className={inp}
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="eyebrow text-[10px] mb-2 block">Expiry Date</span>
+
+                    <input
+                      type="date"
+                      value={form.expires_at || ""}
+                      onChange={(e) => setField("expires_at", e.target.value || null)}
+                      className={inp}
+                    />
+                  </label>
+                </div>
+
+                {/* Status Card */}
+                <div className="border border-border rounded-xl p-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">Coupon Status</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Enable or disable this coupon
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={form.is_active}
+                      onClick={() => setField("is_active", !form.is_active)}
+                      className={`relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 ${
+                        form.is_active ? "bg-emerald-500" : "bg-muted border border-border"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                          form.is_active ? "translate-x-7" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-8 py-6 border-t border-border bg-muted/10">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="border border-border px-6 py-3 text-xs uppercase tracking-widest hover:bg-muted transition-colors"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={createMut.isPending || updateMut.isPending}
+                  className="bg-foreground text-background px-8 py-3 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-gold hover:text-gold-foreground transition-all disabled:opacity-50"
+                >
+                  {createMut.isPending || updateMut.isPending
+                    ? "Saving..."
+                    : editId
+                      ? "Update Coupon"
+                      : "Create Coupon"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </AdminLayout>

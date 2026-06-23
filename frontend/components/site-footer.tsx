@@ -44,10 +44,10 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-20 border-t-0 bg-ink text-background">
-      <div className="mx-auto max-w-7xl px-4 py-20 lg:py-32">
-        <div className="grid gap-16 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:py-20 lg:py-32">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] lg:gap-16">
           {/* Brand */}
-          <div className="flex flex-col items-start pr-8">
+          <div className="flex flex-col items-start sm:col-span-2 lg:col-span-1 lg:pr-8">
             <Link href="/" className="inline-block select-none group" aria-label="Drapeva home">
               <div className="relative rounded-full overflow-hidden h-32 w-32 border border-background/20 p-2 transition-transform duration-700 group-hover:scale-105">
                 <img
@@ -242,8 +242,8 @@ export function SiteFooter() {
       </div>
 
       {/* Large Footer Marquee */}
-      <div className="bg-background text-ink overflow-hidden h-16 md:h-24 flex items-center">
-        <div className="flex animate-marquee whitespace-nowrap text-2xl md:text-4xl tracking-[0.32em] uppercase font-limelight">
+      <div className="bg-background text-ink overflow-hidden h-12 sm:h-16 md:h-24 flex items-center">
+        <div className="flex animate-marquee whitespace-nowrap text-lg sm:text-2xl md:text-4xl tracking-[0.32em] uppercase font-limelight">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex shrink-0 gap-16 px-8 items-center">
               <span className="pt-2">DRAPEVA</span>

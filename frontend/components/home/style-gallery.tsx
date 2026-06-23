@@ -23,12 +23,13 @@ export function StyleGallery() {
   return (
     <section className="gsap-section py-24 md:py-32 bg-background border-t border-border">
       <div className="container-luxe">
-        <div className="text-center max-w-2xl mx-auto mb-16 md:mb-24">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-18">
           <p className="eyebrow mb-4">#DrapevaWomen</p>
           <h2 className="font-display text-3xl md:text-5xl">Styled By You</h2>
           <p className="mt-6 text-muted-foreground leading-relaxed">
-            See how our discerning patrons are styling their Drapeva sarees across the globe. Share
-            your look to be featured.
+            See how our customers bring Drapeva sarees to life with their unique style. From festive
+            celebrations to everyday moments, every look tells a story. Share your Drapeva
+            experience and inspire others.
           </p>
         </div>
 

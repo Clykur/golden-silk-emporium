@@ -13,7 +13,7 @@ export function HeritageStory() {
       <div className="container-luxe relative z-10">
         <div className="grid md:grid-cols-2 gap-16 lg:gap-24 items-center">
           <div className="relative order-2 md:order-1">
-            <div className="aspect-[4/5] overflow-hidden w-4/5">
+            <div className="aspect-[4/5] overflow-hidden w-full md:w-4/5">
               <img
                 src="/images/saree_festive.png"
                 alt="Artisan weaving"
@@ -21,8 +21,8 @@ export function HeritageStory() {
               />
             </div>
 
-            {/* Overlapping smaller image */}
-            <div className="absolute -bottom-12 -right-4 w-3/5 aspect-square border-8 border-background overflow-hidden bg-background shadow-2xl">
+            {/* Overlapping smaller image — hidden on mobile */}
+            <div className="hidden md:block absolute -bottom-12 -right-4 w-3/5 aspect-square border-8 border-background overflow-hidden bg-background shadow-2xl">
               <img
                 src="/images/saree_wedding.png"
                 alt="Thread details"
@@ -33,22 +33,21 @@ export function HeritageStory() {
 
           <div className="order-1 md:order-2 flex flex-col justify-center">
             <p className="eyebrow mb-6">Our Heritage</p>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-8 leading-[1.1]">
-              A Thread Connecting <br />
-              <span className="font-serif italic font-light">Generations</span>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-8 leading-[1.1]">
+              Handpicked for Every <br />
+              <span className="font-serif italic font-light">Occasion</span>
             </h2>
 
             <div className="space-y-6 text-muted-foreground leading-relaxed">
               <p>
-                Behind every Drapeva saree is a story that begins months before it reaches your
-                wardrobe. It starts in the humble homes of master artisans in Kanchipuram, Banaras,
-                and Patan.
+                At Drapeva, we carefully curate sarees from trusted artisans, renowned weaving
+                clusters, and quality-focused manufacturers across India. Every piece in our
+                collection is selected for its craftsmanship, fabric quality, design, and elegance.
               </p>
               <p>
-                We partner directly with over 500 weaver families, ensuring fair wages and helping
-                preserve weaving techniques that are in danger of being lost to machine looms. When
-                you wear our saree, you aren't just wearing six yards of fabric; you are draping
-                yourself in centuries of Indian heritage.
+                Our goal is simple: to bring you exceptional sarees that celebrate India's rich
+                textile traditions while offering styles for modern women. From timeless classics to
+                contemporary favorites, each saree is chosen to help you look and feel your best.
               </p>
             </div>
 

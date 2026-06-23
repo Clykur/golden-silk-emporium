@@ -17,18 +17,17 @@ export function PremiumPackaging() {
               <span className="font-serif italic font-light">Love & Care</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              A Drapeva saree is a treasure, and its arrival should feel like opening a precious
-              gift. Every saree is meticulously folded, wrapped in acid-free butter paper, and
-              placed in our signature rigid keepsake box. Whether for yourself or a loved one, the
-              experience is designed to delight.
+              Every Drapeva saree is carefully inspected, neatly packed, and securely prepared for
+              delivery. We take every precaution to ensure your order reaches you in excellent
+              condition, ready to be worn and cherished.
             </p>
 
             <ul className="space-y-4 mb-10">
               {[
-                "Signature Rigid Keepsake Box",
-                "Acid-Free Tissue Wrapping",
-                "Personalized Handwritten Note",
-                "Saree Care Guide & Dust Bag",
+                "Quality Checked Before Dispatch",
+                "Safe & Secure Packaging",
+                "Reliable Nationwide Delivery",
+                "Order Tracking via Email",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-sm font-medium">
                   <div className="h-1.5 w-1.5 rounded-full bg-foreground" />

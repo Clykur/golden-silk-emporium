@@ -1,13 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { Package, Heart, MapPin, Bell, HelpCircle, RotateCcw, Shield, LogOut } from "lucide-react";
+import {
+  Package,
+  Heart,
+  MapPin,
+  Bell,
+  HelpCircle,
+  RotateCcw,
+  Shield,
+  LogOut,
+  User,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 const ACCOUNT_CARDS = [
+  {
+    to: "/account/profile",
+    label: "My Account",
+    desc: "View and update your profile information",
+    icon: User,
+  },
   {
     to: "/account/orders",
     label: "Your Orders",
@@ -20,6 +36,7 @@ const ACCOUNT_CARDS = [
     desc: "Edit login, name, and mobile number",
     icon: Shield,
   },
+
   {
     to: "/account/addresses",
     label: "Your Addresses",

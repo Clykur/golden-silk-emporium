@@ -8,15 +8,12 @@ import { useShop } from "@/lib/store";
 import { formatINR } from "@/lib/products";
 import { useAuth } from "@/lib/auth-store";
 
-const SIZES = ["XS", "S", "M", "L", "XL"];
-
 export function QuickView() {
   const quickView = useShop((s) => s.quickView);
   const setQuickView = useShop((s) => s.setQuickView);
   const addToCart = useShop((s) => s.addToCart);
   const wishlist = useShop((s) => s.wishlist);
   const toggleWishlist = useShop((s) => s.toggleWishlist);
-  const [size, setSize] = useState("M");
   const isAuthenticated = useAuth((s) => s.isAuthenticated());
   const router = useRouter();
 
@@ -61,25 +58,6 @@ export function QuickView() {
             {quickView.description}
           </p>
 
-          <div className="mt-6">
-            <p className="eyebrow mb-3">Size</p>
-            <div className="flex flex-wrap gap-2">
-              {SIZES.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSize(s)}
-                  className={`h-10 min-w-10 border px-3 text-sm transition-colors ${
-                    size === s
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border hover:border-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="mt-auto pt-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => {
@@ -90,7 +68,7 @@ export function QuickView() {
                   );
                   return;
                 }
-                addToCart(quickView, size);
+                addToCart(quickView, "Free Size");
                 setQuickView(null);
               }}
               className="flex-1 bg-foreground py-4 text-xs font-medium tracking-[0.25em] uppercase text-background hover:bg-gold hover:text-gold-foreground transition-colors"

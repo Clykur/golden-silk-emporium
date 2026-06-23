@@ -73,10 +73,10 @@ export function FabricDiscovery() {
   return (
     <section className="gsap-section bg-foreground text-background relative">
       <div className="container-luxe" ref={containerRef}>
-        <div className="flex flex-col md:flex-row items-start relative">
-          {/* Left: Sticky Image Display */}
-          <div className="w-full md:w-1/2 sticky top-0 h-[100svh] flex items-center py-24 px-4 md:px-0">
-            <div className="relative aspect-[3/4] w-full max-h-full overflow-hidden bg-background/5">
+        <div className="flex flex-col items-start relative">
+          {/* Left: Sticky Image Display — sticky only on md+ */}
+          <div className="w-full md:w-1/2 md:sticky md:top-0 h-[50vw] max-h-[60vh] md:h-[100svh] flex items-center py-8 md:py-24">
+            <div className="relative aspect-[3/4] w-full h-full overflow-hidden bg-background/5">
               {fabrics.map((fabric) => (
                 <img
                   key={fabric.id}
@@ -96,15 +96,15 @@ export function FabricDiscovery() {
           </div>
 
           {/* Right: Scrolling Content */}
-          <div className="w-full md:w-1/2 md:pl-12 lg:pl-24 pt-24 md:pt-[30vh] pb-[30vh]">
+          <div className="w-full md:w-1/2 md:pl-12 lg:pl-24 pt-8 md:pt-[30vh] pb-[30vh]">
             <p className="eyebrow mb-6 text-background/60">Fabric Guide</p>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-24">
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-12 md:mb-24">
               Discover Our
               <br />
               Signature Weaves
             </h2>
 
-            <div className="flex flex-col gap-32 border-l border-background/20 pl-6 md:pl-10 relative">
+            <div className="flex flex-col gap-16 md:gap-32 border-l border-background/20 pl-4 sm:pl-6 md:pl-10 relative">
               {/* Animated active indicator */}
               <div
                 className="absolute left-[-1px] w-[2px] bg-background transition-all duration-500"
@@ -118,11 +118,13 @@ export function FabricDiscovery() {
                 <div
                   id={fabric.id}
                   key={fabric.id}
-                  className={`fabric-scroll-item transition-opacity duration-500 min-h-[30vh] flex flex-col justify-center ${
+                  className={`fabric-scroll-item transition-opacity duration-500 min-h-[25vh] flex flex-col justify-center ${
                     activeId === fabric.id ? "opacity-100" : "opacity-30"
                   }`}
                 >
-                  <h3 className="font-display text-3xl md:text-4xl mb-6">{fabric.name}</h3>
+                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl mb-4 sm:mb-6">
+                    {fabric.name}
+                  </h3>
                   <div className="overflow-hidden">
                     <p className="text-base leading-relaxed text-background/80 mb-8 pr-4">
                       {fabric.description}

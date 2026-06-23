@@ -1,20 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { User, Camera } from "lucide-react";
 import { toast } from "sonner";
-import { User } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
 import { authApi } from "@/lib/api";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function ProfileSettings() {
   const { user, setAuth } = useAuth();
+
   const [name, setName] = useState(user?.name || "");
   const [phone, setPhone] = useState(user?.phone || "");
   const [loading, setLoading] = useState(false);
+
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -23,23 +25,40 @@ export default function ProfileSettings() {
     }
   }, [user]);
 
+  const handleProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+    setProfilePreview(preview);
+
+    toast.success("Profile image selected. Storage upload can be added next.");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     setLoading(true);
+
     try {
-      await authApi.updateProfile({ name, phone: phone || undefined });
-      // Re-fetch profile to update local state
+      await authApi.updateProfile({
+        name,
+        phone: phone || undefined,
+      });
+
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("*")
           .eq("id", user.id)
           .maybeSingle();
+
         if (profile) {
-          // Refresh auth store with updated profile
           const {
             data: { session },
           } = await supabase.auth.getSession();
+
           if (session) {
             setAuth(profile, {
               access_token: session.access_token,
@@ -48,6 +67,7 @@ export default function ProfileSettings() {
           }
         }
       }
+
       toast.success("Profile updated successfully");
     } catch (err: any) {
       toast.error(err.message || "Failed to update profile");
@@ -61,79 +81,122 @@ export default function ProfileSettings() {
   const initials = (user.name || user.email || "?").charAt(0).toUpperCase();
 
   return (
-    <DashboardLayout title="Profile Settings" subtitle="My Profile">
-      <div className="max-w-lg space-y-8">
-        {/* Avatar */}
-        <div className="flex items-center gap-5">
-          <div className="h-20 w-20 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 grid place-items-center text-gold font-display text-3xl ring-2 ring-gold/20 shrink-0">
-            {initials}
-          </div>
-          <div>
-            <p className="font-display text-lg">{user.name}</p>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-            <p className="text-xs text-muted-foreground mt-1 capitalize">{user.role} account</p>
+    <DashboardLayout>
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="mb-8 md:mb-12 text-center">
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight">
+            My Account
+          </h1>
+
+          <p className="mt-3 text-muted-foreground text-sm sm:text-base md:text-lg">
+            Manage your profile information
+          </p>
+        </div>
+
+        {/* Profile Section */}
+        <div className="border border-border rounded-xl bg-background p-5 sm:p-6 md:p-8 mb-6 md:mb-8">
+          <div className="flex flex-col items-center text-center">
+            <div className="relative">
+              {profilePreview ? (
+                <img
+                  src={profilePreview}
+                  alt="Profile"
+                  className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-full object-cover border"
+                />
+              ) : (
+                <div className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 flex items-center justify-center text-3xl md:text-4xl font-display text-gold">
+                  {initials}
+                </div>
+              )}
+
+              <label className="absolute bottom-0 right-0 h-8 w-8 md:h-10 md:w-10 rounded-full bg-black text-white flex items-center justify-center cursor-pointer hover:bg-gold hover:text-black transition-colors">
+                <Camera className="h-4 w-4" />
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleProfileImage}
+                />
+              </label>
+            </div>
+
+            <h2 className="mt-5 text-xl sm:text-2xl font-semibold break-words text-center">
+              {user.name}
+            </h2>
+
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground break-all">
+              {user.email}
+            </p>
+
+            <span className="mt-4 px-4 py-1 rounded-full bg-gold/10 text-gold text-xs uppercase tracking-wider">
+              {user.role}
+            </span>
           </div>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="border border-border p-6 space-y-5">
-          <h2 className="font-display text-lg border-b border-border pb-4">Personal Information</h2>
+        {/* Personal Information */}
+        <div className="border border-border rounded-xl bg-background p-5 sm:p-6 md:p-8">
+          <h2 className="text-xl sm:text-2xl font-display mb-6">Personal Information</h2>
 
-          <label className="block">
-            <span className="eyebrow mb-2 block">Full Name</span>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
-            />
-          </label>
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+            <div>
+              <label className="block text-sm font-medium mb-2">Full Name</label>
 
-          <label className="block">
-            <span className="eyebrow mb-2 block">Email Address</span>
-            <input
-              type="email"
-              disabled
-              value={user.email}
-              className="w-full border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground cursor-not-allowed"
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">
-              Email cannot be changed. Contact support if needed.
-            </p>
-          </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full h-12 border border-border rounded-lg px-4 bg-background focus:outline-none focus:ring-2 focus:ring-gold/20"
+              />
+            </div>
 
-          <label className="block">
-            <span className="eyebrow mb-2 block">Phone Number</span>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full border border-border bg-background px-4 py-3 text-sm focus:border-foreground focus:outline-none"
-              placeholder="+91 98765 43210"
-            />
-          </label>
+            <div>
+              <label className="block text-sm font-medium mb-2">Email Address</label>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-foreground text-background px-8 py-3 text-xs font-medium tracking-[0.25em] uppercase transition-colors hover:bg-gold hover:text-gold-foreground disabled:opacity-50"
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
-        </form>
+              <input
+                type="email"
+                disabled
+                value={user.email}
+                className="w-full h-12 border border-border rounded-lg px-4 bg-muted/30 text-muted-foreground"
+              />
 
-        {/* Info note */}
-        <div className="text-xs text-muted-foreground flex gap-2 items-start">
-          <User className="h-4 w-4 shrink-0 mt-0.5" />
-          <p>
-            To change your password, visit the{" "}
-            <a
-              href="/account/security"
-              className="border-b border-muted-foreground hover:text-foreground"
+              <p className="text-xs text-muted-foreground mt-2">Email cannot be changed.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Phone Number</label>
+
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full h-12 border border-border rounded-lg px-4 bg-background focus:outline-none focus:ring-2 focus:ring-gold/20"
+                placeholder="+91 98765 43210"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto h-12 px-8 bg-black text-white rounded-lg hover:bg-gold hover:text-black transition-colors disabled:opacity-50"
             >
-              Security page
-            </a>
+              {loading ? "Saving..." : "Save Changes"}
+            </button>
+          </form>
+        </div>
+
+        {/* Security Note */}
+        <div className="mt-6 flex items-start gap-3 text-sm text-muted-foreground">
+          <User className="h-4 w-4 shrink-0 mt-0.5" />
+
+          <p>
+            Need to change your password? Visit the{" "}
+            <Link href="/account/security" className="text-gold hover:underline">
+              Security Settings
+            </Link>
             .
           </p>
         </div>

@@ -94,7 +94,7 @@ export default function AboutUs() {
               />
             </div>
             {/* Overlapping detailed image */}
-            <div className="absolute -bottom-8 left-4 md:-left-8 w-[50%] aspect-square border-[6px] border-background overflow-hidden bg-background shadow-2xl">
+            <div className="hidden md:block absolute -bottom-8 md:-left-8 w-[50%] aspect-square border-[6px] border-background overflow-hidden bg-background shadow-2xl">
               <img
                 src="/images/saree_wedding.png"
                 alt="Saree details"
@@ -148,7 +148,7 @@ export default function AboutUs() {
         </div>
 
         {/* Section 4: Call to Action Card */}
-        <div className="relative bg-champagne/15 border border-border p-12 md:p-20 text-center max-w-4xl mx-auto overflow-hidden shadow-soft">
+        <div className="relative bg-champagne/15 border border-border p-6 sm:p-12 md:p-20 text-center max-w-4xl mx-auto overflow-hidden shadow-soft">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl pointer-events-none" />
 

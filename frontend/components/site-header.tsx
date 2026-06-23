@@ -17,7 +17,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  const ACCOUNT_HOME = "/account";
   const [activeHash, setActiveHash] = useState("");
 
   useEffect(() => {
@@ -230,68 +230,29 @@ export function SiteHeader() {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 transition-all duration-700 ease-in-out translate-y-0 opacity-100 ${
-          scrolled
-            ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-sm"
-            : "bg-background border-b border-transparent"
-        }`}
-      >
-        <div
-          className={`flex items-center justify-between container-luxe transition-all duration-700 ${scrolled ? "py-1" : "py-2"}`}
+      <div className="h-[56px] sm:h-[64px] md:h-[72px] lg:h-auto">
+        <header
+          className={`fixed lg:sticky top-0 left-0 right-0 w-full z-40 transition-all duration-700 ease-in-out translate-y-0 opacity-100 ${
+            scrolled
+              ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-sm"
+              : "bg-background border-b border-transparent"
+          }`}
         >
-          {/* Column 1: Left Menu & Mobile Hamburger */}
-          <div className="flex flex-1 items-center gap-6">
-            <button
-              className="lg:hidden -ml-2 p-2 hover:opacity-70 transition-opacity"
-              aria-label="Menu"
-              onClick={() => setOpen(true)}
-            >
-              <Menu className="h-[22px] w-[22px]" strokeWidth={1.2} />
-            </button>
-
-            <nav className="hidden lg:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium">
-              {leftNavItems.map((n) => {
-                const active = isActive(n.to);
-                return (
-                  <Link
-                    key={n.label}
-                    href={n.to}
-                    onClick={(e) => handleNavClick(e, n.to)}
-                    className={cn(
-                      "group relative py-2 transition-colors",
-                      active ? "text-foreground" : "text-foreground/60 hover:text-foreground",
-                    )}
-                  >
-                    {n.label}
-                    <span
-                      className={cn(
-                        "absolute bottom-0 left-0 h-[1px] bg-foreground transition-all duration-500 ease-out",
-                        active ? "w-full" : "w-0 group-hover:w-full",
-                      )}
-                    />
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Column 2: Center Brand */}
-          <Link
-            href="/"
-            className="flex-1 flex justify-center items-center select-none"
-            aria-label="Drapeva home"
+          <div
+            className={`flex items-center justify-between container-luxe transition-all duration-700 ${scrolled ? "py-1" : "py-2"} min-w-0`}
           >
-            <span className="text-2xl md:text-[26px] uppercase tracking-[0.3em] font-limelight font-light transition-transform duration-700 hover:scale-105">
-              Drapeva
-            </span>
-          </Link>
+            {/* Column 1: Left Menu & Mobile Hamburger */}
+            <div className="flex flex-1 items-center gap-6">
+              <button
+                className="lg:hidden -ml-2 p-2 hover:opacity-70 transition-opacity"
+                aria-label="Menu"
+                onClick={() => setOpen(true)}
+              >
+                <Menu className="h-[22px] w-[22px]" strokeWidth={1.2} />
+              </button>
 
-          {/* Column 3: Right Menu + Icons */}
-          <div className="flex flex-1 items-center justify-end gap-6">
-            {rightNavItems.length > 0 && (
-              <nav className="hidden lg:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium mr-2">
-                {rightNavItems.map((n) => {
+              <nav className="hidden lg:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium">
+                {leftNavItems.map((n) => {
                   const active = isActive(n.to);
                   return (
                     <Link
@@ -314,248 +275,289 @@ export function SiteHeader() {
                   );
                 })}
               </nav>
-            )}
-
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <button
-                onClick={() => setSearchOpen((prev) => !prev)}
-                className="p-2 hover:opacity-60 transition-opacity"
-                aria-label="Search"
-              >
-                <Search className="h-5 w-5" strokeWidth={1.2} />
-              </button>
-
-              {/* Wishlist */}
-              {user && (
-                <Link
-                  href="/account/wishlist"
-                  className="relative p-2 hover:opacity-60 transition-opacity"
-                  aria-label="Wishlist"
-                >
-                  <Heart className="h-5 w-5" strokeWidth={1.2} />
-                  {wishlist.length > 0 && (
-                    <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
-                      {wishlist.length}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              {/* Cart */}
-              <button
-                onClick={openCart}
-                className="relative p-2 hover:opacity-60 transition-opacity"
-                aria-label="Cart"
-              >
-                <ShoppingBag className="h-5 w-5" strokeWidth={1.2} />
-                {count > 0 && (
-                  <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
-                    {count}
-                  </span>
-                )}
-              </button>
-
-              {/* Notifications */}
-              {user && (
-                <Link
-                  href="/account/notifications"
-                  className="relative p-2 hover:opacity-60 transition-opacity"
-                  aria-label="Notifications"
-                >
-                  <Bell className="h-5 w-5" strokeWidth={1.2} />
-                  {unreadCount > 0 && (
-                    <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background animate-pulse">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-              )}
-
-              {user ? (
-                <div className="relative hidden lg:block ml-2">
-                  <Link
-                    href="/account"
-                    className="flex items-center gap-2 h-9 px-4 rounded-full border border-border/40 hover:border-gold/40 hover:bg-champagne/10 transition-all text-[11px] font-semibold uppercase tracking-widest text-foreground/80 hover:text-gold"
-                  >
-                    <User className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    <span className="truncate max-w-[140px]">
-                      {user.name || user.email?.split("@")[0]}
-                    </span>
-                  </Link>
-                </div>
-              ) : (
-                /* Login / Register Link Button */
-                <div className="hidden lg:flex items-center gap-3 text-xs ml-2">
-                  <Link
-                    href="/login"
-                    className="relative text-[11px] uppercase tracking-widest font-semibold text-foreground/80 hover:text-gold transition-colors after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
-                  >
-                    Login
-                  </Link>
-                  <span className="text-border text-xs">/</span>
-                  <Link
-                    href="/register"
-                    className="relative text-[11px] uppercase tracking-widest font-semibold text-foreground/80 hover:text-gold transition-colors after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
-                  >
-                    Register
-                  </Link>
-                </div>
-              )}
-
-              {/* Mobile Profile Trigger */}
-              {user && (
-                <Link
-                  href="/account"
-                  className="lg:hidden h-7 w-7 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 text-gold grid place-items-center text-xs font-semibold ring-2 ring-gold/20 hover:scale-105 transition-transform"
-                  aria-label="Account Dashboard"
-                >
-                  {(user.name || user.email).charAt(0).toUpperCase()}
-                </Link>
-              )}
             </div>
-          </div>
-        </div>
 
-        {/* Inline Search Drawer (Slides down below header) */}
-        {searchOpen && (
-          <div className="border-t border-border bg-background w-full animate-rise">
-            <div className="container-luxe py-6 max-h-[80vh] overflow-y-auto">
-              <div className="flex items-center gap-4 border-b border-border pb-3">
-                <Search className="h-5 w-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search for sarees, fabrics, collections..."
-                  className="flex-1 bg-transparent text-lg focus:outline-none placeholder:text-muted-foreground/60"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="p-1 hover:text-gold transition-colors text-muted-foreground"
-                    aria-label="Clear Search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    setSearchOpen(false);
-                    setSearchQuery("");
-                  }}
-                  className="text-xs uppercase tracking-widest font-semibold hover:text-gold transition-colors"
-                >
-                  Close
-                </button>
-              </div>
+            {/* Column 2: Center Brand */}
+            <Link
+              href="/"
+              className="flex-1 flex justify-center items-center select-none"
+              aria-label="Drapeva home"
+            >
+              <span className="text-lg sm:text-2xl md:text-[26px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-limelight font-light transition-transform duration-700 hover:scale-105">
+                Drapeva
+              </span>
+            </Link>
 
-              <div className="mt-6">
-                {searchQuery.trim().length <= 1 ? (
-                  <div>
-                    <p className="eyebrow text-muted-foreground mb-3">Popular Searches</p>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { label: "Silk Sarees", href: "/collections?fabric=Silk" },
-                        { label: "Kanjivaram Sarees", href: "/collections?fabric=Kanjivaram" },
-                        { label: "Banarasi", href: "/collections?fabric=Banarasi" },
-                        { label: "Organza Sarees", href: "/collections?fabric=Organza" },
-                        { label: "Cotton Sarees", href: "/collections?fabric=Cotton" },
-                        { label: "Bridal Sarees", href: "/collections?category=bridal-sarees" },
-                        {
-                          label: "Wedding Collection",
-                          href: "/collections?collection=vivah-couture",
-                        },
-                      ].map((item) => (
-                        <Link
-                          key={item.label}
-                          href={item.href}
-                          onClick={() => {
-                            setSearchOpen(false);
-                            setSearchQuery("");
-                          }}
-                          className="px-4 py-2 border border-border bg-champagne/10 hover:border-gold hover:bg-champagne/20 text-xs transition-colors rounded-full font-medium"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ) : isSearching ? (
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="animate-pulse" role="status">
-                        <div className="aspect-[3/4] bg-champagne/30 rounded" />
-                        <div className="mt-2 h-3 w-3/4 bg-champagne/40 rounded" />
-                        <div className="mt-1 h-3 w-1/4 bg-champagne/30 rounded" />
-                      </div>
-                    ))}
-                  </div>
-                ) : searchResults.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-4">
-                    No sarees found matching your search.
-                  </p>
-                ) : (
-                  <div>
-                    <p className="eyebrow text-muted-foreground mb-4">
-                      Search Results ({searchResults.length})
-                    </p>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 max-h-[50vh] overflow-y-auto pr-2">
-                      {searchResults.slice(0, 8).map((p: any) => (
-                        <Link
-                          key={p.id}
-                          href={`/product/${p.slug}`}
-                          onClick={() => {
-                            setSearchOpen(false);
-                            setSearchQuery("");
-                          }}
-                          className="group flex gap-3 border border-border p-2 bg-background hover:border-gold/30 transition-colors"
-                        >
-                          <div className="aspect-[3/4] w-14 shrink-0 overflow-hidden bg-champagne/10">
-                            <img
-                              src={p.image}
-                              alt={p.name}
-                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                          </div>
-                          <div className="flex flex-col justify-center min-w-0">
-                            <p className="text-xs font-semibold truncate group-hover:text-gold transition-colors">
-                              {p.name}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">{p.fabric}</p>
-                            <p className="text-xs font-display text-gold mt-1 font-semibold">
-                              {formatINR(p.price)}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                    {searchResults.length > 8 && (
+            {/* Column 3: Right Menu + Icons */}
+            <div className="flex flex-1 items-center justify-end gap-6">
+              {rightNavItems.length > 0 && (
+                <nav className="hidden lg:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium mr-2">
+                  {rightNavItems.map((n) => {
+                    const active = isActive(n.to);
+                    return (
                       <Link
-                        href={`/shop?search=${searchQuery}`}
-                        onClick={() => {
-                          setSearchOpen(false);
-                          setSearchQuery("");
-                        }}
-                        className="inline-block mt-4 text-xs font-semibold uppercase tracking-wider hover:text-gold border-b border-foreground hover:border-gold pb-0.5 transition-colors"
+                        key={n.label}
+                        href={n.to}
+                        onClick={(e) => handleNavClick(e, n.to)}
+                        className={cn(
+                          "group relative py-2 transition-colors",
+                          active ? "text-foreground" : "text-foreground/60 hover:text-foreground",
+                        )}
                       >
-                        View all results →
+                        {n.label}
+                        <span
+                          className={cn(
+                            "absolute bottom-0 left-0 h-[1px] bg-foreground transition-all duration-500 ease-out",
+                            active ? "w-full" : "w-0 group-hover:w-full",
+                          )}
+                        />
                       </Link>
+                    );
+                  })}
+                </nav>
+              )}
+
+              <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+                {/* Search */}
+                <button
+                  onClick={() => setSearchOpen((prev) => !prev)}
+                  className="p-2 hover:opacity-60 transition-opacity"
+                  aria-label="Search"
+                >
+                  <Search className="h-5 w-5" strokeWidth={1.2} />
+                </button>
+
+                {/* Wishlist */}
+                {user && (
+                  <Link
+                    href="/account/wishlist"
+                    className="relative p-2 hover:opacity-60 transition-opacity"
+                    aria-label="Wishlist"
+                  >
+                    <Heart className="h-5 w-5" strokeWidth={1.2} />
+                    {wishlist.length > 0 && (
+                      <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
+                        {wishlist.length}
+                      </span>
                     )}
+                  </Link>
+                )}
+
+                {/* Cart */}
+                <button
+                  onClick={openCart}
+                  className="relative p-2 hover:opacity-60 transition-opacity"
+                  aria-label="Cart"
+                >
+                  <ShoppingBag className="h-5 w-5" strokeWidth={1.2} />
+                  {count > 0 && (
+                    <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
+                      {count}
+                    </span>
+                  )}
+                </button>
+
+                {/* Notifications */}
+                {user && (
+                  <Link
+                    href="/account/notifications"
+                    className="relative p-2 hover:opacity-60 transition-opacity"
+                    aria-label="Notifications"
+                  >
+                    <Bell className="h-5 w-5" strokeWidth={1.2} />
+                    {unreadCount > 0 && (
+                      <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background animate-pulse">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
+
+                {user ? (
+                  <div className="relative hidden lg:block ml-2">
+                    <Link
+                      href={ACCOUNT_HOME}
+                      className="flex items-center gap-2 h-9 px-4 rounded-full border border-border/40 hover:border-gold/40 hover:bg-champagne/10 transition-all text-[11px] font-semibold uppercase tracking-widest text-foreground/80 hover:text-gold"
+                    >
+                      <User className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      <span className="truncate max-w-[140px]">
+                        {user.name || user.email?.split("@")[0]}
+                      </span>
+                    </Link>
                   </div>
+                ) : (
+                  /* Login / Register Link Button */
+                  <div className="hidden lg:flex items-center gap-3 text-xs ml-2">
+                    <Link
+                      href="/login"
+                      className="relative text-[11px] uppercase tracking-widest font-semibold text-foreground/80 hover:text-gold transition-colors after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
+                    >
+                      Login
+                    </Link>
+                    <span className="text-border text-xs">/</span>
+                    <Link
+                      href="/register"
+                      className="relative text-[11px] uppercase tracking-widest font-semibold text-foreground/80 hover:text-gold transition-colors after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full"
+                    >
+                      Register
+                    </Link>
+                  </div>
+                )}
+
+                {/* Mobile Profile Trigger */}
+                {user && (
+                  <Link
+                    href={ACCOUNT_HOME}
+                    className="lg:hidden h-7 w-7 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 text-gold grid place-items-center text-xs font-semibold ring-2 ring-gold/20 hover:scale-105 transition-transform"
+                    aria-label="Account Dashboard"
+                  >
+                    {(user.name || user.email).charAt(0).toUpperCase()}
+                  </Link>
                 )}
               </div>
             </div>
           </div>
-        )}
-      </header>
+
+          {/* Inline Search Drawer (Slides down below header) */}
+          {searchOpen && (
+            <div className="border-t border-border bg-background w-full animate-rise">
+              <div className="container-luxe py-6 max-h-[80vh] overflow-y-auto">
+                <div className="flex items-center gap-4 border-b border-border pb-3">
+                  <Search className="h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search for sarees, fabrics, collections..."
+                    className="flex-1 bg-transparent text-lg focus:outline-none placeholder:text-muted-foreground/60"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="p-1 hover:text-gold transition-colors text-muted-foreground"
+                      aria-label="Clear Search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSearchOpen(false);
+                      setSearchQuery("");
+                    }}
+                    className="text-xs uppercase tracking-widest font-semibold hover:text-gold transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <div className="mt-6">
+                  {searchQuery.trim().length <= 1 ? (
+                    <div>
+                      <p className="eyebrow text-muted-foreground mb-3">Popular Searches</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { label: "Silk Sarees", href: "/collections?fabric=Silk" },
+                          { label: "Kanjivaram Sarees", href: "/collections?fabric=Kanjivaram" },
+                          { label: "Banarasi", href: "/collections?fabric=Banarasi" },
+                          { label: "Organza Sarees", href: "/collections?fabric=Organza" },
+                          { label: "Cotton Sarees", href: "/collections?fabric=Cotton" },
+                          { label: "Bridal Sarees", href: "/collections?category=bridal-sarees" },
+                          {
+                            label: "Wedding Collection",
+                            href: "/collections?collection=vivah-couture",
+                          },
+                        ].map((item) => (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            onClick={() => {
+                              setSearchOpen(false);
+                              setSearchQuery("");
+                            }}
+                            className="px-4 py-2 border border-border bg-champagne/10 hover:border-gold hover:bg-champagne/20 text-xs transition-colors rounded-full font-medium"
+                          >
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : isSearching ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="animate-pulse" role="status">
+                          <div className="aspect-[3/4] bg-champagne/30 rounded" />
+                          <div className="mt-2 h-3 w-3/4 bg-champagne/40 rounded" />
+                          <div className="mt-1 h-3 w-1/4 bg-champagne/30 rounded" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4">
+                      No sarees found matching your search.
+                    </p>
+                  ) : (
+                    <div>
+                      <p className="eyebrow text-muted-foreground mb-4">
+                        Search Results ({searchResults.length})
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 max-h-[50vh] overflow-y-auto pr-2">
+                        {searchResults.slice(0, 8).map((p: any) => (
+                          <Link
+                            key={p.id}
+                            href={`/product/${p.slug}`}
+                            onClick={() => {
+                              setSearchOpen(false);
+                              setSearchQuery("");
+                            }}
+                            className="group flex gap-3 border border-border p-2 bg-background hover:border-gold/30 transition-colors"
+                          >
+                            <div className="aspect-[3/4] w-14 shrink-0 overflow-hidden bg-champagne/10">
+                              <img
+                                src={p.image}
+                                alt={p.name}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="flex flex-col justify-center min-w-0">
+                              <p className="text-xs font-semibold truncate group-hover:text-gold transition-colors">
+                                {p.name}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground mt-0.5">{p.fabric}</p>
+                              <p className="text-xs font-display text-gold mt-1 font-semibold">
+                                {formatINR(p.price)}
+                              </p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                      {searchResults.length > 8 && (
+                        <Link
+                          href={`/shop?search=${searchQuery}`}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery("");
+                          }}
+                          className="inline-block mt-4 text-xs font-semibold uppercase tracking-wider hover:text-gold border-b border-foreground hover:border-gold pb-0.5 transition-colors"
+                        >
+                          View all results →
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </header>
+      </div>
 
       {/* Mobile menu */}
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-[82%] max-w-sm bg-background p-6 animate-rise">
+          <div className="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-background p-5 sm:p-6 animate-rise overflow-y-auto overscroll-contain">
             <div className="flex items-center justify-between">
               <Link
                 href="/"

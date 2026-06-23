@@ -7,13 +7,13 @@ const features = [
     icon: Gem,
     title: "Handpicked Quality",
     description:
-      "Every saree is meticulously inspected for thread count, weave perfection, and dye consistency.",
+      "Each piece is carefully handpicked after assessing its softness, comfort, and overall quality, ensuring every drape feels as exceptional as it looks.",
   },
   {
     icon: Sparkles,
-    title: "Authentic Craftsmanship",
+    title: "Authentic",
     description:
-      "Sourced directly from master weavers across India, preserving centuries-old weaving traditions.",
+      "Every piece is personally handpicked with a keen eye for quality, elegance, and timeless appeal, bringing you collections chosen with care and intention.",
   },
   {
     icon: ShieldCheck,
@@ -25,18 +25,18 @@ const features = [
     icon: HeartHandshake,
     title: "Easy Exchanges",
     description:
-      "A seamless 7-day return and exchange policy to ensure your complete satisfaction.",
+      "Need a different fit or style? Our easy exchange process is designed to make your shopping experience smooth and convenient.",
   },
   {
     icon: Truck,
     title: "Global Delivery",
-    description: "Fast, insured shipping worldwide with premium, secure packaging.",
+    description: "Fast, insured shipping nationwide with premium, secure packaging.",
   },
   {
     icon: Clock,
     title: "24/7 Concierge",
     description:
-      "Personalized styling advice and order support from our dedicated luxury care team.",
+      "Dedicated support for your orders and queries, ensuring a smooth and seamless experience with Drapeva.",
   },
 ];
 
@@ -48,8 +48,8 @@ export function WhyChooseUs() {
           <p className="eyebrow mb-4">The Drapeva Standard</p>
           <h2 className="font-display text-3xl md:text-5xl">Why Women Choose Drapeva</h2>
           <p className="mt-6 text-muted-foreground leading-relaxed">
-            We believe buying a saree should be as exquisite as wearing one. Experience the pinnacle
-            of quality, trust, and service.
+            At Drapeva, comfort is at the heart of every collection. We carefully curate elegant
+            styles that combine ease, sophistication, and timeless beauty in every drape.
           </p>
         </div>
 

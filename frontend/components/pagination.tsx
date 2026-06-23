@@ -69,7 +69,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
       <button
         onClick={() => onPageChange(1)}
         disabled={currentPage === 1}
-        className="h-9 w-9 md:h-10 md:w-10 rounded border border-border flex items-center justify-center text-foreground hover:bg-champagne/20 hover:border-gold disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border transition-colors cursor-pointer disabled:cursor-not-allowed"
+        className="hidden sm:flex h-9 w-9 md:h-10 md:w-10 rounded border border-border items-center justify-center text-foreground hover:bg-champagne/20 hover:border-gold disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border transition-colors cursor-pointer disabled:cursor-not-allowed"
         aria-label="Go to first page"
       >
         <ChevronsLeft className="h-4 w-4" />
@@ -85,13 +85,18 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
         <ChevronLeft className="h-4 w-4" />
       </button>
 
+      {/* Mobile Page Indicator */}
+      <span className="inline-flex sm:hidden text-xs font-semibold px-2 py-1 bg-muted/30 border border-border/60 rounded">
+        Page {currentPage} of {totalPages}
+      </span>
+
       {/* Page Numbers */}
       {pages.map((p, i) => {
         if (typeof p === "string") {
           return (
             <span
               key={`ellipsis-${i}`}
-              className="h-9 w-6 md:h-10 md:w-8 flex items-center justify-center text-muted-foreground text-sm"
+              className="hidden sm:flex h-9 w-6 md:h-10 md:w-8 items-center justify-center text-muted-foreground text-sm"
             >
               &hellip;
             </span>
@@ -104,7 +109,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
             key={p}
             onClick={() => onPageChange(p)}
             className={cn(
-              "h-9 w-9 md:h-10 md:w-10 rounded text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer",
+              "hidden sm:flex h-9 w-9 md:h-10 md:w-10 rounded items-center justify-center text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer",
               active
                 ? "bg-gold text-gold-foreground shadow"
                 : "border border-border text-foreground hover:bg-champagne/20 hover:border-gold",
@@ -131,7 +136,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className }:
       <button
         onClick={() => onPageChange(totalPages)}
         disabled={currentPage === totalPages}
-        className="h-9 w-9 md:h-10 md:w-10 rounded border border-border flex items-center justify-center text-foreground hover:bg-champagne/20 hover:border-gold disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border transition-colors cursor-pointer disabled:cursor-not-allowed"
+        className="hidden sm:flex h-9 w-9 md:h-10 md:w-10 rounded border border-border items-center justify-center text-foreground hover:bg-champagne/20 hover:border-gold disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:border-border transition-colors cursor-pointer disabled:cursor-not-allowed"
         aria-label="Go to last page"
       >
         <ChevronsRight className="h-4 w-4" />

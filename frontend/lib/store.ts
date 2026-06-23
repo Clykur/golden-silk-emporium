@@ -33,7 +33,7 @@ export const useShop = create<ShopState>()(
       wishlistItems: [],
       cartOpen: false,
       quickView: null,
-      addToCart: (product, size = "Standard", qty = 1) =>
+      addToCart: (product, size = "Free Size", qty = 1) =>
         set((s) => {
           const existing = s.cart.find((c) => c.product.id === product.id && c.size === size);
           const currentQty = existing ? existing.qty : 0;

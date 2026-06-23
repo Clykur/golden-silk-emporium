@@ -66,17 +66,17 @@ export function HeroSection() {
 
       <div className="container-luxe relative z-10 flex h-full flex-col justify-end pb-24 md:pb-32">
         <div className="max-w-4xl">
-          <p className="hero-text-line eyebrow flex items-center gap-3 text-background/80 mb-6">
+          <p className="hero-text-line eyebrow flex items-center gap-3 text-background/80 mb-4 sm:mb-6">
             Since 2026
           </p>
-          <h1 className="hero-text-line font-display text-4xl leading-[1.1] md:text-8xl lg:text-[100px] tracking-tight">
+          <h1 className="hero-text-line font-display text-[2rem] leading-[1.1] sm:text-5xl md:text-7xl lg:text-8xl xl:text-[100px] tracking-tight break-words">
             Comfort in Every
             <br />
             <span className="font-serif italic font-light">Drape.</span>
           </h1>
-          <p className="max-w-md text-sm leading-relaxed text-background/80 font-light">
-            Discover our curated selection of premium sarees, where traditional craftsmanship meets
-            modern luxury.
+          <p className="max-w-md text-sm leading-relaxed text-background/80 font-light mt-4">
+            Explore our collection of comfortable and elegant sarees, designed to make you look
+            beautiful and feel confident every day.
           </p>
           <div className="hero-text-line mt-8 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
             <a
@@ -91,7 +91,7 @@ export function HeroSection() {
 
       {/* Bottom Marquee */}
       <div className="absolute bottom-0 left-0 right-0 z-20 bg-ink text-background overflow-hidden h-10 flex items-center border-t border-border/20">
-        <div className="flex animate-marquee whitespace-nowrap text-[0.7rem] tracking-[0.32em] uppercase font-limelight">
+        <div className="flex animate-marquee whitespace-nowrap text-[0.55rem] sm:text-[0.7rem] tracking-[0.32em] uppercase font-limelight">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex shrink-0 gap-12 px-6 items-center">
               <span className="pt-1">DRAPEVA</span>

@@ -1,24 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useMemo, useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { z } from "zod";
 import { SlidersHorizontal, X, Check as CheckIcon } from "lucide-react";
 import { productsApi } from "@/lib/api";
 import { ProductCard } from "@/components/product-card";
 import { Select } from "@/components/select";
 import { Pagination } from "@/components/pagination";
 import type { Product } from "@/lib/types";
-
-const searchSchema = z.object({
-  category: z.string().optional(),
-  fabric: z.string().optional(),
-  collection: z.string().optional(),
-  occasion: z.string().optional(),
-  search: z.string().optional(),
-});
+import { Combobox } from "@/components/combobox";
 
 const FABRICS = [
   "Silk",
@@ -46,7 +37,12 @@ const PRICE_BANDS: { label: string; min?: number; max?: number }[] = [
   ];
   return bands[i];
 });
-type Sort = "featured" | "price-asc" | "price-desc" | "newest";
+const SORT_OPTIONS = [
+  { value: "featured", label: "Featured" },
+  { value: "newest", label: "Latest Arrivals" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+];
 
 function ProductSkeleton() {
   return (
@@ -77,7 +73,7 @@ function ShopContent() {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceBandIndex, setPriceBandIndex] = useState<number | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [sort, setSort] = useState<Sort>("featured");
+  const [sort, setSort] = useState<"featured" | "newest" | "price-asc" | "price-desc">("featured");
   const [open, setOpen] = useState(false);
 
   // Fetch all products matching high-level URL filters from Supabase
@@ -254,37 +250,35 @@ function ShopContent() {
           </aside>
 
           <div>
-            <div className="mb-8 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {isLoading ? "Loading..." : `${filtered.length} masterworks found`}
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground order-2 sm:order-1">
+                {isLoading ? "Loading..." : `${filtered.length} Products Found`}
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto order-1 sm:order-2">
                 <button
                   onClick={() => setOpen(true)}
-                  className="inline-flex items-center gap-2 border border-border px-4 py-2 text-xs uppercase tracking-[0.2em] lg:hidden font-medium"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 border border-border px-4 py-2.5 text-xs uppercase tracking-[0.2em] lg:hidden font-medium h-10"
                 >
                   <SlidersHorizontal className="h-3.5 w-3.5" /> Filter
                 </button>
-                <Select
+                <Combobox
+                  options={SORT_OPTIONS}
                   value={sort}
-                  onChange={(e) => {
-                    setSort(e.target.value as Sort);
+                  onChange={(value) => {
+                    setSort(value as "featured" | "newest" | "price-asc" | "price-desc");
                     const params = new URLSearchParams(window.location.search);
                     params.delete("page");
                     router.push(`${pathname}?${params.toString()}`);
                   }}
-                  className="w-40"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="newest">Newest</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                </Select>
+                  placeholder="Sort By"
+                  searchPlaceholder="Search sort option..."
+                  className="flex-1 sm:flex-initial sm:w-56"
+                />
               </div>
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 md:gap-x-8">
+              <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 md:gap-x-8">
                 {Array.from({ length: 9 }).map((_, i) => (
                   <ProductSkeleton key={i} />
                 ))}
@@ -301,7 +295,7 @@ function ShopContent() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-x-5 gap-y-12 md:grid-cols-3 md:gap-x-8">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 md:gap-x-8">
                   {paginatedProducts.map((p: Product) => (
                     <ProductCard key={p.id} product={p} />
                   ))}

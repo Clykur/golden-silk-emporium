@@ -30,16 +30,15 @@ export function VideoCommerce() {
       <div className="container-luxe">
         <div className="flex flex-col md:flex-row gap-12 lg:gap-20 items-center justify-between">
           <div className="w-full md:w-1/2 flex flex-col justify-center order-2 md:order-1">
-            <p className="eyebrow mb-6">Saree in Motion</p>
+            <p className="eyebrow mb-6">Drapeva in Motion</p>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6">
               Grace in <br />
               <span className="font-serif italic font-light">Every Step</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed text-lg mb-10 max-w-xl">
-              Experience the fluid drape, the unmistakable rustle of pure silk, and the way light
-              plays across intricate zari borders. Our video commerce experience brings you closer
-              to the craftsmanship before you even touch it, allowing you to witness the true
-              movement and elegance of our signature weaves.
+              Every saree tells a story through its movement. Discover the graceful drape, rich
+              textures, and intricate details through immersive videos designed to bring the
+              collection closer to you. Experience the elegance before it arrives at your doorstep.
             </p>
 
             <div className="flex items-center gap-6">
