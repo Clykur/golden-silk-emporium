@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -677,7 +677,7 @@ export default function OrderHistory() {
     enabled: !!user,
   });
 
-  const { data: collections = [] } = useQuery({
+  useQuery({
     queryKey: ["orders-empty-collections"],
     queryFn: () => collectionsApi.list(),
     enabled: orders.length === 0,

@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { EDITORIAL_IMAGES } from "@/lib/media";
 import { useState, useEffect } from "react";
 
 const CAROUSEL_IMAGES = [

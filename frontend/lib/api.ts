@@ -40,7 +40,11 @@ export const productsApi = {
 
     if (filters.category) query = query.eq("categories.slug", filters.category);
     if (filters.collection) {
-      query = query.filter("collection.slug", "eq", filters.collection);
+      if (filters.collection === "bestsellers") {
+        query = query.or('tags.cs.{"bestseller"},tags.cs.{"Bestseller"},tags.cs.{"BESTSELLER"}');
+      } else {
+        query = query.filter("collection.slug", "eq", filters.collection);
+      }
     }
     if (filters.fabric) query = query.eq("fabric", filters.fabric);
     if (filters.occasion) query = query.eq("occasion", filters.occasion);
@@ -1462,13 +1466,9 @@ export const adminStatsApi = {
     if (wishlistRes.error) throw wishlistRes.error;
 
     const orders = ordersRes.data || [];
-    const coupons = couponsRes.data || [];
     const wishlist = wishlistRes.data || [];
 
     const totalOrders = orders.length;
-    const completedOrders = orders.filter(
-      (o) => !["cancelled", "returned"].includes(o.status),
-    ).length;
 
     // Funnel (Mocked relative to actual orders because page views aren't tracked)
     const baseMultiplier = 35; // e.g. 1 order = 35 visitors
@@ -1970,7 +1970,7 @@ export const authApi = {
     }
   },
 
-  async resetPassword({ token, password }: { token: string; password?: string }) {
+  async resetPassword({ token: _token, password }: { token: string; password?: string }) {
     if (password) {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;

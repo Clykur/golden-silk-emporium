@@ -1,17 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Heart, ShoppingBag, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
-import { wishlistApi } from "@/lib/api";
-import { formatINR, normalizeProduct } from "@/lib/types";
+import { formatINR } from "@/lib/types";
 import { useShop } from "@/lib/store";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
 export default function Wishlist() {
-  const { user } = useAuth();
+  useAuth();
   const { addToCart, wishlistItems, toggleWishlist } = useShop();
 
   const handleAddToCart = (product: any) => {

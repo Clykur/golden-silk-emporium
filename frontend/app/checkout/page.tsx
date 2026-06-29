@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useShop, cartTotal, cartCount } from "@/lib/store";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { useAddressesStore } from "@/lib/addresses-store";
-import { ordersApi, couponsApi, addressesApi } from "@/lib/api";
+import { ordersApi, couponsApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth-store";
 import { formatINR } from "@/lib/types";
 import type { ShippingAddress, OrderItem, CustomerAddress } from "@/lib/types";
@@ -16,10 +16,8 @@ import {
   ShoppingBag,
   ArrowLeft,
   Tag,
-  CheckCircle,
   Navigation,
   Loader2,
-  MapPin,
   Plus,
   Check,
 } from "lucide-react";
@@ -70,8 +68,6 @@ export const dynamic = "force-dynamic";
 
 function CheckoutContent() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { cart, clearCart } = useShop();
   const { user, isAuthenticated } = useAuth();
 
@@ -79,9 +75,9 @@ function CheckoutContent() {
     if (!isAuthenticated()) {
       router.push(
         "/login?redirect=" +
-          encodeURIComponent("/checkout") +
-          "&message=" +
-          encodeURIComponent("Please sign in to continue shopping."),
+        encodeURIComponent("/checkout") +
+        "&message=" +
+        encodeURIComponent("Please sign in to continue shopping."),
       );
     }
   }, [isAuthenticated, router]);
@@ -109,8 +105,6 @@ function CheckoutContent() {
 
   // Address book from Zustand
   const savedAddresses = useAddressesStore((s) => s.addresses);
-  const setSavedAddresses = (list: CustomerAddress[]) =>
-    useAddressesStore.setState({ addresses: list });
 
   // Ephemeral local UI states
   const [locating, setLocating] = useState(false);
@@ -362,7 +356,7 @@ function CheckoutContent() {
 
   const subtotal = cartTotal(cart);
   const discount = appliedCoupon?.discount || 0;
-  const shipping = subtotal >= 5000 ? 0 : SHIPPING_COST;
+  const shipping = subtotal >= 2500 ? 0 : SHIPPING_COST;
   const taxable = Math.max(0, subtotal - discount);
   const tax = taxable * TAX_RATE;
   const total = taxable + tax + shipping;
@@ -704,18 +698,16 @@ function CheckoutContent() {
                               country: addr.country || "India",
                             });
                           }}
-                          className={`cursor-pointer border p-5 relative transition-all duration-300 flex flex-col justify-between ${
-                            isSelected
-                              ? "border-gold bg-gold/5 shadow-sm"
-                              : "border-border hover:border-foreground/40 bg-background"
-                          }`}
+                          className={`cursor-pointer border p-5 relative transition-all duration-300 flex flex-col justify-between ${isSelected
+                            ? "border-gold bg-gold/5 shadow-sm"
+                            : "border-border hover:border-foreground/40 bg-background"
+                            }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="mt-1">
                               <div
-                                className={`h-4.5 w-4.5 rounded-full border flex items-center justify-center ${
-                                  isSelected ? "border-gold" : "border-muted-foreground"
-                                }`}
+                                className={`h-4.5 w-4.5 rounded-full border flex items-center justify-center ${isSelected ? "border-gold" : "border-muted-foreground"
+                                  }`}
                               >
                                 {isSelected && <div className="h-2 w-2 rounded-full bg-gold" />}
                               </div>
@@ -1018,11 +1010,10 @@ function CheckoutContent() {
                   {/* Razorpay selector */}
                   <div
                     onClick={() => setPaymentMethod("razorpay")}
-                    className={`cursor-pointer border p-4 transition-all duration-300 ${
-                      paymentMethod === "razorpay"
-                        ? "border-gold bg-gold/5 shadow-sm"
-                        : "border-border hover:border-foreground/45 bg-background"
-                    }`}
+                    className={`cursor-pointer border p-4 transition-all duration-300 ${paymentMethod === "razorpay"
+                      ? "border-gold bg-gold/5 shadow-sm"
+                      : "border-border hover:border-foreground/45 bg-background"
+                      }`}
                   >
                     <div className="flex items-center justify-between font-semibold">
                       <span className="text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
@@ -1050,11 +1041,10 @@ function CheckoutContent() {
                   {/* COD selector */}
                   <div
                     onClick={() => setPaymentMethod("cod")}
-                    className={`cursor-pointer border p-4 transition-all duration-300 ${
-                      paymentMethod === "cod"
-                        ? "border-gold bg-gold/5 shadow-sm"
-                        : "border-border hover:border-foreground/45 bg-background"
-                    }`}
+                    className={`cursor-pointer border p-4 transition-all duration-300 ${paymentMethod === "cod"
+                      ? "border-gold bg-gold/5 shadow-sm"
+                      : "border-border hover:border-foreground/45 bg-background"
+                      }`}
                   >
                     <div className="flex items-center justify-between font-semibold">
                       <span className="text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
@@ -1203,7 +1193,7 @@ function CheckoutContent() {
 
           {shipping === 0 && (
             <p className="text-xs text-emerald-600 text-center">
-              Free shipping applied on orders above ₹5,000
+              Free shipping applied on orders above ₹2,500
             </p>
           )}
         </div>

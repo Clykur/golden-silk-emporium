@@ -1,8 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -83,7 +80,7 @@ export default function Notifications() {
 
       return { previousNotifications, previousUnreadCount };
     },
-    onError: (err, id, context: any) => {
+    onError: (_err, _id, context: any) => {
       if (context) {
         qc.setQueryData(["my-notifications", user?.id], context.previousNotifications);
         qc.setQueryData(["unread-notifications-count", user?.id], context.previousUnreadCount);
@@ -113,7 +110,7 @@ export default function Notifications() {
 
       return { previousNotifications, previousUnreadCount };
     },
-    onError: (err, variables, context: any) => {
+    onError: (_err, _variables, context: any) => {
       if (context) {
         qc.setQueryData(["my-notifications", user?.id], context.previousNotifications);
         qc.setQueryData(["unread-notifications-count", user?.id], context.previousUnreadCount);

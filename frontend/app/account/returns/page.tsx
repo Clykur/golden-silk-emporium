@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { RotateCcw, Package, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
+import { RotateCcw, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
 import { returnsApi, ordersApi } from "@/lib/api";
 import type { ReturnRequest } from "@/lib/types";

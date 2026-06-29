@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { Shield, Key, Smartphone, AlertTriangle, LogOut } from "lucide-react";
+import { Shield, Key, AlertTriangle, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
 import { authApi } from "@/lib/api";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
@@ -13,7 +11,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 export default function Security() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const [currentPwd, setCurrentPwd] = useState("");
+  const [, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);

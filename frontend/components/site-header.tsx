@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Heart, Search, ShoppingBag, User, Menu, X, Bell } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useShop, cartCount } from "@/lib/store";
 import { useAuth } from "@/lib/auth-store";
 import { notificationsApi, productsApi } from "@/lib/api";
@@ -81,7 +81,7 @@ export function SiteHeader() {
   const queryClient = useQueryClient();
   const isHeroPath = pathname === "/" || pathname === "/about";
   const [hasHero, setHasHero] = useState(isHeroPath);
-  const [heroVisible, setHeroVisible] = useState(isHeroPath);
+  const [, setHeroVisible] = useState(isHeroPath);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -119,9 +119,9 @@ export function SiteHeader() {
   const rightNavItems = user
     ? []
     : [
-        { to: "/about" as const, label: "About" },
-        { to: "/support" as const, label: "Contact" },
-      ];
+      { to: "/about" as const, label: "About" },
+      { to: "/support" as const, label: "Contact" },
+    ];
 
   const allNavItems = [...leftNavItems, ...rightNavItems];
 
@@ -220,9 +220,6 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", on);
   }, []);
 
-  const isHidden = hasHero && heroVisible;
-  const isFloating = hasHero ? !heroVisible : scrolled;
-
   // Hide header completely in admin portal
   if (pathname && /^\/admin(\/.*)?$/.test(pathname)) {
     return null;
@@ -232,11 +229,14 @@ export function SiteHeader() {
     <>
       <div className="h-[56px] sm:h-[64px] md:h-[72px] lg:h-[80px]">
         <header
-          className={`fixed lg:sticky top-0 left-0 right-0 w-full z-40 transition-all duration-700 ease-in-out translate-y-0 opacity-100 ${
-            scrolled
-              ? "bg-background/90 backdrop-blur-xl border-b border-border shadow-sm"
-              : "bg-background border-b border-transparent"
-          }`}
+          className={cn(
+            "fixed top-0 left-0 right-0 w-full z-40 transition-all duration-500 ease-in-out",
+            hasHero
+              ? scrolled
+                ? "translate-y-0 opacity-100 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm"
+                : "translate-y-0 opacity-100 bg-background border-b border-transparent"
+              : "translate-y-0 opacity-100 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm pointer-events-auto"
+          )}
         >
           {/* Desktop header */}
           <div
@@ -648,7 +648,7 @@ export function SiteHeader() {
                   alt="Drapeva Logo"
                   className="h-20 w-20 rounded-full object-cover border border-foreground/10"
                 />
-                <span className="text-3xl font-limelight tracking-[0.2em] uppercase">Drapeva</span>
+                <span className="text-2xl font-limelight tracking-[0.2em] uppercase">Drapeva</span>
               </Link>
               <button onClick={() => setOpen(false)} aria-label="Close" className="p-2">
                 <X className="h-5 w-5" />

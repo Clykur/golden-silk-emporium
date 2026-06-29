@@ -4,9 +4,8 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useMemo, useState, Suspense, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal, X, Check as CheckIcon } from "lucide-react";
-import { productsApi } from "@/lib/api";
+import { productsApi, collectionsApi } from "@/lib/api";
 import { ProductCard } from "@/components/product-card";
-import { Select } from "@/components/select";
 import { Pagination } from "@/components/pagination";
 import type { Product } from "@/lib/types";
 import { Combobox } from "@/components/combobox";
@@ -28,7 +27,7 @@ const PRICE_BANDS: { label: string; min?: number; max?: number }[] = [
   "₹2,000 – ₹3,500",
   "₹3,500 – ₹5,000",
   "Above ₹5,000",
-].map((l, i) => {
+].map((_l, i) => {
   const bands = [
     { label: "Under ₹2,000", max: 2000 },
     { label: "₹2,000 – ₹3,500", min: 2000, max: 3500 },
@@ -62,38 +61,106 @@ function ShopContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Parse filters directly from URL query parameters
   const category = searchParams.get("category") || undefined;
-  const fabric = searchParams.get("fabric") || undefined;
   const collection = searchParams.get("collection") || undefined;
-  const occasion = searchParams.get("occasion") || undefined;
+  const occasionParam = searchParams.get("occasion");
+  const fabricParam = searchParams.get("fabric");
+  const colorParam = searchParams.get("color");
+  const priceBandParam = searchParams.get("priceBand");
+  const inStockParam = searchParams.get("inStock");
   const searchParam = searchParams.get("search") || undefined;
   const page = parseInt(searchParams.get("page") || "1") || 1;
 
-  const [selectedFabrics, setSelectedFabrics] = useState<string[]>(fabric ? [fabric] : []);
-  const [selectedOccasions, setSelectedOccasions] = useState<string[]>(occasion ? [occasion] : []);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [priceBandIndex, setPriceBandIndex] = useState<number | null>(null);
-  const [inStockOnly, setInStockOnly] = useState(false);
-  const [sort, setSort] = useState<"featured" | "newest" | "price-asc" | "price-desc">("featured");
+  // React states initialized from URL parameters
+  const [selectedFabrics, setSelectedFabrics] = useState<string[]>(
+    fabricParam ? fabricParam.split(",") : [],
+  );
+  const [selectedOccasions, setSelectedOccasions] = useState<string[]>(
+    occasionParam ? occasionParam.split(",") : [],
+  );
+  const [selectedColors, setSelectedColors] = useState<string[]>(
+    colorParam ? colorParam.split(",") : [],
+  );
+  const [priceBandIndex, setPriceBandIndex] = useState<number | null>(
+    priceBandParam !== null ? parseInt(priceBandParam) : null,
+  );
+  const [inStockOnly, setInStockOnly] = useState(inStockParam === "true");
+  const [sort, setSort] = useState<
+    "featured" | "newest" | "price-asc" | "price-desc" | "bestsellers"
+  >("featured");
   const [open, setOpen] = useState(false);
+
+  // Sync state back from URL query parameters (e.g. back button / reset)
+  useEffect(() => {
+    setSelectedFabrics(fabricParam ? fabricParam.split(",") : []);
+  }, [fabricParam]);
+
+  useEffect(() => {
+    setSelectedOccasions(occasionParam ? occasionParam.split(",") : []);
+  }, [occasionParam]);
+
+  useEffect(() => {
+    setSelectedColors(colorParam ? colorParam.split(",") : []);
+  }, [colorParam]);
+
+  useEffect(() => {
+    setPriceBandIndex(priceBandParam !== null ? parseInt(priceBandParam) : null);
+  }, [priceBandParam]);
+
+  useEffect(() => {
+    setInStockOnly(inStockParam === "true");
+  }, [inStockParam]);
+
+  // Fetch all collections for the Collection Filter Group
+  const { data: collections = [] } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => collectionsApi.list(),
+  });
 
   // Fetch all products matching high-level URL filters from Supabase
   const { data: allProducts = [], isLoading } = useQuery({
-    queryKey: ["shop-products", category, collection, occasion, fabric, searchParam],
+    queryKey: ["shop-products", category, collection, occasionParam, fabricParam, searchParam],
     queryFn: () =>
       productsApi.list({
         category,
         collection,
-        fabric: selectedFabrics.length === 1 ? selectedFabrics[0] : fabric,
-        occasion: selectedOccasions.length === 1 ? selectedOccasions[0] : occasion,
+        fabric: selectedFabrics.length === 1 ? selectedFabrics[0] : fabricParam || undefined,
+        occasion:
+          selectedOccasions.length === 1 ? selectedOccasions[0] : occasionParam || undefined,
         search: searchParam,
-        sort,
+        sort: sort === "bestsellers" ? "featured" : sort,
       }),
   });
+
+  // Dynamically extract available colors from all fetched products in the database
+  const availableColors = useMemo(() => {
+    const colorsSet = new Set<string>();
+    allProducts.forEach((p) => {
+      if (p.color) {
+        const trimmed = p.color.trim();
+        if (trimmed) {
+          colorsSet.add(trimmed);
+        }
+      }
+    });
+    return Array.from(colorsSet).sort();
+  }, [allProducts]);
 
   // Client-side filtering for multi-select options
   const filtered = useMemo(() => {
     let list = [...allProducts];
+
+    if (collection === "bestsellers" || sort === "bestsellers") {
+      list = list.filter((p) => {
+        const hasTag = (p.tags || []).some((t) => {
+          const normalized = t.toLowerCase().replace(/\s+/g, "");
+          return normalized === "bestseller" || normalized === "bestsellers";
+        });
+        return hasTag || p.is_bestseller;
+      });
+    }
 
     if (selectedFabrics.length) {
       list = list.filter((p) =>
@@ -107,7 +174,7 @@ function ShopContent() {
     }
     if (selectedColors.length) {
       list = list.filter((p) =>
-        selectedColors.some((c) => (p.color || "").toLowerCase().includes(c.toLowerCase())),
+        selectedColors.some((c) => (p.color || "").toLowerCase() === c.toLowerCase()),
       );
     }
     if (inStockOnly) {
@@ -133,6 +200,7 @@ function ShopContent() {
     priceBandIndex,
     inStockOnly,
     sort,
+    collection,
   ]);
 
   const itemsPerPage = 25;
@@ -147,24 +215,36 @@ function ShopContent() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const toggle = (arr: string[], v: string, set: (a: string[]) => void) => {
-    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
-    // Reset page to 1 on filter change
+  const toggle = (arr: string[], v: string, paramName: string) => {
+    const nextVal = arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
     const params = new URLSearchParams(window.location.search);
     params.delete("page");
+    if (nextVal.length > 0) {
+      params.set(paramName, nextVal.join(","));
+    } else {
+      params.delete(paramName);
+    }
     router.push(`${pathname}?${params.toString()}`);
   };
 
   const clearAll = () => {
-    setSelectedFabrics([]);
-    setSelectedOccasions([]);
-    setSelectedColors([]);
-    setPriceBandIndex(null);
-    setInStockOnly(false);
     const params = new URLSearchParams(window.location.search);
     params.delete("page");
+    params.delete("fabric");
+    params.delete("occasion");
+    params.delete("color");
+    params.delete("priceBand");
+    params.delete("inStock");
+    params.delete("collection");
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  // Determine page banner title dynamically based on active collection
+  const collectionName = useMemo(() => {
+    if (collection === "bestsellers") return "Bestsellers Collection";
+    const found = collections.find((c) => c.slug === collection);
+    return found ? found.name : "Comfort in Every Drape";
+  }, [collection, collections]);
 
   return (
     <div>
@@ -176,9 +256,7 @@ function ShopContent() {
         />
         <div className="absolute inset-0 bg-background/20" />
         <div className="relative z-10 container-luxe">
-          <h1 className="font-display text-4xl md:text-6xl text-background">
-            Comfort in Every Drape
-          </h1>
+          <h1 className="font-display text-4xl md:text-6xl text-background">{collectionName}</h1>
         </div>
       </div>
 
@@ -199,15 +277,64 @@ function ShopContent() {
               </button>
             </div>
 
+            <FilterGroup title="Collection">
+              <Check
+                label="Bestsellers"
+                checked={collection === "bestsellers"}
+                onChange={() => {
+                  const params = new URLSearchParams(window.location.search);
+                  params.delete("page");
+                  if (collection === "bestsellers") {
+                    params.delete("collection");
+                  } else {
+                    params.set("collection", "bestsellers");
+                  }
+                  router.push(`${pathname}?${params.toString()}`);
+                }}
+              />
+              {collections.map((c) => (
+                <Check
+                  key={c.id}
+                  label={c.name}
+                  checked={collection === c.slug}
+                  onChange={() => {
+                    const params = new URLSearchParams(window.location.search);
+                    params.delete("page");
+                    if (collection === c.slug) {
+                      params.delete("collection");
+                    } else {
+                      params.set("collection", c.slug);
+                    }
+                    router.push(`${pathname}?${params.toString()}`);
+                  }}
+                />
+              ))}
+            </FilterGroup>
+
             <FilterGroup title="Fabric">
               {FABRICS.map((f) => (
                 <Check
                   key={f}
                   label={f}
                   checked={selectedFabrics.includes(f)}
-                  onChange={() => toggle(selectedFabrics, f, setSelectedFabrics)}
+                  onChange={() => toggle(selectedFabrics, f, "fabric")}
                 />
               ))}
+            </FilterGroup>
+
+            <FilterGroup title="Color">
+              {availableColors.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No colors available</p>
+              ) : (
+                availableColors.map((c) => (
+                  <Check
+                    key={c}
+                    label={c}
+                    checked={selectedColors.includes(c)}
+                    onChange={() => toggle(selectedColors, c, "color")}
+                  />
+                ))
+              )}
             </FilterGroup>
 
             <FilterGroup title="Price Range">
@@ -217,9 +344,13 @@ function ShopContent() {
                   label={b.label}
                   checked={priceBandIndex === i}
                   onChange={() => {
-                    setPriceBandIndex(priceBandIndex === i ? null : i);
                     const params = new URLSearchParams(window.location.search);
                     params.delete("page");
+                    if (priceBandIndex === i) {
+                      params.delete("priceBand");
+                    } else {
+                      params.set("priceBand", String(i));
+                    }
                     router.push(`${pathname}?${params.toString()}`);
                   }}
                 />
@@ -230,9 +361,13 @@ function ShopContent() {
                 label="In Stock Only"
                 checked={inStockOnly}
                 onChange={() => {
-                  setInStockOnly(!inStockOnly);
                   const params = new URLSearchParams(window.location.search);
                   params.delete("page");
+                  if (inStockOnly) {
+                    params.delete("inStock");
+                  } else {
+                    params.set("inStock", "true");
+                  }
                   router.push(`${pathname}?${params.toString()}`);
                 }}
               />
@@ -270,7 +405,9 @@ function ShopContent() {
                   options={SORT_OPTIONS}
                   value={sort}
                   onChange={(value) => {
-                    setSort(value as "featured" | "newest" | "price-asc" | "price-desc");
+                    setSort(
+                      value as "featured" | "newest" | "price-asc" | "price-desc" | "bestsellers",
+                    );
                     const params = new URLSearchParams(window.location.search);
                     params.delete("page");
                     router.push(`${pathname}?${params.toString()}`);

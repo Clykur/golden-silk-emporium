@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { User, LogOut, Package, MapPin, Settings, Heart, History } from "lucide-react";
+import { User, LogOut, Package, MapPin, Settings, History } from "lucide-react";
 import { useAuth } from "@/lib/auth-store";
 import { formatINR } from "@/lib/products";
 
