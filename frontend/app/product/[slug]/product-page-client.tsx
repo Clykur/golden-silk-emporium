@@ -169,9 +169,9 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
         </button>
       </div>
 
-      <div className="container-luxe grid gap-10 pb-12 pt-2 lg:grid-cols-[1.4fr_1fr] lg:gap-20 lg:items-start">
+      <div className="container-luxe grid gap-10 pb-12 pt-2 lg:grid-cols-[minmax(0,520px)_minmax(0,1fr)] lg:gap-24 lg:items-start">
         {/* Gallery */}
-        <div className="grid gap-4 md:grid-cols-[80px_1fr] lg:sticky lg:top-24 h-fit">
+        <div className="grid gap-4 md:grid-cols-[80px_1fr] lg:sticky lg:top-24 lg:h-[calc(100vh-6rem)]">
           {/* Thumbnails */}
           <div className="order-2 flex flex-row gap-3 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 md:order-1 md:flex-col scrollbar-none snap-x snap-mandatory">
             {dynamicGallery.map((img, i) => (
@@ -222,7 +222,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
         </div>
 
         {/* Info */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 lg:h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-3 hide-scrollbar ml-4">
           <div className="space-y-4 border-b border-border/40 pb-4">
             <p className="eyebrow text-gold font-bold tracking-[0.25em] text-[0.65rem]">
               {product.collection?.name || product.fabric}
@@ -266,7 +266,6 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                   {formatINR(product.compare_at)}
                 </span>
               )}
-              <span className="text-xs text-muted-foreground font-medium">incl. GST</span>
             </div>
 
             {!product.inStock && (
@@ -278,41 +277,12 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
             <p className="text-sm leading-[1.8] text-muted-foreground/90 font-medium max-w-[95%]">
               {product.description}
             </p>
-
-            {/* Tags */}
-            {product.fabric && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {product.fabric && (
-                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                    {product.fabric}
-                  </span>
-                )}
-                {product.weave && product.weave !== "None" && (
-                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                    {product.weave}
-                  </span>
-                )}
-                {product.occasion && (
-                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                    {product.occasion}
-                  </span>
-                )}
-                {product.color && (
-                  <span className="border border-border/80 px-2.5 py-1 text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
-                    {product.color}
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Size selector */}
           <div className="pt-2">
             <div className="flex items-center justify-between">
               <p className="eyebrow text-foreground/80 font-bold">Size / Length</p>
-              <button className="inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors">
-                <Ruler className="h-3.5 w-3.5 text-gold" /> Size guide
-              </button>
             </div>
             <div className="mt-4 flex flex-wrap gap-2.5">
               <button className="border border-foreground bg-foreground text-background font-semibold px-5 py-2.5 text-xs uppercase tracking-wider transition-all duration-300">
@@ -375,7 +345,7 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
           </div>
 
           <a
-            href={`https://wa.me/919949740776?text=${encodeURIComponent(
+            href={`https://wa.me/918123045318?text=${encodeURIComponent(
               `Hello *Drapeva*,
 
 I'm interested in the following saree:

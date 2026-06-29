@@ -20,7 +20,6 @@ export function SiteFooter() {
       /^\/register$/,
       /^\/forgot-password$/,
       /^\/reset-password$/,
-      /^\/otp$/,
       /^\/verify$/,
       /^\/checkout(\/.*)?$/,
       /^\/payment-processing(\/.*)?$/,
@@ -88,23 +87,23 @@ export function SiteFooter() {
             <ul className="space-y-4">
               <li>
                 <Link
-                  href="/support"
+                  href="/shipping-cancellation"
                   className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  Shipping Policy
+                  Shipping & Cancellation Policy
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/returns-exchanges-refunds"
                   className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
-                  Returns, Exchanges & Refunds
+                  Returns & Exchanges
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/terms-of-service"
                   className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Terms & Conditions
@@ -112,7 +111,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
-                  href="/support"
+                  href="/privacy-policy"
                   className="text-sm font-light text-background/70 transition-colors hover:text-background"
                 >
                   Privacy Policy
@@ -172,7 +171,7 @@ export function SiteFooter() {
             <ul className="space-y-4">
               <li>
                 <a
-                  href="https://instagram.com/drapeva"
+                  href="https://www.instagram.com/thedrapeva/?utm_source=ig_web_button_share_sheet"
                   target="_blank"
                   rel="noreferrer"
                   className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
@@ -194,7 +193,7 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  href="https://youtube.com/@drapeva"
+                  href="https://www.youtube.com/@Drapeva2026"
                   target="_blank"
                   rel="noreferrer"
                   className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"
@@ -216,13 +215,13 @@ export function SiteFooter() {
 
           <div className="flex flex-wrap items-center gap-8">
             <a
-              href="https://wa.me/919949740776"
+              href="https://wa.me/918123045318"
               className="flex items-center gap-2 transition-colors hover:text-background"
             >
               <FaWhatsapp className="h-6 w-6" />
             </a>
             <a
-              href="https://instagram.com/drapeva"
+              href="https://www.instagram.com/thedrapeva/?utm_source=ig_web_button_share_sheet"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 transition-colors hover:text-background"
@@ -230,7 +229,7 @@ export function SiteFooter() {
               <Instagram className="h-6 w-6" />
             </a>
             <a
-              href="https://youtube.com/@drapeva"
+              href="https://www.youtube.com/@Drapeva2026"
               target="_blank"
               rel="noreferrer"
               className="group inline-flex items-center gap-3 text-sm font-light text-background/70 transition-colors hover:text-background"

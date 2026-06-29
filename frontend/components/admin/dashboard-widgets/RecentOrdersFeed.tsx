@@ -22,7 +22,7 @@ export function RecentOrdersFeed({ orders }: { orders: any[] }) {
         </Link>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto hide-scrollbar">
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-muted-foreground bg-gray-50 uppercase border-b border-border sticky top-0">
             <tr>

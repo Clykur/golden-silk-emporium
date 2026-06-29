@@ -127,7 +127,7 @@ export default function AdminCollections() {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4">
           <div
-            className="w-full max-w-lg bg-background border border-border max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-lg bg-background border border-border max-h-[90vh] overflow-y-auto hide-scrollbar"
             data-lenis-prevent="true"
           >
             <div className="border-b border-border p-6 flex items-center justify-between">

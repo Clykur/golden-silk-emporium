@@ -47,7 +47,7 @@ export function DashboardLayout({ children, title, subtitle, headerAction }: Das
     <div className="min-h-[80vh] bg-background">
       <main className="container-luxe pt-4 pb-8 md:pt-6 md:pb-12">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center text-sm text-muted-foreground mb-6 overflow-x-auto whitespace-nowrap">
+        <nav className="flex items-center text-sm text-muted-foreground mb-6 overflow-x-auto whitespace-nowrap hide-scrollbar">
           <Link href="/" className="hover:text-gold transition-colors font-medium">
             Home
           </Link>

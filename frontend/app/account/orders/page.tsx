@@ -595,11 +595,36 @@ function OrderCard({
             )}
 
             {order.tracking_number && (
-              <div>
-                <p className="eyebrow text-[10px] mb-2 text-gold">Tracking Number</p>
-                <code className="text-sm font-mono bg-background px-3 py-1.5 border border-border inline-block">
-                  {order.tracking_number}
-                </code>
+              <div className="space-y-3 p-4 border border-border bg-background/50 rounded-sm">
+                <p className="eyebrow text-[10px] text-gold uppercase tracking-widest font-bold">
+                  Delivery & Tracking
+                </p>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      Courier:{" "}
+                      <span className="font-semibold text-foreground">
+                        {(order as any).courier_name || "Delivery Partner"}
+                      </span>
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Tracking ID:{" "}
+                      <code className="text-xs font-mono bg-muted px-2 py-0.5 border border-border rounded-sm">
+                        {order.tracking_number}
+                      </code>
+                    </p>
+                  </div>
+                  {(order as any).tracking_url && (
+                    <a
+                      href={(order as any).tracking_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center px-3 py-1.5 border border-foreground bg-foreground text-background hover:bg-transparent hover:text-foreground text-[10px] uppercase tracking-widest font-semibold transition-all rounded-none"
+                    >
+                      Track Shipment
+                    </a>
+                  )}
+                </div>
               </div>
             )}
 

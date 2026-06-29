@@ -37,7 +37,7 @@ export function StyleGallery() {
           {galleryImages.map((img) => (
             <a
               key={img.id}
-              href="https://instagram.com"
+              href="https://www.instagram.com/thedrapeva/?utm_source=ig_web_button_share_sheet"
               target="_blank"
               rel="noreferrer"
               className={`group relative overflow-hidden bg-muted/10 block ${img.span}`}

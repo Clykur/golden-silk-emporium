@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Limelight&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @source "..";
@@ -5,9 +6,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-display: var(--font-sans-next), "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-sans: var(--font-sans-next), "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-limelight: var(--font-limelight), "Limelight", cursive;
+  --font-display: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-limelight: "Limelight", cursive;
 
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -42,8 +43,10 @@
 :root {
   --radius: 0rem;
 
-  --background: oklch(1 0 0); /* Pure White */
-  --foreground: oklch(0.1 0 0); /* Deep Black */
+  --background: oklch(1 0 0);
+  /* Pure White */
+  --foreground: oklch(0.1 0 0);
+  /* Deep Black */
   --ink: oklch(0.1 0 0);
 
   --card: oklch(1 0 0);
@@ -71,7 +74,8 @@
   --destructive: oklch(0.55 0.18 25);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.9 0 0); /* Light Gray */
+  --border: oklch(0.9 0 0);
+  /* Light Gray */
   --input: oklch(0.9 0 0);
   --ring: oklch(0.1 0 0);
 
@@ -87,7 +91,8 @@
   }
 
   html {
-    scroll-behavior: initial; /* Lenis handles smooth scroll */
+    scroll-behavior: initial;
+    /* Lenis handles smooth scroll */
     overflow-x: hidden;
   }
 
@@ -214,6 +219,7 @@
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -237,6 +243,7 @@
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(100%);
   }
@@ -250,6 +257,7 @@
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -277,4 +285,41 @@
     padding 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.hide-scrollbar,
+.scrollbar-none,
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

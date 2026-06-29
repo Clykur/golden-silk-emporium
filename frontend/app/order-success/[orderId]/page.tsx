@@ -214,7 +214,7 @@ export default function OrderSuccessPage() {
             <h2 className="font-display text-lg font-medium text-foreground border-b border-border/60 pb-3">
               Items Ordered
             </h2>
-            <div className="divide-y divide-border/60 max-h-[350px] overflow-y-auto pr-1">
+            <div className="divide-y divide-border/60 max-h-[350px] overflow-y-auto pr-1 hide-scrollbar">
               {items.map((item: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-3.5 py-3 first:pt-0">
                   {item.product_image && (
@@ -278,7 +278,7 @@ export default function OrderSuccessPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">GST (18%)</span>
+                <span className="text-muted-foreground">GST (5%)</span>
                 <span className="font-medium text-foreground">{formatINR(order.tax || 0)}</span>
               </div>
               <div className="flex justify-between font-bold text-gold text-sm border-t border-border/60 pt-3 mt-1.5">

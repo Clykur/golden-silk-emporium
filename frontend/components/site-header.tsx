@@ -230,7 +230,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="h-[56px] sm:h-[64px] md:h-[72px] lg:h-auto">
+      <div className="h-[56px] sm:h-[64px] md:h-[72px] lg:h-[80px]">
         <header
           className={`fixed lg:sticky top-0 left-0 right-0 w-full z-40 transition-all duration-700 ease-in-out translate-y-0 opacity-100 ${
             scrolled
@@ -238,20 +238,13 @@ export function SiteHeader() {
               : "bg-background border-b border-transparent"
           }`}
         >
+          {/* Desktop header */}
           <div
-            className={`flex items-center justify-between container-luxe transition-all duration-700 ${scrolled ? "py-1" : "py-2"} min-w-0`}
+            className={`hidden lg:flex items-center justify-between container-luxe transition-all duration-700 ${scrolled ? "h-[64px]" : "h-[80px]"} min-w-0`}
           >
-            {/* Column 1: Left Menu & Mobile Hamburger */}
+            {/* Column 1: Left Menu */}
             <div className="flex flex-1 items-center gap-6">
-              <button
-                className="lg:hidden -ml-2 p-2 hover:opacity-70 transition-opacity"
-                aria-label="Menu"
-                onClick={() => setOpen(true)}
-              >
-                <Menu className="h-[22px] w-[22px]" strokeWidth={1.2} />
-              </button>
-
-              <nav className="hidden lg:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium">
+              <nav className="flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-medium">
                 {leftNavItems.map((n) => {
                   const active = isActive(n.to);
                   return (
@@ -283,7 +276,7 @@ export function SiteHeader() {
               className="flex-1 flex justify-center items-center select-none"
               aria-label="Drapeva home"
             >
-              <span className="text-lg sm:text-2xl md:text-[26px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-limelight font-light transition-transform duration-700 hover:scale-105">
+              <span className="text-[26px] uppercase tracking-[0.3em] font-limelight font-light transition-transform duration-700 hover:scale-105">
                 Drapeva
               </span>
             </Link>
@@ -403,25 +396,110 @@ export function SiteHeader() {
                     </Link>
                   </div>
                 )}
-
-                {/* Mobile Profile Trigger */}
-                {user && (
-                  <Link
-                    href={ACCOUNT_HOME}
-                    className="lg:hidden h-7 w-7 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 text-gold grid place-items-center text-xs font-semibold ring-2 ring-gold/20 hover:scale-105 transition-transform"
-                    aria-label="Account Dashboard"
-                  >
-                    {(user.name || user.email).charAt(0).toUpperCase()}
-                  </Link>
-                )}
               </div>
+            </div>
+          </div>
+
+          {/* Mobile & Tablet header */}
+          <div
+            className={`lg:hidden flex items-center justify-between container-luxe transition-all duration-700 ${scrolled ? "h-[50px]" : "h-[56px]"}`}
+          >
+            {/* Left: Menu button */}
+            <div className="flex flex-1 items-center">
+              <button
+                className="p-2 -ml-2 hover:opacity-70 transition-opacity"
+                aria-label="Menu"
+                onClick={() => setOpen(true)}
+              >
+                <Menu className="h-[22px] w-[22px]" strokeWidth={1.2} />
+              </button>
+            </div>
+
+            {/* Center: Brand title centered */}
+            <Link
+              href="/"
+              className="flex justify-center items-center select-none"
+              aria-label="Drapeva home"
+            >
+              <span className="text-lg sm:text-2xl uppercase tracking-[0.2em] sm:tracking-[0.3em] font-limelight font-light transition-transform duration-700 hover:scale-105">
+                Drapeva
+              </span>
+            </Link>
+
+            {/* Right: Actions */}
+            <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2">
+              {/* Search */}
+              <button
+                onClick={() => setSearchOpen((prev) => !prev)}
+                className="p-2 hover:opacity-60 transition-opacity"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" strokeWidth={1.2} />
+              </button>
+
+              {/* Wishlist */}
+              {user && (
+                <Link
+                  href="/account/wishlist"
+                  className="relative p-2 hover:opacity-60 transition-opacity"
+                  aria-label="Wishlist"
+                >
+                  <Heart className="h-5 w-5" strokeWidth={1.2} />
+                  {wishlist.length > 0 && (
+                    <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {/* Cart */}
+              <button
+                onClick={openCart}
+                className="relative p-2 hover:opacity-60 transition-opacity"
+                aria-label="Cart"
+              >
+                <ShoppingBag className="h-5 w-5" strokeWidth={1.2} />
+                {count > 0 && (
+                  <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background">
+                    {count}
+                  </span>
+                )}
+              </button>
+
+              {/* Notifications */}
+              {user && (
+                <Link
+                  href="/account/notifications"
+                  className="relative p-2 hover:opacity-60 transition-opacity"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-5 w-5" strokeWidth={1.2} />
+                  {unreadCount > 0 && (
+                    <span className="absolute right-0 top-1 grid h-3.5 w-3.5 place-items-center rounded-full bg-foreground text-[8px] font-bold text-background animate-pulse">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {/* Mobile Profile Trigger */}
+              {user && (
+                <Link
+                  href={ACCOUNT_HOME}
+                  className="h-7 w-7 rounded-full bg-gradient-to-br from-gold/20 to-gold/40 text-gold grid place-items-center text-xs font-semibold ring-2 ring-gold/20 hover:scale-105 transition-transform"
+                  aria-label="Account Dashboard"
+                >
+                  {(user.name || user.email).charAt(0).toUpperCase()}
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Inline Search Drawer (Slides down below header) */}
           {searchOpen && (
             <div className="border-t border-border bg-background w-full animate-rise">
-              <div className="container-luxe py-6 max-h-[80vh] overflow-y-auto">
+              <div className="container-luxe py-6 max-h-[80vh] overflow-y-auto hide-scrollbar">
                 <div className="flex items-center gap-4 border-b border-border pb-3">
                   <Search className="h-5 w-5 text-muted-foreground" />
                   <input
@@ -502,7 +580,7 @@ export function SiteHeader() {
                       <p className="eyebrow text-muted-foreground mb-4">
                         Search Results ({searchResults.length})
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 max-h-[50vh] overflow-y-auto pr-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-4 max-h-[50vh] overflow-y-auto pr-2 hide-scrollbar">
                         {searchResults.slice(0, 8).map((p: any) => (
                           <Link
                             key={p.id}
@@ -557,21 +635,26 @@ export function SiteHeader() {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-background p-5 sm:p-6 animate-rise overflow-y-auto overscroll-contain">
+          <div className="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-background p-5 sm:p-6 animate-rise overflow-y-auto overscroll-contain hide-scrollbar">
             <div className="flex items-center justify-between">
               <Link
                 href="/"
                 onClick={() => setOpen(false)}
                 aria-label="Drapeva home"
-                className="flex items-center"
+                className="flex items-center gap-3"
               >
+                <img
+                  src="/media/logo.png"
+                  alt="Drapeva Logo"
+                  className="h-20 w-20 rounded-full object-cover border border-foreground/10"
+                />
                 <span className="text-3xl font-limelight tracking-[0.2em] uppercase">Drapeva</span>
               </Link>
               <button onClick={() => setOpen(false)} aria-label="Close" className="p-2">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="mt-10 flex flex-col gap-1 overflow-y-auto max-h-[60vh] pr-2">
+            <nav className="mt-10 flex flex-col gap-1 overflow-y-auto max-h-[60vh] pr-2 hide-scrollbar">
               {allNavItems.map((n) => {
                 const active = isActive(n.to);
                 return (
@@ -736,7 +819,7 @@ export function SiteHeader() {
               )}
             </nav>
             <a
-              href="https://wa.me/919949740776"
+              href="https://wa.me/918123045318"
               className="mt-10 inline-flex items-center gap-2 eyebrow text-gold"
             >
               <span className="gold-divider" /> Concierge on WhatsApp

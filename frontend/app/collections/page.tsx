@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useMemo, useState, Suspense } from "react";
+import { useMemo, useState, Suspense, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SlidersHorizontal, X, Check as CheckIcon } from "lucide-react";
 import { productsApi } from "@/lib/api";
@@ -39,6 +39,7 @@ const PRICE_BANDS: { label: string; min?: number; max?: number }[] = [
 });
 const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },
+  { value: "bestsellers", label: "Bestsellers" },
   { value: "newest", label: "Latest Arrivals" },
   { value: "price-asc", label: "Price: Low to High" },
   { value: "price-desc", label: "Price: High to Low" },
@@ -182,10 +183,14 @@ function ShopContent() {
       </div>
 
       <div className="container-luxe py-12">
-        <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
+        <div className="grid items-start gap-10 lg:grid-cols-[280px_minmax(0,1fr)]">
           {/* Filter sidebar */}
           <aside
-            className={`${open ? "fixed inset-0 z-50 overflow-y-auto bg-background p-6" : "hidden"} lg:sticky lg:top-32 lg:self-start lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:block lg:p-0 hide-scrollbar`}
+            className={`${
+              open
+                ? "fixed inset-0 z-50 overflow-y-auto bg-background p-6 hide-scrollbar"
+                : "hidden"
+            } lg:block lg:sticky lg:top-24 lg:self-start lg:h-[calc(100vh-6rem)] lg:overflow-y-auto hide-scrollbar`}
           >
             <div className="flex items-center justify-between lg:hidden mb-6">
               <p className="font-display text-xl">Filters</p>
@@ -249,8 +254,8 @@ function ShopContent() {
             </div>
           </aside>
 
-          <div>
-            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="min-w-0 lg:h-[calc(100vh-6rem)] lg:overflow-y-auto hide-scrollbar lg:pr-2">
+            <div className="sticky top-0 z-20 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-background py-4 border-b border-border">
               <p className="text-sm text-muted-foreground order-2 sm:order-1">
                 {isLoading ? "Loading..." : `${filtered.length} Products Found`}
               </p>
@@ -326,7 +331,7 @@ function FilterGroup({ title, children }: { title: string; children: React.React
   return (
     <div className="border-b border-border py-6 first:pt-0 lg:first:pt-0">
       <p className="eyebrow mb-4">{title}</p>
-      <div className="space-y-3 max-h-48 overflow-y-auto pr-2">{children}</div>
+      <div className="space-y-3 max-h-48 overflow-y-auto pr-2 hide-scrollbar">{children}</div>
     </div>
   );
 }

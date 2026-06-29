@@ -123,7 +123,7 @@ export function AdminLayout({ children, title, subtitle, actions, activeHref }: 
         </div>
 
         <nav
-          className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-6 custom-scrollbar"
+          className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-6 hide-scrollbar"
           data-lenis-prevent="true"
           style={{ WebkitOverflowScrolling: "touch" }}
         >

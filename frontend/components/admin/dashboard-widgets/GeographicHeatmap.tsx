@@ -21,7 +21,7 @@ export function GeographicHeatmap({ data }: { data: GeoLocation[] }) {
         <p className="text-sm text-muted-foreground">Revenue by city</p>
       </div>
 
-      <div className="p-5 flex-1 overflow-auto">
+      <div className="p-5 flex-1 overflow-auto hide-scrollbar">
         <div className="space-y-4">
           {data.slice(0, 7).map((loc, i) => {
             const width = Math.max((loc.revenue / maxRevenue) * 100, 5);

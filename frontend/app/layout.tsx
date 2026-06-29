@@ -7,24 +7,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { QuickView } from "@/components/quick-view";
 import { WhatsAppButton } from "@/components/whatsapp-button";
-import { SmoothScroll } from "@/components/smooth-scroll";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-import { Inter, Limelight } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans-next",
-  display: "swap",
-});
-
-const limelight = Limelight({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-limelight",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   themeColor: "#ffffff",
@@ -116,8 +101,8 @@ const jsonLd = {
         url: "https://drapeva.com/media/logo.png",
       },
       sameAs: [
-        "https://instagram.com/drapeva",
-        "https://youtube.com/@drapeva",
+        "https://www.instagram.com/thedrapeva/?utm_source=ig_web_button_share_sheet",
+        "https://www.youtube.com/@Drapeva2026",
         "https://threads.net/@drapeva",
       ],
     },
@@ -126,8 +111,8 @@ const jsonLd = {
       "@id": "https://drapeva.com/#localbusiness",
       name: "Drapeva",
       image: "https://drapeva.com/media/logo.png",
-      telephone: "+91-9949740776",
-      email: "support@drapeva.com",
+      telephone: "+91-8123045318",
+      email: "drapeva2026@gmail.com",
       address: {
         "@type": "PostalAddress",
         streetAddress: "NPS School Road, Ambedkar Nagar, Chikkabellandur, Mullur",
@@ -172,12 +157,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${limelight.variable}`}
-      data-scroll-behavior="smooth"
-      suppressHydrationWarning
-    >
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <meta name="geo.region" content="IN-KA" />
         <meta name="geo.placename" content="Bengaluru" />
@@ -195,20 +175,18 @@ export default function RootLayout({
         className="antialiased min-h-screen bg-background text-foreground"
         suppressHydrationWarning
       >
-        <SmoothScroll>
-          <Providers>
-            <div className="flex flex-col min-h-screen">
-              <Suspense fallback={<div className="h-[72px] md:h-[88px] bg-background" />}>
-                <SiteHeader />
-              </Suspense>
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
-            <CartDrawer />
-            <QuickView />
-            <WhatsAppButton />
-          </Providers>
-        </SmoothScroll>
+        <Providers>
+          <div className="flex flex-col min-h-screen">
+            <Suspense fallback={<div className="h-[72px] md:h-[88px] bg-background" />}>
+              <SiteHeader />
+            </Suspense>
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
+          <CartDrawer />
+          <QuickView />
+          <WhatsAppButton />
+        </Providers>
       </body>
     </html>
   );

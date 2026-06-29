@@ -33,7 +33,7 @@ export function TopProductsTable({ data }: { data: TopProduct[] }) {
         </Link>
       </div>
 
-      <div className="flex-1 overflow-x-auto">
+      <div className="flex-1 overflow-x-auto hide-scrollbar">
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-muted-foreground bg-gray-50 uppercase border-b border-border">
             <tr>

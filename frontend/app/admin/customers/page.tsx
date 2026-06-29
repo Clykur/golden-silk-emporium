@@ -154,7 +154,7 @@ export default function AdminCustomers() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto border border-border bg-background">
+              <div className="overflow-x-auto border border-border bg-background hide-scrollbar">
                 <table className="w-full text-sm text-left border-collapse">
                   <thead>
                     <tr className="border-b border-border bg-champagne/10">

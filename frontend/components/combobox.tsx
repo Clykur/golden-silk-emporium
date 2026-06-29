@@ -161,7 +161,7 @@ export function Combobox({
 
                 {/* Options List */}
                 <ul
-                  className="max-h-60 overflow-y-auto overscroll-contain py-1 custom-scrollbar"
+                  className="max-h-60 overflow-y-auto overscroll-contain py-1 hide-scrollbar"
                   role="listbox"
                   tabIndex={-1}
                   data-lenis-prevent="true"

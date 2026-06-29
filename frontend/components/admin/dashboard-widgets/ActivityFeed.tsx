@@ -71,7 +71,7 @@ export function ActivityFeed() {
         <p className="text-sm text-muted-foreground">Real-time business operations</p>
       </div>
 
-      <div className="flex-1 overflow-auto p-5">
+      <div className="flex-1 overflow-auto p-5 hide-scrollbar">
         <div className="space-y-6 relative">
           {logs?.map((log: any) => (
             <div key={log.id} className="relative flex items-start gap-4">

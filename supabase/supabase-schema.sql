@@ -507,11 +507,11 @@ ON CONFLICT (slug) DO NOTHING;
 -- ============================================================
 
 INSERT INTO site_settings (key, value) VALUES
-  ('store_name', '"Maaya Couture"'),
+  ('store_name', '"Drapeva"'),
   ('store_tagline', '"Heirloom Indian Silk Sarees"'),
-  ('whatsapp_number', '"+919949740776"'),
+  ('whatsapp_number', '"+918123045318"'),
   ('free_shipping_threshold', '5000'),
-  ('tax_rate', '0.18'),
+  ('tax_rate', '0.05'),
   ('shipping_cost', '299')
 ON CONFLICT (key) DO NOTHING;
 

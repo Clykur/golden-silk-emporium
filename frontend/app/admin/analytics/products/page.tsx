@@ -149,7 +149,7 @@ export default function ProductsAnalytics() {
             <PackageSearch className="h-4 w-4 text-muted-foreground" />
           </div>
 
-          <div className="flex-1 overflow-x-auto">
+          <div className="flex-1 overflow-x-auto hide-scrollbar">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
@@ -192,7 +192,7 @@ export default function ProductsAnalytics() {
             </div>
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto hide-scrollbar">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
@@ -244,7 +244,7 @@ export default function ProductsAnalytics() {
             </div>
             <AlertTriangle className="h-4 w-4 text-amber-600" />
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto hide-scrollbar">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-amber-200">

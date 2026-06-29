@@ -120,7 +120,7 @@ export default function AdminSettings() {
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
-                    placeholder="e.g. +919949740776"
+                    placeholder="e.g. +918123045318"
                   />
                 </label>
               </div>
@@ -184,14 +184,14 @@ export default function AdminSettings() {
                     min={0}
                     max={1}
                     className="w-full border border-gray-300 bg-white px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold transition-all"
-                    placeholder="e.g. 0.18"
+                    placeholder="e.g. 0.05"
                   />
                 </label>
               </div>
               <div className="bg-blue-50/50 text-blue-800 text-sm p-4 rounded-lg border border-blue-100 flex items-start gap-3">
                 <span className="text-xl">💡</span>
                 <p>
-                  <strong>GST Tip:</strong> A value of <code>0.18</code> corresponds to an 18% Goods
+                  <strong>GST Tip:</strong> A value of <code>0.05</code> corresponds to a 5% Goods
                   and Services Tax added at checkout. Set to <code>0</code> if your pricing is
                   already tax-inclusive.
                 </p>

@@ -295,7 +295,7 @@ export default function Support() {
                 {expanded && (
                   <div className="border-t border-border bg-champagne/5 p-5 space-y-4">
                     {/* Messages */}
-                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                    <div className="space-y-3 max-h-80 overflow-y-auto hide-scrollbar">
                       {(ticket.messages || []).map((msg) => (
                         <div
                           key={msg.id}

@@ -43,7 +43,7 @@ export function QuickView() {
           alt={quickView.name}
           className="h-72 w-full object-cover md:h-full"
         />
-        <div className="flex flex-col overflow-y-auto p-7 md:p-10">
+        <div className="flex flex-col overflow-y-auto p-7 md:p-10 hide-scrollbar">
           <p className="eyebrow">{quickView?.collection_id}</p>
           <h3 className="mt-2 font-display text-2xl md:text-3xl">{quickView.name}</h3>
           <div className="mt-2 flex items-baseline gap-3">

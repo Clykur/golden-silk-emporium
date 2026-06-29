@@ -195,7 +195,10 @@ export default function AdminCoupons() {
         </div>
       )}
       {showForm && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4" onClick={resetForm}>
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4 hide-scrollbar"
+          onClick={resetForm}
+        >
           <div
             onClick={(e) => e.stopPropagation()}
             className="mx-auto my-8 w-full max-w-2xl bg-background border border-border rounded-xl shadow-2xl"
@@ -210,7 +213,7 @@ export default function AdminCoupons() {
 
             <form onSubmit={handleSubmit}>
               <div
-                className="overflow-y-auto px-8 py-8 space-y-6"
+                className="overflow-y-auto px-8 py-8 space-y-6 hide-scrollbar"
                 style={{ WebkitOverflowScrolling: "touch" }}
               >
                 {/* Coupon Code */}

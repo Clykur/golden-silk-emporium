@@ -44,7 +44,7 @@ export default function NotFoundPage() {
           </h1>
           <span className="gold-divider mx-auto block" />
           <p className="text-sm text-muted-foreground leading-relaxed">
-            The path you followed does not exist within the Drapeva Atelier. You may explore our
+            The path you followed does not exist within the DRAPEVA STORE. You may explore our
             latest curated collections below.
           </p>
           <div className="pt-6 flex flex-wrap justify-center gap-4">

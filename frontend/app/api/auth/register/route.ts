@@ -7,58 +7,65 @@ export async function POST(request: Request) {
   try {
     const { email, phone, password, name } = await request.json();
 
-    if (!email && !phone) {
-      return NextResponse.json({ error: "Either email or phone is required" }, { status: 400 });
+    if (!email || !phone || !password || !name) {
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
     const supabaseAdmin = getSupabaseAdmin();
+    const formattedPhone = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "")}`;
 
     // 1. Restrict duplicates
-    if (email) {
-      const { data: existingUser, error: checkError } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .eq("email", email)
-        .maybeSingle();
+    const { data: existingEmail, error: emailCheckError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
 
-      if (checkError) {
-        console.error("Duplicate check error for email:", checkError);
-      }
-      if (existingUser) {
-        return NextResponse.json({ error: "Email already registered" }, { status: 400 });
-      }
+    if (emailCheckError) {
+      console.error("Duplicate check error for email:", emailCheckError);
+    }
+    if (existingEmail) {
+      return NextResponse.json({ error: "Email already registered" }, { status: 400 });
     }
 
-    if (phone) {
-      const formattedPhone = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "")}`;
-      const { data: existingUser, error: checkError } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .eq("phone", formattedPhone)
-        .maybeSingle();
+    const { data: profiles, error: phoneCheckError } = await supabaseAdmin
+      .from("profiles")
+      .select("phone")
+      .not("phone", "is", null);
 
-      if (checkError) {
-        console.error("Duplicate check error for phone:", checkError);
+    if (phoneCheckError) {
+      console.error("Duplicate check error for phone:", phoneCheckError);
+    }
+
+    const cleanInput = phone.replace(/\D/g, "");
+    if (cleanInput.length < 10) {
+      return NextResponse.json(
+        { error: "Invalid phone number format. Must contain at least 10 digits." },
+        { status: 400 },
+      );
+    }
+    const inputLast10 = cleanInput.slice(-10);
+
+    const phoneExists = profiles?.some((p) => {
+      if (!p.phone) return false;
+      const cleanDbPhone = p.phone.replace(/\D/g, "");
+      if (cleanDbPhone.length < 10) {
+        return cleanDbPhone === cleanInput;
       }
-      if (existingUser) {
-        return NextResponse.json({ error: "Phone number already registered" }, { status: 400 });
-      }
+      return cleanDbPhone.slice(-10) === inputLast10;
+    });
+
+    if (phoneExists) {
+      return NextResponse.json({ error: "Phone number already registered" }, { status: 400 });
     }
 
     // 2. Create the user in auth.users
-    const createUserParams: any = {
+    const createUserParams = {
+      email,
       password,
-      user_metadata: { name, role: "customer", phone: phone || "" },
+      email_confirm: true,
+      user_metadata: { name, role: "customer", phone: formattedPhone },
     };
-
-    if (email) {
-      createUserParams.email = email;
-      createUserParams.email_confirm = true;
-    } else if (phone) {
-      const formattedPhone = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "")}`;
-      createUserParams.phone = formattedPhone;
-      createUserParams.phone_confirm = true;
-    }
 
     const { data, error } = await supabaseAdmin.auth.admin.createUser(createUserParams);
 

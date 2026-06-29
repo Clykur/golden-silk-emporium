@@ -81,21 +81,21 @@ export default function MaintenancePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs font-semibold uppercase tracking-wider text-ink mt-2">
             <a
-              href="https://wa.me/919949740776"
+              href="https://wa.me/918123045318"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 hover:text-gold transition-colors"
             >
               <PhoneCall className="h-4 w-4 text-gold" />
-              +91 99497 40776
+              +91 81230 45318
             </a>
             <span className="hidden sm:inline text-muted-foreground/50">|</span>
             <a
-              href="mailto:concierge@drapeva.com"
+              href="mailto:drapeva2026@gmail.com"
               className="inline-flex items-center gap-2 hover:text-gold transition-colors"
             >
               <Mail className="h-4 w-4 text-gold" />
-              concierge@drapeva.com
+              drapeva2026@gmail.com
             </a>
           </div>
         </div>

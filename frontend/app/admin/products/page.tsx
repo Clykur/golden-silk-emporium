@@ -699,7 +699,7 @@ function AdminProductsContent() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto border border-border">
+              <div className="overflow-x-auto border border-border hide-scrollbar">
                 <table className="w-full text-sm text-left border-collapse">
                   <thead>
                     <tr className="border-b border-border bg-champagne/10">

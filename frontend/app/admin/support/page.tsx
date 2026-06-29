@@ -190,7 +190,7 @@ export default function AdminSupport() {
                     <div className="border-t border-border bg-champagne/5 p-5 space-y-5">
                       {/* Messages */}
                       <div
-                        className="space-y-4 max-h-96 overflow-y-auto pr-2"
+                        className="space-y-4 max-h-96 overflow-y-auto pr-2 hide-scrollbar"
                         data-lenis-prevent="true"
                       >
                         {(ticket.messages || []).map((msg) => (

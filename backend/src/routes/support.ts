@@ -34,7 +34,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
     // Notify Support Admin
     await EmailService.sendEmail(
-      "support@drapeva.com",
+      "drapeva2026@gmail.com",
       `New Support Ticket: ${data.subject}`,
       `<p>Received support ticket from ${data.name} (${data.email}):</p><p>Message: ${data.message}</p>`,
     );

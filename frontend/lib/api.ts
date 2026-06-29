@@ -376,14 +376,16 @@ export const ordersApi = {
     razorpay_order_id?: string;
     payment_status?: string;
   }) {
-    const { data, error } = await supabase.from("orders").insert(order).select().single();
-    if (error) throw error;
-    await auditLogApi.log({
-      action: `Created order with status ${data.status}`,
-      resource_type: "order",
-      resource_id: data.id,
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
     });
-    return data;
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || "Failed to create order");
+    }
+    return response.json();
   },
 
   async updatePayment(
@@ -513,18 +515,23 @@ export const ordersApi = {
     return data || [];
   },
 
-  async updateStatus(id: string, status: OrderStatus, tracking_number?: string) {
-    const { error } = await supabase
-      .from("orders")
-      .update({ status, ...(tracking_number ? { tracking_number } : {}) })
-      .eq("id", id);
-    if (error) throw error;
-
-    await auditLogApi.log({
-      action: `Updated order status to ${status}`,
-      resource_type: "order",
-      resource_id: id,
+  async updateStatus(
+    id: string,
+    status: OrderStatus,
+    tracking_number?: string,
+    courier_name?: string,
+    tracking_url?: string,
+  ) {
+    const response = await fetch(`/api/orders/${id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, tracking_number, courier_name, tracking_url }),
     });
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || "Failed to update order status");
+    }
+    return response.json();
   },
 
   async updatePaymentStatus(id: string, payment_status: string) {
@@ -1880,16 +1887,28 @@ export const settingsApi = {
 export const authApi = {
   async login(identifier: string, password: string) {
     const isEmail = identifier.includes("@");
-    const credentials: any = { password };
-    if (isEmail) {
-      credentials.email = identifier;
-    } else {
-      const formatted = identifier.startsWith("+")
-        ? identifier
-        : `+91${identifier.replace(/\D/g, "")}`;
-      credentials.phone = formatted;
+    let email = identifier;
+
+    if (!isEmail) {
+      const res = await fetch("/api/auth/lookup-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: identifier }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "No account found associated with this phone number");
+      }
+
+      const lookupData = await res.json();
+      email = lookupData.email;
     }
-    const { data, error } = await supabase.auth.signInWithPassword(credentials);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     if (error) throw error;
 
     await auditLogApi.log({
@@ -1926,32 +1945,6 @@ export const authApi = {
     }
 
     return await res.json();
-  },
-
-  async sendOtp(phone: string) {
-    // Format phone to E.164 if needed
-    const formatted = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "")}`;
-    const { data, error } = await supabase.auth.signInWithOtp({ phone: formatted });
-    if (error) throw error;
-    return data;
-  },
-
-  async verifyOtp(phone: string, token: string) {
-    const formatted = phone.startsWith("+") ? phone : `+91${phone.replace(/\D/g, "")}`;
-    const { data, error } = await supabase.auth.verifyOtp({ phone: formatted, token, type: "sms" });
-    if (error) throw error;
-
-    if (data.user) {
-      await auditLogApi.log({
-        action: "User logged in (OTP)",
-        resource_type: "user",
-        resource_id: data.user.id,
-        admin_email: data.user.email || formatted,
-        admin_id: data.user.id,
-      });
-    }
-
-    return data;
   },
 
   async forgotPassword(email: string) {

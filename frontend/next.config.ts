@@ -36,6 +36,12 @@ const nextConfig: NextConfig = {
       static: 180,
     },
   },
+  webpack: (config) => {
+    config.infrastructureLogging = {
+      level: "error",
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

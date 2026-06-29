@@ -15,7 +15,7 @@ export class EmailService {
 
     try {
       const data = await resend!.emails.send({
-        from: "Drapeva <atelier@drapeva.com>",
+        from: "Drapeva <drapeva2026@gmail.com>",
         to: [to],
         subject,
         html,
@@ -35,7 +35,7 @@ export class EmailService {
         <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Atelier</p>
         <hr style="border: 0; border-top: 1px solid #e2dcd0; margin: 30px 0;" />
         <p>Dear ${name},</p>
-        <p>Welcome to the Drapeva atelier. Your account has been successfully registered.</p>
+        <p>Welcome to the DRAPEVA STORE. Your account has been successfully registered.</p>
         <p>Discover our heirloom Banarasi weaves, bridal Kanjivarams, and styling consultations designed to celebrate your most precious moments.</p>
         <div style="text-align: center; margin: 40px 0;">
           <a href="http://localhost:3000/shop" style="background-color: #1a1612; color: #faf9f6; padding: 15px 30px; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;">Explore the Collection</a>
@@ -43,7 +43,7 @@ export class EmailService {
         <p style="font-size: 0.85rem; color: #8c7853; line-height: 1.6;">Warmest regards,<br/>The Drapeva Concierge Team</p>
       </div>
     `;
-    return this.sendEmail(to, "Welcome to Drapeva Atelier", html);
+    return this.sendEmail(to, "Welcome to DRAPEVA STORE", html);
   }
 
   static async sendOrderConfirmation(to: string, name: string, orderId: string, total: number) {

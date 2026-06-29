@@ -82,11 +82,11 @@ export default function Returns() {
         <div className="flex gap-3 border border-amber-200 bg-amber-50 p-4">
           <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
           <div className="text-sm text-amber-800">
-            <p className="font-medium mb-1">Return Policy</p>
+            <p className="font-medium mb-1">Exchange Policy</p>
             <p className="text-xs leading-relaxed">
-              Returns are accepted within 7 days of delivery for unused, unwashed items in original
-              packaging. Sarees that have been draped or altered are not eligible for return.
-              Custom/made-to-order pieces are final sale.
+              We currently do not offer returns or refunds. However, we do offer exchanges within 1
+              day of delivery for unused, unwashed, and unworn items with original tags and
+              packaging intact. Sale, customized, and non-exchangeable items are excluded.
             </p>
           </div>
         </div>

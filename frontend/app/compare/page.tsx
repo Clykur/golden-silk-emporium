@@ -90,7 +90,7 @@ export default function CompareProducts() {
             )}
 
             {/* Comparison Table */}
-            <div className="overflow-x-auto border border-border">
+            <div className="overflow-x-auto border border-border hide-scrollbar">
               <table className="w-full border-collapse text-left text-sm">
                 <thead>
                   <tr className="border-b border-border bg-champagne/10">

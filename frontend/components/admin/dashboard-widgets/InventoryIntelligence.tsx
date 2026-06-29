@@ -62,7 +62,7 @@ export function InventoryIntelligence({ data }: { data: InventoryData }) {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto hide-scrollbar">
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-muted-foreground bg-gray-50 uppercase border-y border-border">
               <tr>

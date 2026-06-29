@@ -5,7 +5,7 @@ import { z } from "zod";
 import prisma from "../config/prisma.js";
 import { EmailService } from "../services/email.js";
 import { authenticateJWT, AuthenticatedRequest } from "../middlewares/auth.js";
-import { supabase, getSupabaseClient } from "../services/supabase.js";
+import { getSupabaseClient } from "../services/supabase.js";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -22,11 +22,11 @@ const RegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().min(2),
-  phone: z.string().optional(),
+  phone: z.string().min(10),
 });
 
 const LoginSchema = z.object({
-  email: z.string().email(),
+  identifier: z.string(),
   password: z.string(),
 });
 
@@ -54,9 +54,17 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
   try {
     const data = RegisterSchema.parse(req.body);
 
-    const existing = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) {
+    const existingEmail = await prisma.user.findUnique({ where: { email: data.email } });
+    if (existingEmail) {
       return res.status(400).json({ error: "Email already registered" });
+    }
+
+    const formattedPhone = data.phone.startsWith("+")
+      ? data.phone
+      : `+91${data.phone.replace(/\D/g, "")}`;
+    const existingPhone = await prisma.user.findFirst({ where: { phone: formattedPhone } });
+    if (existingPhone) {
+      return res.status(400).json({ error: "Phone number already registered" });
     }
 
     const sbClient = await getSupabaseClient();
@@ -66,11 +74,13 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
     if (sbClient) {
       const result = await sbClient.auth.admin.createUser({
         email: data.email,
+        phone: formattedPhone,
         password: data.password,
         email_confirm: true,
+        phone_confirm: true,
         user_metadata: {
           name: data.name,
-          phone: data.phone || "",
+          phone: formattedPhone,
         },
       });
       authData = result.data;
@@ -88,7 +98,7 @@ router.post("/register", async (req: Request, res: Response, next: NextFunction)
         email: data.email,
         passwordHash,
         name: data.name,
-        phone: data.phone,
+        phone: formattedPhone,
         role: "CUSTOMER",
       },
     });
@@ -123,32 +133,47 @@ router.post("/login", async (req: Request, res: Response, next: NextFunction) =>
   try {
     const data = LoginSchema.parse(req.body);
 
+    const isEmail = data.identifier.includes("@");
+    const credentials: any = { password: data.password };
+    const formatted = data.identifier.startsWith("+")
+      ? data.identifier
+      : `+91${data.identifier.replace(/\D/g, "")}`;
+
+    if (isEmail) {
+      credentials.email = data.identifier;
+    } else {
+      credentials.phone = formatted;
+    }
+
     const sbClient = await getSupabaseClient();
     let authUser: any = null;
     let signInError: any = null;
 
     if (sbClient) {
-      const result = await sbClient.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
+      const result = await sbClient.auth.signInWithPassword(credentials);
       authUser = result.data?.user;
       signInError = result.error;
     }
 
     if (signInError) {
-      return res.status(400).json({ error: signInError?.message || "Invalid email or password" });
+      return res.status(400).json({ error: signInError?.message || "Invalid credentials" });
     }
 
-    let user = await prisma.user.findUnique({ where: { email: data.email } });
+    let user;
+    if (isEmail) {
+      user = await prisma.user.findUnique({ where: { email: data.identifier } });
+    } else {
+      user = await prisma.user.findFirst({ where: { phone: formatted } });
+    }
+
     if (!user) {
       user = await prisma.user.create({
         data: {
           id: authUser?.id || crypto.randomUUID(),
-          email: data.email,
+          email: authUser?.email || `user_${Date.now()}@drapeva.com`,
           passwordHash: await bcrypt.hash(data.password, 10),
           name: authUser?.user_metadata?.name || "Patron",
-          phone: authUser?.user_metadata?.phone || "",
+          phone: authUser?.user_metadata?.phone || formatted,
           role: "CUSTOMER",
         },
       });
@@ -207,11 +232,6 @@ router.post("/refresh", async (req: Request, res: Response) => {
     },
   );
 });
-
-import { WhatsAppService } from "../services/whatsapp.js";
-
-// Store OTPs in memory with expiration: key is phone, value is { code, expiresAt }
-const otpStore = new Map<string, { code: string; expiresAt: Date }>();
 
 // 4. Request Forgot Password
 router.post("/forgot-password", async (req: Request, res: Response, next: NextFunction) => {
@@ -304,47 +324,6 @@ router.post("/verify-email", async (req: Request, res: Response) => {
   } catch (err) {
     res.status(400).json({ error: "Invalid or expired verification token" });
   }
-});
-
-// 7a. Send OTP
-router.post("/otp-send", async (req: Request, res: Response) => {
-  const { phone } = req.body;
-  if (!phone) return res.status(400).json({ error: "Phone number is required" });
-
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
-  otpStore.set(phone, { code, expiresAt });
-
-  await WhatsAppService.sendNotification(
-    phone,
-    `Your Drapeva verification code is: ${code}. This code is valid for 5 minutes.`,
-  );
-
-  res.json({ message: "OTP sent successfully" });
-});
-
-// 7b. OTP Verification
-router.post("/otp-verify", async (req: Request, res: Response) => {
-  const { phone, code } = req.body;
-  if (!phone || !code)
-    return res.status(400).json({ error: "Phone number and OTP code are required" });
-
-  const record = otpStore.get(phone);
-  if (!record) {
-    return res.status(400).json({ error: "No OTP sent for this number" });
-  }
-
-  if (record.expiresAt < new Date()) {
-    otpStore.delete(phone);
-    return res.status(400).json({ error: "OTP has expired" });
-  }
-
-  if (record.code !== code) {
-    return res.status(400).json({ error: "Invalid OTP code" });
-  }
-
-  otpStore.delete(phone); // Burn token on use
-  res.json({ message: "OTP verification successful" });
 });
 
 // 8. Fetch current user profile details

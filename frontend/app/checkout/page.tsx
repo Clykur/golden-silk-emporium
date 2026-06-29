@@ -32,7 +32,7 @@ declare global {
 }
 
 const SHIPPING_COST = 299;
-const TAX_RATE = 0.18;
+const TAX_RATE = 0.05;
 
 const INDIAN_STATES = [
   "Andhra Pradesh",
@@ -1191,7 +1191,7 @@ function CheckoutContent() {
                 <span>{shipping === 0 ? "Free" : formatINR(shipping)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">GST (18%)</span>
+                <span className="text-muted-foreground">GST (5%)</span>
                 <span>{formatINR(tax)}</span>
               </div>
               <div className="flex justify-between font-semibold text-gold text-base border-t border-border pt-3 mt-2">

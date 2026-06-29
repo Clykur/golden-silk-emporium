@@ -47,7 +47,7 @@ export function HeroSection() {
     <section
       id="home"
       ref={containerRef}
-      className="relative h-[calc(100svh-50px)] w-full overflow-hidden bg-foreground text-background"
+      className="relative h-[calc(100svh-56px)] sm:h-[calc(100svh-64px)] md:h-[calc(100svh-72px)] w-full overflow-hidden bg-foreground text-background"
       data-hero-section
     >
       <div className="hero-media absolute inset-0 h-[120%] w-full -top-[10%]">

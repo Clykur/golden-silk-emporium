@@ -189,7 +189,7 @@ export default function CustomersAnalytics() {
           </div>
           <Crown className="h-4 w-4 text-gold" />
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hide-scrollbar">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">

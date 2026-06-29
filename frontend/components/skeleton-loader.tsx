@@ -44,7 +44,7 @@ export function SkeletonLoader({
           >
             {/* Gallery Skeleton */}
             <div className="grid gap-4 md:grid-cols-[100px_1fr] h-fit">
-              <div className="flex flex-row md:flex-col gap-3 overflow-x-auto">
+              <div className="flex flex-row md:flex-col gap-3 overflow-x-auto hide-scrollbar">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="aspect-[3/4] w-16 md:w-24 shrink-0 bg-champagne/30" />
                 ))}

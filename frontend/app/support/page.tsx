@@ -92,11 +92,11 @@ export default function SupportCenter() {
             <div className="space-y-10 text-sm">
               <div>
                 <p className="eyebrow mb-1">Email</p>
-                <p className="text-foreground">hello@drapeva.com</p>
+                <p className="text-foreground">drapeva2026@gmail.com</p>
               </div>
               <div>
                 <p className="eyebrow mb-1">Customer Support</p>
-                <p className="text-foreground">+91 99497 40776</p>
+                <p className="text-foreground">+91 81230 45318</p>
                 <p className="text-muted-foreground mt-1">Mon - Sat, 10am to 7pm IST</p>
               </div>
               <div>

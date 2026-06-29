@@ -126,7 +126,7 @@ router.post(
 
         // Shipping & Tax
         const shippingCost = subtotal > 50000 ? 0 : 1500;
-        const tax = subtotal * 0.12; // 12% GST
+        const tax = subtotal * 0.05; // 5% GST
 
         // Coupon discount
         let discount = 0;

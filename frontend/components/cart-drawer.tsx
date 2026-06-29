@@ -57,7 +57,7 @@ export function CartDrawer() {
         </header>
 
         <div
-          className="flex-1 overflow-y-auto overscroll-contain px-6 py-6"
+          className="flex-1 overflow-y-auto overscroll-contain px-6 py-6 hide-scrollbar"
           style={{ WebkitOverflowScrolling: "touch" }}
           data-lenis-prevent="true"
         >

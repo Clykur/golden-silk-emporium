@@ -61,7 +61,7 @@ model User {
   id           String      @id @default(uuid())
   email        String      @unique
   name         String
-  phone        String?
+  phone        String      @unique
   passwordHash String
   role         Role        @default(CUSTOMER)
   createdAt    DateTime    @default(now())
