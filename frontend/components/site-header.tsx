@@ -119,9 +119,9 @@ export function SiteHeader() {
   const rightNavItems = user
     ? []
     : [
-      { to: "/about" as const, label: "About" },
-      { to: "/support" as const, label: "Contact" },
-    ];
+        { to: "/about" as const, label: "About" },
+        { to: "/support" as const, label: "Contact" },
+      ];
 
   const allNavItems = [...leftNavItems, ...rightNavItems];
 
@@ -235,7 +235,7 @@ export function SiteHeader() {
               ? scrolled
                 ? "translate-y-0 opacity-100 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm"
                 : "translate-y-0 opacity-100 bg-background border-b border-transparent"
-              : "translate-y-0 opacity-100 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm pointer-events-auto"
+              : "translate-y-0 opacity-100 bg-background/90 backdrop-blur-xl border-b border-border shadow-sm pointer-events-auto",
           )}
         >
           {/* Desktop header */}

@@ -180,10 +180,11 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                   setActive(i);
                   setView360(false);
                 }}
-                className={`aspect-[3/4] w-16 md:w-24 shrink-0 overflow-hidden border transition-all duration-300 snap-start ${active === i && !view360
+                className={`aspect-[3/4] w-16 md:w-24 shrink-0 overflow-hidden border transition-all duration-300 snap-start ${
+                  active === i && !view360
                     ? "border-gold ring-1 ring-gold"
                     : "border-border/60 hover:border-foreground/50"
-                  }`}
+                }`}
               >
                 <img
                   src={img}
@@ -198,10 +199,11 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
             {dynamicGallery.length > 1 && (
               <button
                 onClick={() => setView360(true)}
-                className={`aspect-[3/4] w-16 md:w-24 shrink-0 flex flex-col items-center justify-center border text-[9px] uppercase tracking-wider transition-all duration-300 snap-start ${view360
+                className={`aspect-[3/4] w-16 md:w-24 shrink-0 flex flex-col items-center justify-center border text-[9px] uppercase tracking-wider transition-all duration-300 snap-start ${
+                  view360
                     ? "border-gold bg-gold/10 text-gold"
                     : "border-border/60 text-muted-foreground hover:text-foreground hover:border-foreground/50"
-                  }`}
+                }`}
               >
                 <RotateCw className="h-4 w-4 mb-1" />
                 360°
@@ -236,8 +238,9 @@ export default function ProductPageClient({ initialProduct, slug }: ProductPageC
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-3.5 w-3.5 ${i < Math.round(avgRating) ? "fill-yellow-400 text-yellow-400" : "text-border"
-                      }`}
+                    className={`h-3.5 w-3.5 ${
+                      i < Math.round(avgRating) ? "fill-yellow-400 text-yellow-400" : "text-border"
+                    }`}
                   />
                 ))}
               </div>
@@ -397,23 +400,35 @@ Could you please share more details?`,
                 content: (
                   <div className="space-y-2 text-xs leading-relaxed text-muted-foreground font-medium">
                     <p>
-                      • <strong className="text-foreground">Processing & Delivery:</strong> Orders are processed within 3–4 business days and typically delivered within 10–15 business days. Free shipping on orders above ₹2,500 across India.
+                      • <strong className="text-foreground">Processing & Delivery:</strong> Orders
+                      are processed within 3–4 business days and typically delivered within 10–15
+                      business days. Free shipping on orders above ₹2,500 across India.
                     </p>
                     <p>
-                      • <strong className="text-foreground">Exchanges:</strong> We offer exchanges within 1 day of delivery for unused, unwashed items with tags intact.
+                      • <strong className="text-foreground">Exchanges:</strong> We offer exchanges
+                      within 1 day of delivery for unused, unwashed items with tags intact.
                     </p>
                     <p>
-                      • <strong className="text-foreground">No Returns or Refunds:</strong> Due to the curated nature of our collection, we do not accept returns or offer refunds.
+                      • <strong className="text-foreground">No Returns or Refunds:</strong> Due to
+                      the curated nature of our collection, we do not accept returns or offer
+                      refunds.
                     </p>
                     <p className="pt-1">
                       Read our full{" "}
-                      <Link href="/shipping-cancellation" className="underline hover:text-gold transition-colors">
+                      <Link
+                        href="/shipping-cancellation"
+                        className="underline hover:text-gold transition-colors"
+                      >
                         Shipping & Cancellation Policy
                       </Link>{" "}
                       and{" "}
-                      <Link href="/returns-exchanges-refunds" className="underline hover:text-gold transition-colors">
+                      <Link
+                        href="/returns-exchanges-refunds"
+                        className="underline hover:text-gold transition-colors"
+                      >
                         Exchange Policy
-                      </Link>.
+                      </Link>
+                      .
                     </p>
                   </div>
                 ),
@@ -507,10 +522,11 @@ Could you please share more details?`,
                             className="p-1 hover:scale-110 transition-transform duration-250"
                           >
                             <Star
-                              className={`h-5 w-5 ${starVal <= reviewRating
+                              className={`h-5 w-5 ${
+                                starVal <= reviewRating
                                   ? "fill-yellow-400 text-yellow-400"
                                   : "text-muted-foreground/30"
-                                }`}
+                              }`}
                             />
                           </button>
                         );

@@ -12,15 +12,7 @@ import { ordersApi, couponsApi } from "@/lib/api";
 import { useAuth } from "@/lib/auth-store";
 import { formatINR } from "@/lib/types";
 import type { ShippingAddress, OrderItem, CustomerAddress } from "@/lib/types";
-import {
-  ShoppingBag,
-  ArrowLeft,
-  Tag,
-  Navigation,
-  Loader2,
-  Plus,
-  Check,
-} from "lucide-react";
+import { ShoppingBag, ArrowLeft, Tag, Navigation, Loader2, Plus, Check } from "lucide-react";
 import Script from "next/script";
 
 declare global {
@@ -75,9 +67,9 @@ function CheckoutContent() {
     if (!isAuthenticated()) {
       router.push(
         "/login?redirect=" +
-        encodeURIComponent("/checkout") +
-        "&message=" +
-        encodeURIComponent("Please sign in to continue shopping."),
+          encodeURIComponent("/checkout") +
+          "&message=" +
+          encodeURIComponent("Please sign in to continue shopping."),
       );
     }
   }, [isAuthenticated, router]);
@@ -698,16 +690,18 @@ function CheckoutContent() {
                               country: addr.country || "India",
                             });
                           }}
-                          className={`cursor-pointer border p-5 relative transition-all duration-300 flex flex-col justify-between ${isSelected
-                            ? "border-gold bg-gold/5 shadow-sm"
-                            : "border-border hover:border-foreground/40 bg-background"
-                            }`}
+                          className={`cursor-pointer border p-5 relative transition-all duration-300 flex flex-col justify-between ${
+                            isSelected
+                              ? "border-gold bg-gold/5 shadow-sm"
+                              : "border-border hover:border-foreground/40 bg-background"
+                          }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className="mt-1">
                               <div
-                                className={`h-4.5 w-4.5 rounded-full border flex items-center justify-center ${isSelected ? "border-gold" : "border-muted-foreground"
-                                  }`}
+                                className={`h-4.5 w-4.5 rounded-full border flex items-center justify-center ${
+                                  isSelected ? "border-gold" : "border-muted-foreground"
+                                }`}
                               >
                                 {isSelected && <div className="h-2 w-2 rounded-full bg-gold" />}
                               </div>
@@ -1010,10 +1004,11 @@ function CheckoutContent() {
                   {/* Razorpay selector */}
                   <div
                     onClick={() => setPaymentMethod("razorpay")}
-                    className={`cursor-pointer border p-4 transition-all duration-300 ${paymentMethod === "razorpay"
-                      ? "border-gold bg-gold/5 shadow-sm"
-                      : "border-border hover:border-foreground/45 bg-background"
-                      }`}
+                    className={`cursor-pointer border p-4 transition-all duration-300 ${
+                      paymentMethod === "razorpay"
+                        ? "border-gold bg-gold/5 shadow-sm"
+                        : "border-border hover:border-foreground/45 bg-background"
+                    }`}
                   >
                     <div className="flex items-center justify-between font-semibold">
                       <span className="text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
@@ -1041,10 +1036,11 @@ function CheckoutContent() {
                   {/* COD selector */}
                   <div
                     onClick={() => setPaymentMethod("cod")}
-                    className={`cursor-pointer border p-4 transition-all duration-300 ${paymentMethod === "cod"
-                      ? "border-gold bg-gold/5 shadow-sm"
-                      : "border-border hover:border-foreground/45 bg-background"
-                      }`}
+                    className={`cursor-pointer border p-4 transition-all duration-300 ${
+                      paymentMethod === "cod"
+                        ? "border-gold bg-gold/5 shadow-sm"
+                        : "border-border hover:border-foreground/45 bg-background"
+                    }`}
                   >
                     <div className="flex items-center justify-between font-semibold">
                       <span className="text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
