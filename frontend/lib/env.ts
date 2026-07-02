@@ -43,7 +43,9 @@ const envSchema = z.object({
       )
     : z.preprocess(trimmedOrUndefined, z.string().optional()),
   RAZORPAY_WEBHOOK_SECRET: z.preprocess(trimmedOrUndefined, z.string().optional()),
-  RESEND_API_KEY: z.preprocess(trimmedOrUndefined, z.string().optional()),
+  ZEPTOMAIL_API_KEY: z.preprocess(trimmedOrUndefined, z.string().optional()),
+  ZEPTOMAIL_FROM_EMAIL: z.preprocess(trimmedOrUndefined, z.string().optional()),
+  ZEPTOMAIL_FROM_NAME: z.preprocess(trimmedOrUndefined, z.string().optional()),
   ORDER_WEBHOOK_SECRET: z.preprocess(trimmedOrUndefined, z.string().optional()),
   WHATSAPP_API_TOKEN: z.preprocess(trimmedOrUndefined, z.string().optional()),
   WHATSAPP_PHONE_NUMBER_ID: z.preprocess(trimmedOrUndefined, z.string().optional()),
@@ -73,7 +75,9 @@ if (IS_SERVER) {
       NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
       RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
-      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      ZEPTOMAIL_API_KEY: process.env.ZEPTOMAIL_API_KEY,
+      ZEPTOMAIL_FROM_EMAIL: process.env.ZEPTOMAIL_FROM_EMAIL,
+      ZEPTOMAIL_FROM_NAME: process.env.ZEPTOMAIL_FROM_NAME,
       ORDER_WEBHOOK_SECRET: process.env.ORDER_WEBHOOK_SECRET,
       WHATSAPP_API_TOKEN: process.env.WHATSAPP_API_TOKEN,
       WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID,
@@ -111,7 +115,9 @@ if (IS_SERVER) {
       NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
       RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
-      RESEND_API_KEY: process.env.RESEND_API_KEY,
+      ZEPTOMAIL_API_KEY: process.env.ZEPTOMAIL_API_KEY,
+      ZEPTOMAIL_FROM_EMAIL: process.env.ZEPTOMAIL_FROM_EMAIL,
+      ZEPTOMAIL_FROM_NAME: process.env.ZEPTOMAIL_FROM_NAME,
       ORDER_WEBHOOK_SECRET: process.env.ORDER_WEBHOOK_SECRET,
       WHATSAPP_API_TOKEN: process.env.WHATSAPP_API_TOKEN,
       WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID,
@@ -179,9 +185,13 @@ export function getRazorpayWebhookSecret(): string {
   );
 }
 
-export function getResendApiKey(): string {
-  if (!IS_SERVER) return "";
-  return parsedEnv.RESEND_API_KEY || process.env.RESEND_API_KEY || "";
+export function getZeptoMailConfig() {
+  if (!IS_SERVER) return { apiKey: "", fromEmail: "", fromName: "" };
+  return {
+    apiKey: parsedEnv.ZEPTOMAIL_API_KEY || process.env.ZEPTOMAIL_API_KEY || "",
+    fromEmail: parsedEnv.ZEPTOMAIL_FROM_EMAIL || process.env.ZEPTOMAIL_FROM_EMAIL || "",
+    fromName: parsedEnv.ZEPTOMAIL_FROM_NAME || process.env.ZEPTOMAIL_FROM_NAME || "",
+  };
 }
 
 export function getWhatsAppCredentials(): { token: string; phoneId: string } {

@@ -9,7 +9,7 @@ import { EDITORIAL_IMAGES } from "@/lib/media";
 const PAGES = [
   {
     title: "Vivah Couture Cover",
-    tagline: "The Bridal Atelier",
+    tagline: "The Bridal Collection",
     desc: "A celebration of hand-embroidered velvet and gold zardozi motifs.",
     image: EDITORIAL_IMAGES.catalogPage1,
     productId: "noor-crimson",
@@ -59,13 +59,13 @@ export default function VirtualCatalog() {
       <div className="border-b border-border bg-champagne/30">
         <div className="container-luxe py-14 md:py-20 text-center">
           <p className="eyebrow flex items-center justify-center gap-2">
-            <BookOpen className="h-4 w-4 text-gold" /> Atelier Journal
+            <BookOpen className="h-4 w-4 text-gold" /> Heritage Journal
           </p>
           <h1 className="mt-3 font-display text-4xl md:text-6xl">Virtual Catalog</h1>
           <span className="gold-divider mt-4 block mx-auto" />
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground leading-relaxed">
-            Flip through the seasonal atelier pages to read artisan stories and explore
-            ready-to-measure commissions.
+            Flip through the seasonal pages to read artisan stories and explore ready-to-measure
+            commissions.
           </p>
         </div>
       </div>

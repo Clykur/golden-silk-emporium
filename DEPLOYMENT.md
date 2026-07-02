@@ -25,7 +25,9 @@ Add these variables in your Vercel Project Settings (`Settings` -> `Environment 
 | `NEXT_PUBLIC_RAZORPAY_KEY_ID`   | Razorpay Key ID for client checkout                   | `rzp_live_1234567890`                 |
 | `RAZORPAY_KEY_SECRET`           | Razorpay Key Secret                                   | `abcdefghijklmnopqrstuvwx`            |
 | `RAZORPAY_WEBHOOK_SECRET`       | Signature verification key for Razorpay Webhooks      | `your-razorpay-webhook-secret`        |
-| `RESEND_API_KEY`                | Resend API Key for sending order/welcome emails       | `re_123456789abcdef`                  |
+| `ZEPTOMAIL_API_KEY`             | ZeptoMail API key for sending emails                  | `your_zeptomail_api_key`              |
+| `ZEPTOMAIL_FROM_EMAIL`          | Verified sender email address                         | `onboarding@yourdomain.com`           |
+| `ZEPTOMAIL_FROM_NAME`           | Sender name                                           | `Drapeva`                             |
 | `WHATSAPP_API_TOKEN`            | WhatsApp Cloud API System User Access Token           | `EAAG...`                             |
 | `WHATSAPP_PHONE_NUMBER_ID`      | WhatsApp Business Phone Number ID                     | `123456789012345`                     |
 | `NEXT_PUBLIC_API_URL`           | Target endpoint of the Express Payment REST API       | `https://your-api.onrender.com`       |
@@ -51,7 +53,9 @@ Add these variables in your Render Web Service Settings (`Environment` tab).
 | `REDIS_URL`                 | Connection string for Redis cache (or `"mock"` to disable cache) | `redis://default:password@host:port`                              |
 | `RAZORPAY_KEY_ID`           | Razorpay Key ID for backend transaction validation               | `rzp_live_1234567890`                                             |
 | `RAZORPAY_KEY_SECRET`       | Razorpay Key Secret for backend verification signature           | `abcdefghijklmnopqrstuvwx`                                        |
-| `RESEND_API_KEY`            | Resend API key for backend notification emails                   | `re_123456789abcdef`                                              |
+| `ZEPTOMAIL_API_KEY`         | ZeptoMail API key for sending emails                             | `your_zeptomail_api_key`                                          |
+| `ZEPTOMAIL_FROM_EMAIL`      | Verified sender email address for notifications                  | `onboarding@yourdomain.com`                                       |
+| `ZEPTOMAIL_FROM_NAME`       | Sender name for notifications                                    | `Drapeva`                                                         |
 | `WHATSAPP_API_TOKEN`        | WhatsApp Cloud API Token for order notification texts            | `EAAG...`                                                         |
 | `WHATSAPP_PHONE_NUMBER_ID`  | WhatsApp Business Phone ID for notification texts                | `123456789012345`                                                 |
 | `FRONTEND_URL`              | Allowed CORS origin (points to your Vercel deployment domain)    | `https://drapeva.com`                                             |

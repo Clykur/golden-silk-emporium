@@ -48,7 +48,7 @@ export default function CompareProducts() {
     <div>
       <div className="border-b border-border bg-champagne/30">
         <div className="container-luxe py-14 md:py-20 text-center">
-          <p className="eyebrow">Atelier Compare</p>
+          <p className="eyebrow">Compare Curations</p>
           <h1 className="mt-3 font-display text-4xl md:text-5xl">Compare Creations</h1>
           <span className="gold-divider mt-4 block mx-auto" />
         </div>

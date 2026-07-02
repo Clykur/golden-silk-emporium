@@ -66,7 +66,7 @@ export default function EditorialLookbook() {
         <div className="relative w-full max-w-2xl aspect-[3/4] bg-champagne/20 border border-border shadow-soft overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1641699862936-be9f49b1c38d?auto=format&fit=crop&w=1200&q=80"
-            alt="Atelier photoshoot edit"
+            alt="Curated photoshoot edit"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-ink/10" />

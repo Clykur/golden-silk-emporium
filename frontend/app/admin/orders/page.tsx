@@ -180,8 +180,15 @@ export default function AdminOrders() {
                           setTrackingInput(o.tracking_number || "");
                         }}
                       >
-                        <td className="p-4 font-mono text-xs text-muted-foreground">
-                          {o.order_number || o.id.slice(0, 8).toUpperCase()}
+                        <td className="p-4 font-mono text-xs">
+                          <span className="font-semibold text-foreground">
+                            {o.order_number || o.id.slice(0, 8).toUpperCase()}
+                          </span>
+                          {o.order_number && (
+                            <span className="block text-[9px] text-muted-foreground/50 mt-0.5 font-normal">
+                              {o.id.slice(0, 8)}…
+                            </span>
+                          )}
                         </td>
                         <td className="p-4">
                           <p className="font-medium">{o.customer_name}</p>
@@ -267,6 +274,10 @@ export default function AdminOrders() {
               <p className="text-sm font-medium">{selected.customer_name}</p>
               <p className="text-xs text-muted-foreground">
                 {selected.customer_email} · {selected.customer_phone}
+              </p>
+              {/* Internal UUID — admin debugging only */}
+              <p className="text-[10px] text-muted-foreground/50 mt-2 font-mono">
+                Internal ID: {selected.id}
               </p>
             </div>
             {/* Address */}

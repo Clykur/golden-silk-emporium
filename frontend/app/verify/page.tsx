@@ -55,7 +55,7 @@ function VerifyEmailContent() {
             <>
               <p className="text-sm text-muted-foreground">
                 Thank you. Your email address has been successfully verified. You now have full
-                access to our online atelier services.
+                access to our online services.
               </p>
               <Link
                 href="/login"

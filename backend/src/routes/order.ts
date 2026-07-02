@@ -287,13 +287,14 @@ router.post(
         });
 
         // Send order emails & messages
+        const displayCode = `ORD-${updatedOrder.id.slice(0, 8).toUpperCase()}`;
         await EmailService.sendOrderConfirmation(
           updatedOrder.email,
           updatedOrder.name,
           updatedOrder.id,
           updatedOrder.total,
         );
-        await WhatsAppService.sendOrderUpdate(updatedOrder.phone, updatedOrder.id, "PROCESSING");
+        await WhatsAppService.sendOrderUpdate(updatedOrder.phone, displayCode, "PROCESSING");
 
         res.json({ success: true, message: "Payment verified successfully" });
       } else {
@@ -382,11 +383,12 @@ router.put(
       });
 
       // Notify Customer
-      await WhatsAppService.sendOrderUpdate(order.phone, order.id, status);
+      const displayCode = `ORD-${order.id.slice(0, 8).toUpperCase()}`;
+      await WhatsAppService.sendOrderUpdate(order.phone, displayCode, status);
       await EmailService.sendEmail(
         order.email,
-        `Your Drapeva Order Update - #${order.id}`,
-        `<p>Dear ${order.name},</p><p>The status of your couture piece #${order.id} has been updated to: <strong>${status}</strong>.</p>`,
+        `Your Drapeva Order Update - ${displayCode}`,
+        `<p>Dear ${order.name},</p><p>The status of your couture piece <strong>${displayCode}</strong> has been updated to: <strong>${status}</strong>.</p>`,
       );
 
       res.json(order);

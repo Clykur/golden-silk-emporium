@@ -17,7 +17,7 @@ interface EmailItem {
 
 export interface OrderShippedEmailProps {
   customerName: string;
-  orderId: string;
+  orderCode: string;
   courierName: string;
   trackingNumber: string;
   trackingUrl?: string;
@@ -27,7 +27,7 @@ export interface OrderShippedEmailProps {
 
 export const OrderShippedEmail: React.FC<OrderShippedEmailProps> = ({
   customerName,
-  orderId,
+  orderCode,
   courierName,
   trackingNumber,
   trackingUrl,
@@ -77,17 +77,6 @@ export const OrderShippedEmail: React.FC<OrderShippedEmailProps> = ({
             >
               DRAPEVA
             </h1>
-            <p
-              style={{
-                fontSize: "12px",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: brandGold,
-                margin: "0 0 30px 0",
-              }}
-            >
-              Atelier
-            </p>
             <div
               style={{ borderBottom: "1px solid #e2dcd0", width: "100%", margin: "20px 0" }}
             ></div>
@@ -125,7 +114,7 @@ export const OrderShippedEmail: React.FC<OrderShippedEmailProps> = ({
                 margin: "0 0 30px 0",
               }}
             >
-              Exciting news! Your custom order <strong>#{orderId}</strong> has completed
+              Exciting news! Your custom order <strong>#{orderCode}</strong> has completed
               craftsmanship and is now dispatched. It will be delivered to your doorstep soon.
             </p>
           </td>

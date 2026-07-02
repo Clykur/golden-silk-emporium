@@ -13,13 +13,13 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Playfair Display', Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #faf9f6; color: #1a1612; border: 1px solid #e2dcd0;">
         <h1 style="text-align: center; letter-spacing: 0.15em; font-weight: 400; text-transform: uppercase;">DRAPEVA</h1>
-        <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Atelier</p>
+        <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Curated Heritage</p>
         <hr style="border: 0; border-top: 1px solid #e2dcd0; margin: 30px 0;" />
         <p>Dear ${name},</p>
         <p>Welcome to the DRAPEVA STORE. Your account has been successfully registered.</p>
         <p>Discover our heirloom Banarasi weaves, bridal Kanjivarams, and styling consultations designed to celebrate your most precious moments.</p>
         <div style="text-align: center; margin: 40px 0;">
-          <a href="${appUrl}/shop" style="background-color: #1a1612; color: #faf9f6; padding: 15px 30px; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;">Explore the Maison</a>
+          <a href="${appUrl}/shop" style="background-color: #1a1612; color: #faf9f6; padding: 15px 30px; text-decoration: none; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;">Explore the Collection</a>
         </div>
         <p style="font-size: 0.85rem; color: #8c7853; line-height: 1.6;">Warmest regards,<br/>The Drapeva Concierge Team</p>
       </div>
@@ -46,7 +46,7 @@ export class EmailService {
         const fallbackHtml = `
           <div style="font-family: 'Playfair Display', Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #faf9f6; color: #1a1612; border: 1px solid #e2dcd0;">
             <h1 style="text-align: center; letter-spacing: 0.15em; font-weight: 400; text-transform: uppercase;">DRAPEVA</h1>
-            <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Atelier</p>
+            <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Curated Heritage</p>
             <hr style="border: 0; border-top: 1px solid #e2dcd0; margin: 30px 0;" />
             <p>Dear ${name},</p>
             <p>We are delighted to confirm receipt of your order <strong>#${orderId}</strong>.</p>
@@ -116,17 +116,17 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Playfair Display', Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #faf9f6; color: #1a1612; border: 1px solid #e2dcd0;">
         <h1 style="text-align: center; letter-spacing: 0.15em; font-weight: 400; text-transform: uppercase;">DRAPEVA</h1>
-        <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Atelier</p>
+        <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Curated Heritage</p>
         <hr style="border: 0; border-top: 1px solid #e2dcd0; margin: 30px 0;" />
         <p>Dear ${name},</p>
         <p>Your bridal/couture consultation has been scheduled.</p>
         <p><strong>Date:</strong> ${dateStr}</p>
         <p><strong>Time Slot:</strong> ${timeSlot}</p>
-        <p><strong>Type:</strong> ${type === "VIDEO" ? "Video Consultation" : "In-Person Atelier Visit"}</p>
+        <p><strong>Type:</strong> ${type === "VIDEO" ? "Video Consultation" : "In-Person Consultation"}</p>
         <p>Our concierge will reach out to you shortly via WhatsApp to share details or link invites.</p>
         <p style="font-size: 0.85rem; color: #8c7853; line-height: 1.6;">With compliments,<br/>The Drapeva Concierge Team</p>
       </div>
     `;
-    return this.sendEmail(to, "Atelier Consultation Scheduled — Drapeva", html);
+    return this.sendEmail(to, "Consultation Scheduled — Drapeva", html);
   }
 }

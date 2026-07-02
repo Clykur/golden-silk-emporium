@@ -209,7 +209,7 @@ const SAREE_UNSPLASH_IDS = [
 ];
 
 const getDescription = (name, fabric, color, occasion) => {
-  return `An exquisite ${color} ${fabric} saree, meticulously curated for ${occasion.toLowerCase()} occasions. Features handloom details, a custom border, and a matching unstitched blouse piece. Woven in our partner atelier in South India.`;
+  return `An exquisite ${color} ${fabric} saree, meticulously curated for ${occasion.toLowerCase()} occasions. Features handloom details, a custom border, and a matching unstitched blouse piece. Woven by our trusted partner weavers in South India.`;
 };
 
 async function seed() {

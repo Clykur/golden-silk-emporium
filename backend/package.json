@@ -26,7 +26,6 @@
     "jsonwebtoken": "^9.0.2",
     "razorpay": "^2.9.5",
     "redis": "^4.7.0",
-    "resend": "^4.1.2",
     "stripe": "^17.6.0",
     "zod": "^3.24.2"
   },

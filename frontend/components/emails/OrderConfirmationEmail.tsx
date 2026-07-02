@@ -30,7 +30,7 @@ interface Address {
 
 export interface OrderConfirmationEmailProps {
   customerName: string;
-  orderId: string;
+  orderCode: string;
   items: EmailItem[];
   subtotal: number;
   tax: number;
@@ -43,7 +43,7 @@ export interface OrderConfirmationEmailProps {
 
 export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
   customerName,
-  orderId,
+  orderCode,
   items,
   subtotal,
   tax,
@@ -96,17 +96,6 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
             >
               DRAPEVA
             </h1>
-            <p
-              style={{
-                fontSize: "12px",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: brandGold,
-                margin: "0 0 30px 0",
-              }}
-            >
-              Atelier
-            </p>
             <div
               style={{ borderBottom: "1px solid #e2dcd0", width: "100%", margin: "20px 0" }}
             ></div>
@@ -145,8 +134,8 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
               }}
             >
               Thank you for choosing Drapeva. We are delighted to confirm that your order{" "}
-              <strong>#{orderId}</strong> has been successfully placed. Our master artisans have
-              commenced work on your handcrafted couture piece.
+              <strong>#{orderCode}</strong> has been successfully placed. Our trusted partner
+              weavers and artisans have commenced preparing your curated handcrafted masterpiece.
             </p>
           </td>
         </tr>

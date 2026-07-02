@@ -26,7 +26,7 @@ export default function AccessDeniedPage() {
             Entrance Denied
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed mt-4">
-            You do not have the required clearance to access this atelier salon. Please sign in with
+            You do not have the required clearance to access this private salon. Please sign in with
             an administrator account or return to the store.
           </p>
         </div>

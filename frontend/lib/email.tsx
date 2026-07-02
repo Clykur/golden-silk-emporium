@@ -1,33 +1,10 @@
-import { Resend } from "resend";
+import { sendEmail } from "./zeptomail";
 import React from "react";
 import { OrderConfirmationEmail } from "@/components/emails/OrderConfirmationEmail";
 import { AdminOrderNotificationEmail } from "@/components/emails/AdminOrderNotificationEmail";
 import { OrderShippedEmail } from "@/components/emails/OrderShippedEmail";
 import { OrderDeliveredEmail } from "@/components/emails/OrderDeliveredEmail";
 import { getSupabaseAdmin } from "@/lib/supabase";
-
-// Expose Resend instance using the live environment variable.
-const resendApiKey = process.env.RESEND_API_KEY || "re_mock_resend_api_key";
-const isResendMocked = resendApiKey.includes("mock") || !process.env.RESEND_API_KEY;
-const resend = !isResendMocked ? new Resend(resendApiKey) : null;
-
-// Reusable retry helper
-async function retryOperation<T>(
-  operation: () => Promise<T>,
-  retries = 3,
-  delay = 1000,
-): Promise<T> {
-  try {
-    return await operation();
-  } catch (error) {
-    if (retries > 0) {
-      console.warn(`[Email Service] Retrying operation... (${retries} attempts left)`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return retryOperation(operation, retries - 1, delay * 2);
-    }
-    throw error;
-  }
-}
 
 // Check and update email logs to prevent duplicate sending
 async function markEmailAsSent(orderId: string, emailType: string): Promise<boolean> {
@@ -80,66 +57,18 @@ async function markEmailAsSent(orderId: string, emailType: string): Promise<bool
 }
 
 // ------------------------------------------------------------
-// Helper to send emails directly via Resend (with logging, retries, and error handling)
-// ------------------------------------------------------------
 async function sendEmailDirect(to: string, subject: string, html: string) {
   if (!to) {
     console.error("[Email Service] Recipient email is empty.");
     return null;
   }
 
-  let finalTo = to;
-  let finalSubject = subject;
-
-  // Resend Sandbox Restriction Bypass:
-  // If the target recipient is not the account owner (drapeva2026@gmail.com) and we are using the onboarding domain,
-  // we redirect it to drapeva2026@gmail.com and append a subject prefix to indicate the original recipient.
-  if (to.toLowerCase() !== "drapeva2026@gmail.com" && !isResendMocked) {
-    console.log(
-      `[Email Service] Sandbox Restriction: Redirecting email from "${to}" to "drapeva2026@gmail.com" to avoid 403 validation error.`,
-    );
-    finalTo = "drapeva2026@gmail.com";
-    finalSubject = `${subject} [Simulated Delivery to: ${to}]`;
-  }
-
-  console.log(
-    `[Email Service] Preparing to dispatch email to: "${finalTo}" (Original: "${to}") | Subject: "${finalSubject}"`,
-  );
-
-  if (isResendMocked || !resend) {
-    console.log(`[Resend Mock] Dispatching email to: ${finalTo}`);
-    console.log(`Subject: ${finalSubject}`);
-    console.log(`Body snippet: ${html.substring(0, 200)}...`);
-    return { id: "resend_mock_id_" + Math.random().toString(36).substring(4) };
-  }
+  console.log(`[Email Service] Preparing to dispatch email to: "${to}" | Subject: "${subject}"`);
 
   try {
-    const data = await retryOperation(async () => {
-      const response = await resend!.emails.send({
-        from: "Drapeva <onboarding@resend.dev>",
-        to: [finalTo],
-        subject: finalSubject,
-        html,
-      });
-
-      console.log(
-        `[Email Service] Full Resend response for "${finalTo}":`,
-        JSON.stringify(response),
-      );
-
-      if (!response || (response as any).error) {
-        const errorObj = (response as any).error || "Failed to send email via Resend";
-        console.error(
-          `[Email Service] Resend API error for "${finalTo}":`,
-          JSON.stringify(errorObj),
-        );
-        throw new Error(JSON.stringify(errorObj));
-      }
-      return response;
-    });
-    return data;
+    return await sendEmail(to, subject, html);
   } catch (err: any) {
-    console.error(`[Email Service] Failed to send email to "${finalTo}" after retries:`, err);
+    console.error(`[Email Service] Failed to send email to "${to}":`, err);
     throw err;
   }
 }
@@ -195,10 +124,17 @@ export async function sendOrderConfirmationToCustomer(
 
     // 2. Render HTML Email
     const { renderToStaticMarkup } = await import("react-dom/server");
+    // Fetch order_number for human-readable display
+    const { data: orderRow } = await supabase
+      .from("orders")
+      .select("order_number")
+      .eq("id", orderId)
+      .maybeSingle();
+    const orderCode = orderRow?.order_number || orderId.slice(0, 8).toUpperCase();
     const emailHtml = renderToStaticMarkup(
       <OrderConfirmationEmail
         customerName={name}
-        orderId={orderId}
+        orderCode={orderCode}
         items={orderData.items}
         subtotal={orderData.subtotal}
         tax={orderData.tax}
@@ -242,6 +178,15 @@ export async function sendAdminOrderNotification(
       return { status: "already_sent" };
     }
 
+    // Fetch order_number for human-readable display
+    const supabase = getSupabaseAdmin();
+    const { data: orderRow } = await supabase
+      .from("orders")
+      .select("order_number")
+      .eq("id", orderId)
+      .maybeSingle();
+    const orderCode = orderRow?.order_number || orderId.slice(0, 8).toUpperCase();
+
     // 2. Render HTML Email
     const { renderToStaticMarkup } = await import("react-dom/server");
     const emailHtml = renderToStaticMarkup(
@@ -249,7 +194,8 @@ export async function sendAdminOrderNotification(
         customerName={orderData.customerName}
         customerEmail={orderData.customerEmail}
         customerPhone={orderData.customerPhone}
-        orderId={orderId}
+        orderCode={orderCode}
+        internalId={orderId}
         items={orderData.items}
         total={orderData.total}
         shippingAddress={orderData.shippingAddress}
@@ -307,12 +253,21 @@ export async function sendOrderShippedEmail(
       return { status: "already_sent" };
     }
 
+    // Fetch order_number for human-readable display
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: orderRow } = await supabaseAdmin
+      .from("orders")
+      .select("order_number")
+      .eq("id", orderId)
+      .maybeSingle();
+    const orderCode = orderRow?.order_number || orderId.slice(0, 8).toUpperCase();
+
     // 2. Render HTML Email
     const { renderToStaticMarkup } = await import("react-dom/server");
     const emailHtml = renderToStaticMarkup(
       <OrderShippedEmail
         customerName={name}
-        orderId={orderId}
+        orderCode={orderCode}
         courierName={shippingData.courierName}
         trackingNumber={shippingData.trackingNumber}
         trackingUrl={shippingData.trackingUrl}
@@ -366,12 +321,21 @@ export async function sendOrderDeliveredEmail(
       return { status: "already_sent" };
     }
 
+    // Fetch order_number for human-readable display
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: orderRow } = await supabaseAdmin
+      .from("orders")
+      .select("order_number")
+      .eq("id", orderId)
+      .maybeSingle();
+    const orderCode = orderRow?.order_number || orderId.slice(0, 8).toUpperCase();
+
     // 2. Render HTML Email
     const { renderToStaticMarkup } = await import("react-dom/server");
     const emailHtml = renderToStaticMarkup(
       <OrderDeliveredEmail
         customerName={name}
-        orderId={orderId}
+        orderCode={orderCode}
         deliveredDate={deliveryData.deliveredDate}
         items={deliveryData.items}
       />,

@@ -438,7 +438,7 @@ function OrderCard({
         <div>
           <div className="flex items-center gap-3">
             <span className="font-display text-lg font-medium text-ink">
-              Order {order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}
+              Order {order.order_number}
             </span>
             <span
               className={`border px-2 py-0.5 text-[10px] uppercase tracking-wider rounded font-medium ${STATUS_COLORS[order.status] || "bg-muted"}`}

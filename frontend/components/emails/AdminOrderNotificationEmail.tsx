@@ -30,7 +30,8 @@ export interface AdminOrderNotificationEmailProps {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
-  orderId: string;
+  orderCode: string;
+  internalId?: string;
   items: EmailItem[];
   total: number;
   shippingAddress: Address;
@@ -43,7 +44,8 @@ export const AdminOrderNotificationEmail: React.FC<AdminOrderNotificationEmailPr
   customerName,
   customerEmail,
   customerPhone,
-  orderId,
+  orderCode,
+  internalId,
   items,
   total,
   shippingAddress,
@@ -157,10 +159,34 @@ export const AdminOrderNotificationEmail: React.FC<AdminOrderNotificationEmailPr
             >
               <tr>
                 <td width="40%" style={{ fontWeight: "bold", paddingBottom: "8px" }}>
-                  Order ID:
+                  Order Number:
                 </td>
-                <td style={{ paddingBottom: "8px" }}>#{orderId}</td>
+                <td style={{ paddingBottom: "8px", fontWeight: "bold" }}>#{orderCode}</td>
               </tr>
+              {internalId && (
+                <tr>
+                  <td
+                    style={{
+                      fontWeight: "bold",
+                      paddingBottom: "8px",
+                      color: "#999999",
+                      fontSize: "11px",
+                    }}
+                  >
+                    Internal Ref (Admin):
+                  </td>
+                  <td
+                    style={{
+                      paddingBottom: "8px",
+                      color: "#999999",
+                      fontSize: "11px",
+                      fontFamily: "monospace",
+                    }}
+                  >
+                    {internalId}
+                  </td>
+                </tr>
+              )}
               <tr>
                 <td style={{ fontWeight: "bold", paddingBottom: "8px" }}>Time of Purchase:</td>
                 <td style={{ paddingBottom: "8px" }}>{createdAt}</td>

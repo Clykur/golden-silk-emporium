@@ -325,7 +325,7 @@ async function main() {
     color: string,
     occasion: string,
   ): string => {
-    return `An exquisite ${color} ${fabric} saree, meticulously curated for ${occasion.toLowerCase()} occasions. Features handloom details, a custom border, and a matching unstitched blouse piece. Woven in our partner atelier in South India.`;
+    return `An exquisite ${color} ${fabric} saree, meticulously curated for ${occasion.toLowerCase()} occasions. Features handloom details, a custom border, and a matching unstitched blouse piece. Woven by our trusted partner weavers in South India.`;
   };
 
   const sizes = ["XS", "S", "M", "L", "XL"];
@@ -492,7 +492,7 @@ async function main() {
       image:
         "https://images.unsplash.com/photo-1641699862936-be9f49b1c38d?auto=format&fit=crop&w=900&q=80",
       category: "Craftsmanship",
-      author: "Atelier Curator",
+      author: "Drapeva Curator",
       isPublished: true,
     },
   });

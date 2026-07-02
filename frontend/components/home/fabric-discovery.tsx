@@ -38,7 +38,7 @@ const fabrics = [
     description:
       "Delicate, sheer, and styled with a subtle ethereal sheen, pure organza brings a contemporary lightness to heritage silhouettes. Hand-embroidered with fine details, it drapes like a soft whisper of wind.",
     feel: "Crisp, sheer, and feather-light",
-    occasion: "Atelier Parties, Evening Soirées",
+    occasion: "Elegant Parties, Evening Soirées",
     image: "/images/saree_organza.png",
   },
   {
@@ -48,7 +48,7 @@ const fabrics = [
     description:
       "The ultimate harmony of comfort and understated luxury. Combining the breathability of premium cotton with the soft sheen of hand-spun silk, this weave ensures all-day comfort without losing its regal poise.",
     feel: "Soft, breathable, and slightly crisp",
-    occasion: "Day Atelier, Executive Wear",
+    occasion: "Day Soirées, Executive Wear",
     image: "/images/saree_office.png",
   },
 ];
@@ -171,7 +171,7 @@ export function FabricDiscovery() {
               {/* Header */}
               <div className="space-y-1 mb-4 md:mb-6 sm:mb-8 text-center md:text-left">
                 <span className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] text-gold font-bold block">
-                  Atelier Fabric Guide
+                  Fabric Heritage Guide
                 </span>
                 <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide text-white leading-tight">
                   Discover Our Collection{" "}

@@ -63,7 +63,7 @@ export default function BookAppointment() {
           will reach out to you via WhatsApp to finalize saree customization requirements.
         </p>
         <Link href="/" className="mt-10 inline-block border-b border-foreground pb-0.5 eyebrow">
-          Back to Atelier
+          Back to Store
         </Link>
       </div>
     );
@@ -77,8 +77,8 @@ export default function BookAppointment() {
           <h1 className="mt-3 font-display text-4xl md:text-5xl">Book Consultation</h1>
           <span className="gold-divider mt-4 block mx-auto" />
           <p className="mx-auto mt-5 max-w-xl text-sm text-muted-foreground leading-relaxed">
-            Schedule a session with our master drapers. Available via video call or physical studio
-            visit in South Mumbai.
+            Schedule a session with our master drapers. Available via video call or in-person
+            consultation in South Mumbai.
           </p>
         </div>
       </div>

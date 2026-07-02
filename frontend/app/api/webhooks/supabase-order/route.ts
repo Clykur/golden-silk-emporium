@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { EmailService } from "@/lib/services/email";
 import { WhatsAppService } from "@/lib/services/whatsapp";
 
-// Uses Resend (Node.js HTTP) — pin to Node.js runtime.
+// Uses ZeptoMail (Node.js HTTP) — pin to Node.js runtime.
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
@@ -55,14 +55,14 @@ export async function POST(request: Request) {
     if (type === "UPDATE" && old_record && old_record.status !== record.status) {
       await EmailService.sendEmail(
         record.customer_email,
-        `Your Drapeva Order Update - #${record.id.slice(0, 8).toUpperCase()}`,
+        `Your Drapeva Order Update - ${record.order_number || "#" + record.id.slice(0, 8).toUpperCase()}`,
         `
         <div style="font-family: 'Playfair Display', Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #faf9f6; color: #1a1612; border: 1px solid #e2dcd0;">
           <h1 style="text-align: center; letter-spacing: 0.15em; font-weight: 400; text-transform: uppercase;">DRAPEVA</h1>
-          <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Atelier</p>
+          <p style="text-align: center; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: #8c7853; margin-top: -10px;">Curated Heritage</p>
           <hr style="border: 0; border-top: 1px solid #e2dcd0; margin: 30px 0;" />
           <p>Dear ${record.customer_name},</p>
-          <p>The status of your couture saree order <strong>#${record.id.slice(0, 8).toUpperCase()}</strong> has been updated to: <strong>${record.status.toUpperCase()}</strong>.</p>
+          <p>The status of your curated saree order <strong>${record.order_number || "#" + record.id.slice(0, 8).toUpperCase()}</strong> has been updated to: <strong>${record.status.toUpperCase()}</strong>.</p>
           ${record.tracking_number ? `<p>Tracking Number: <strong>${record.tracking_number}</strong></p>` : ""}
           <p>Warmest regards,<br/>The Drapeva Concierge Team</p>
         </div>

@@ -110,7 +110,7 @@ export default function OrderSuccessPage() {
                 <Truck className="h-4.5 w-4.5 text-gold" /> Track Order
               </h2>
               <span className="font-mono text-xs text-muted-foreground uppercase bg-muted/65 px-2 py-0.5 border border-border/40">
-                {order.order_number || "#" + order.id.slice(0, 8).toUpperCase()}
+                {order.order_number}
               </span>
             </div>
 

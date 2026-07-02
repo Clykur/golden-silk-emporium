@@ -17,14 +17,14 @@ interface EmailItem {
 
 export interface OrderDeliveredEmailProps {
   customerName: string;
-  orderId: string;
+  orderCode: string;
   deliveredDate: string;
   items: EmailItem[];
 }
 
 export const OrderDeliveredEmail: React.FC<OrderDeliveredEmailProps> = ({
   customerName,
-  orderId,
+  orderCode,
   deliveredDate,
   items,
 }) => {
@@ -71,17 +71,6 @@ export const OrderDeliveredEmail: React.FC<OrderDeliveredEmailProps> = ({
             >
               DRAPEVA
             </h1>
-            <p
-              style={{
-                fontSize: "12px",
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: brandGold,
-                margin: "0 0 30px 0",
-              }}
-            >
-              Atelier
-            </p>
             <div
               style={{ borderBottom: "1px solid #e2dcd0", width: "100%", margin: "20px 0" }}
             ></div>
@@ -119,8 +108,8 @@ export const OrderDeliveredEmail: React.FC<OrderDeliveredEmailProps> = ({
                 margin: "0 0 20px 0",
               }}
             >
-              We are pleased to confirm that your order <strong>#{orderId}</strong> was delivered on{" "}
-              <strong>{deliveredDate}</strong>.
+              We are pleased to confirm that your order <strong>#{orderCode}</strong> was delivered
+              on <strong>{deliveredDate}</strong>.
             </p>
             <p
               style={{

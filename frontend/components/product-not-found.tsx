@@ -36,7 +36,7 @@ export function ProductNotFound() {
         <div className="absolute inset-4 border border-gold/10 pointer-events-none" />
 
         <div className="max-w-xl mx-auto text-center space-y-5 relative z-10">
-          <p className="eyebrow text-gold font-bold tracking-[0.25em]">ATELIER EDIT</p>
+          <p className="eyebrow text-gold font-bold tracking-[0.25em]">CURATED EDIT</p>
           <h1 className="font-display text-4xl md:text-5xl leading-tight text-ink font-semibold tracking-wide">
             Masterpiece Unavailable
           </h1>

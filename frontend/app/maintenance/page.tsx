@@ -41,7 +41,7 @@ export default function MaintenancePage() {
         </div>
 
         <div className="space-y-3">
-          <p className="eyebrow text-gold text-center">Atelier Maintenance</p>
+          <p className="eyebrow text-gold text-center">Scheduled Maintenance</p>
           <h1 className="font-display text-3.5xl md:text-4xl text-ink font-semibold tracking-wide leading-tight">
             We're making Drapeva even better
           </h1>
